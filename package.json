@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:razroo-vscode-plugin.helloWorld"
+    "onCommand:razroo-vscode-plugin.initialization"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "razroo-vscode-plugin.helloWorld",
-        "title": "Hello World"
+        "command": "razroo-vscode-plugin.initialization",
+        "title": "Razroo Initialization"
       }
     ]
   },
