@@ -10,7 +10,9 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:razroo-vscode-plugin.initialization"
+    "onCommand:razroo-vscode-plugin.initialization",
+    "onCommand:razroo-vscode-plugin.authenticate",
+    "onCommand:extension.getGitHubUser"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,6 +20,14 @@
       {
         "command": "razroo-vscode-plugin.initialization",
         "title": "Razroo Initialization"
+      },
+      {
+        "command": "razroo-vscode-plugin.authenticate",
+        "title": "Razroo Authentication"
+      },
+      {
+        "command": "extension.getGitHubUser",
+        "title": "Razroo Github Authentication"
       }
     ]
   },
@@ -40,6 +50,7 @@
     "glob": "^7.1.7",
     "mocha": "^8.4.0",
     "typescript": "^4.3.2",
-    "vscode-test": "^1.5.2"
+    "vscode-test": "^1.5.2",
+    "@octokit/rest": "^18.0.0"
   }
 }
