@@ -3,13 +3,15 @@
 import * as vscode from 'vscode';
 import fileSystem = require('fs');
 import path = require('path');
+import createAuth0Client from '@auth0/auth0-spa-js';
 import { Credentials } from './credentials';
+import { validateEmail } from './utils';
+import open = require('open');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  const credentials = new Credentials();
-  await credentials.initialize(context);
+
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
@@ -35,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('razroo-vscode-plugin.authenticate', () => {
+    vscode.commands.registerCommand('razroo-vscode-plugin.authenticateViaWebview', () => {
       // Create and show a new webview
 
       const panel = vscode.window.createWebviewPanel(
@@ -56,25 +58,36 @@ export async function activate(context: vscode.ExtensionContext) {
   const githubDisposable = vscode.commands.registerCommand(
     'extension.getGitHubUser',
     async () => {
-		console.log("inside getGitHubUser");
+
       /**
        * Octokit (https://github.com/octokit/rest.js#readme) is a library for making REST API
        * calls to GitHub. It provides convenient typings that can be helpful for using the API.
        *
        * Documentation on GitHub's REST API can be found here: https://docs.github.com/en/rest
        */
-      const octokit = await credentials.getOctokit();
-	  console.log("octokit",octokit);
-      const userInfo = await octokit.users.getAuthenticated();
-	  console.log("userInfo", userInfo);
+      //const octokit = await credentials.getOctokit();
+      //console.log("octokit", octokit);
+      //const userInfo = await octokit.users.getAuthenticated();
+      //console.log("userInfo", userInfo);
 
-      vscode.window.showInformationMessage(
-        `Logged into GitHub as ${userInfo.data.login}`
-      );
+      //vscode.window.showInformationMessage(
+      //  `Logged into GitHub as ${userInfo.data.login}`
+      //);
     }
   );
-
   context.subscriptions.push(githubDisposable);
+
+  const auth0Authentication = vscode.commands.registerCommand('extension.auth0Authentication',
+    async () => {
+      console.log("inside auth0Authentcation");
+      //Auth0 Authentication
+      const githubEmail = await vscode.window.showInputBox({ title: "Your GitHub Email", placeHolder: "Your Github email", prompt: "Please type in your Github email", validateInput: (value) => validateEmail(value) });
+      console.log("githubEmail", githubEmail);
+      const githubPassword = await vscode.window.showInputBox({ title: "Your GitHub Password", placeHolder: "Your Github Password", password: true });
+      console.log("githubPassword", githubPassword);
+      //await open("https://zeta.razroo.com");
+    });
+  context.subscriptions.push(auth0Authentication);
 }
 
 function getWebviewContent() {
@@ -83,11 +96,11 @@ function getWebviewContent() {
   <head>
   </head>
   <body>
-  <iframe src="https://zeta.razroo.com/">
+  <button id="login">Click to Login</button>
   </iframe>
   </body>
   </html>`;
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

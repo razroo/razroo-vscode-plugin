@@ -4,7 +4,7 @@ import * as Octokit from '@octokit/rest';
 const GITHUB_AUTH_PROVIDER_ID = 'github';
 // The GitHub Authentication Provider accepts the scopes described here:
 // https://developer.github.com/apps/building-oauth-apps/understanding-scopes-for-oauth-apps/
-const SCOPES = ['user:email', 'repo'];
+const SCOPES = ['admin:repo_hook', 'user:email', 'repo'];
 
 export class Credentials {
 	private octokit: Octokit.Octokit | undefined;
@@ -12,6 +12,7 @@ export class Credentials {
 	async initialize(context: vscode.ExtensionContext): Promise<void> {
 		this.registerListeners(context);
 		this.setOctokit();
+
 	}
 
 	private async setOctokit() {

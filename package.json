@@ -11,8 +11,9 @@
   ],
   "activationEvents": [
     "onCommand:razroo-vscode-plugin.initialization",
-    "onCommand:razroo-vscode-plugin.authenticate",
-    "onCommand:extension.getGitHubUser"
+    "onCommand:razroo-vscode-plugin.authenticateViaWebview",
+    "onCommand:extension.getGitHubUser",
+    "onCommand:extension.auth0Authentication"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -22,12 +23,16 @@
         "title": "Razroo Initialization"
       },
       {
-        "command": "razroo-vscode-plugin.authenticate",
+        "command": "razroo-vscode-plugin.authenticateViaWebview",
         "title": "Razroo Authentication"
       },
       {
         "command": "extension.getGitHubUser",
         "title": "Razroo Github Authentication"
+      },
+      {
+        "command": "extension.auth0Authentication",
+        "title": "Razroo Auth0 Authentication"
       }
     ]
   },
@@ -40,17 +45,17 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.57.0",
+    "@octokit/rest": "^18.0.0",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.2.2",
     "@types/node": "14.x",
-    "eslint": "^7.27.0",
+    "@types/vscode": "^1.57.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.27.0",
     "glob": "^7.1.7",
     "mocha": "^8.4.0",
     "typescript": "^4.3.2",
-    "vscode-test": "^1.5.2",
-    "@octokit/rest": "^18.0.0"
+    "vscode-test": "^1.5.2"
   }
 }
