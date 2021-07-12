@@ -1,11 +1,9 @@
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import fileSystem = require('fs');
 import path = require('path');
-import createAuth0Client from '@auth0/auth0-spa-js';
 import { Credentials } from './credentials';
-import { validateEmail } from './utils';
+import { getAuth0Url, validateEmail } from './utils';
 import open = require('open');
 
 // this method is called when your extension is activated
@@ -85,7 +83,8 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log("githubEmail", githubEmail);
       const githubPassword = await vscode.window.showInputBox({ title: "Your GitHub Password", placeHolder: "Your Github Password", password: true });
       console.log("githubPassword", githubPassword);
-      //await open("https://zeta.razroo.com");
+      const loginUrl = getAuth0Url();
+      await open(loginUrl);
     });
   context.subscriptions.push(auth0Authentication);
 }
