@@ -6,7 +6,6 @@ export const validateEmail = (email: string) => {
 };
 
 export const getAuth0Url = (token: string, socketHost: string) => {
-    console.log(process.env);
     const host = process.env.scope === 'DEVELOPMENT' ? 'http://localhost:4200' : AUTH0URL;
     const loginUrl =  `${host}?vscodeToken=${token}&socketVsCode=${socketHost}`;
     return loginUrl;
