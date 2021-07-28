@@ -6,6 +6,11 @@ import { Credentials } from './credentials';
 import { getAuth0Url, validateEmail } from './utils';
 import open = require('open');
 
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
+import { v4 as uuidv4 } from 'uuid';
+import { AUTH0URL, DEVAUTHURL, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL, MEMENTO_RAZROO_REFRESH_TOKEN, SOCKET_HOST } from './constants';
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -81,10 +86,31 @@ export async function activate(context: vscode.ExtensionContext) {
       //Auth0 Authentication
       const githubEmail = await vscode.window.showInputBox({ title: "Your GitHub Email", placeHolder: "Your Github email", prompt: "Please type in your Github email", validateInput: (value) => validateEmail(value) });
       console.log("githubEmail", githubEmail);
-      const githubPassword = await vscode.window.showInputBox({ title: "Your GitHub Password", placeHolder: "Your Github Password", password: true });
-      console.log("githubPassword", githubPassword);
-      const loginUrl = getAuth0Url();
+      const token =  uuidv4();
+      const host = SOCKET_HOST;
+      const loginUrl = getAuth0Url(token, host);
+
       await open(loginUrl);
+
+      const httpServer = createServer();      
+      const io = new Server(httpServer, {
+          cors: {
+              origin: [DEVAUTHURL, AUTH0URL],
+              methods: ["GET", "POST"]
+          }
+      });
+
+      io.on("connection", (socket: Socket) => {
+          socket.on(token, (msg) => {
+            const [refresh_token, id_token, access_token] = msg;
+            console.log('User is authenticated via web.');
+            context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, refresh_token);
+            context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, access_token);
+            context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, id_token);
+            context.workspaceState.update(MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL, token);
+          });
+      });
+      httpServer.listen(3000);
     });
   context.subscriptions.push(auth0Authentication);
 }

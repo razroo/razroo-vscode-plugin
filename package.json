@@ -39,7 +39,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "watch": "scope=DEVELOPMENT tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
@@ -61,6 +61,8 @@
   },
   "dependencies": {
     "open": "^8.2.1",
+    "socket.io": "^4.1.3",
+    "socket.io-client": "^4.1.3",
     "uuid": "^8.3.2"
   }
 }

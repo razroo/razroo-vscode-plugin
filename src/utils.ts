@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { AUTH0URL } from './constants';
 
 export const validateEmail = (email: string) => {
@@ -6,8 +5,8 @@ export const validateEmail = (email: string) => {
     return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = () => {
-    const draftToken = uuidv4();
-    const loginUrl = AUTH0URL + `?token=${draftToken}`;
+export const getAuth0Url = (token: string, socketHost: string) => {
+    const host = process.env.scope === 'DEVELOPMENT' ? 'http://localhost:4200' : AUTH0URL;
+    const loginUrl =  `${host}?vscodeToken=${token}&socketVsCode=${socketHost}`;
     return loginUrl;
 }
