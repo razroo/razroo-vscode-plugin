@@ -1,15 +1,20 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import fileSystem = require('fs');
-import path = require('path');
-import { Credentials } from './credentials';
-import { getAuth0Url, validateEmail } from './utils';
 import open = require('open');
-
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { v4 as uuidv4 } from 'uuid';
-import { AUTH0URL, DEVAUTHURL, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL, MEMENTO_RAZROO_REFRESH_TOKEN, SOCKET_HOST } from './constants';
+import * as AdmZip from 'adm-zip';
+import * as request from 'request';
+import * as http from 'http2';
+
+import { getAuth0Url } from './utils';
+import { AUTH0URL, COMMAND_AUTH0_AUTH, DEVAUTHURL, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL, MEMENTO_RAZROO_REFRESH_TOKEN, SOCKET_HOST } from './constants';
+
+
+const showErrorMessage = vscode.window.showErrorMessage;
+const showInformationMessage = vscode.window.showInformationMessage;
+const showOpenDialog = vscode.window.showOpenDialog;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -80,17 +85,15 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(githubDisposable);
 
-  const auth0Authentication = vscode.commands.registerCommand('extension.auth0Authentication',
+  const auth0Authentication = vscode.commands.registerCommand(COMMAND_AUTH0_AUTH,
     async () => {
       console.log("inside auth0Authentcation");
       //Auth0 Authentication
-      const githubEmail = await vscode.window.showInputBox({ title: "Your GitHub Email", placeHolder: "Your Github email", prompt: "Please type in your Github email", validateInput: (value) => validateEmail(value) });
-      console.log("githubEmail", githubEmail);
+      // const githubEmail = await vscode.window.showInputBox({ title: "Your GitHub Email", placeHolder: "Your Github email", prompt: "Please type in your Github email", validateInput: (value) => validateEmail(value) });
+      // console.log("githubEmail", githubEmail);
       const token =  uuidv4();
       const host = SOCKET_HOST;
       const loginUrl = getAuth0Url(token, host);
-
-      await open(loginUrl);
 
       const httpServer = createServer();      
       const io = new Server(httpServer, {
@@ -111,8 +114,76 @@ export async function activate(context: vscode.ExtensionContext) {
           });
       });
       httpServer.listen(3000);
+
+      await open(loginUrl);
+
+
     });
   context.subscriptions.push(auth0Authentication);
+
+  const getGenerateCode = vscode.commands.registerCommand('extension.getGenerateCode', async () => {
+    // get token
+    const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+    console.log("Token: ", token);
+    if ( !token ) {
+      console.error('Token is null');
+      showErrorMessage("Session has expired. Please login again.");
+      vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+      return;
+    }
+    // generate prompt
+    const templateId = await vscode.window.showInputBox({ title: "Your templateId", placeHolder: "Your templateId", prompt: "Please type in the templateId" });
+    console.log('templateId: '+templateId);
+    
+    const url = 'https://vuerbsj4cjffvfzx7cph4iy7se.appsync-api.us-east-1.amazonaws.com/graphql';
+    const body = {
+      "query": `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
+      "variables": {}
+    };
+    request.post( { url, body: JSON.stringify(body),
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json"
+      },
+      gzip: true
+    }, async (error, response, body) => {
+        // console.log("error: ",error);
+        if ( response.statusCode === http.constants.HTTP_STATUS_FORBIDDEN || response.statusCode === http.constants.HTTP_STATUS_UNAUTHORIZED ) {
+          showErrorMessage("Session has expired. Please login again.");
+          vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+          return;
+        }
+        if ( error ) {
+          await showErrorMessage("Something went wrong. Please contact support.");
+          return;
+        }
+        
+        // console.log("Response: ", response);
+        // console.log("Body: ", body);
+
+        const bodyObject = JSON.parse(body);
+
+        request.get({url: bodyObject.data.generateCode.downloadUrl , encoding: null}, async (err, res, body) => {
+          var zip = new AdmZip(body);
+          showOpenDialog({canSelectFiles: false, canSelectFolders: true , canSelectMany: false}).then((value: vscode.Uri[] | undefined) => {
+            if ( !value ) {
+              // console.log("User did not select a folder");
+              showInformationMessage("Please select a folder");
+              return;
+            }
+            const dir = value[0];
+            try {
+              // console.log("Dir: ", dir.fsPath);
+              zip.extractAllTo(dir.fsPath, false);  
+            }catch(error){
+              // let the user know that the download faile, check folder permission, or ask support.
+              showErrorMessage("We had problems writting in that folder, please check for permissions");
+            }
+          });
+        });
+    });
+  });
+  context.subscriptions.push(getGenerateCode);
 }
 
 function getWebviewContent() {
