@@ -11,8 +11,6 @@
   ],
   "activationEvents": [
     "onCommand:razroo-vscode-plugin.initialization",
-    "onCommand:razroo-vscode-plugin.authenticateViaWebview",
-    "onCommand:extension.getGitHubUser",
     "onCommand:extension.auth0Authentication",
     "onCommand:extension.getGenerateCode"
   ],
@@ -22,14 +20,6 @@
       {
         "command": "razroo-vscode-plugin.initialization",
         "title": "Razroo Initialization"
-      },
-      {
-        "command": "razroo-vscode-plugin.authenticateViaWebview",
-        "title": "Razroo Authentication"
-      },
-      {
-        "command": "extension.getGitHubUser",
-        "title": "Razroo Github Authentication"
       },
       {
         "command": "extension.auth0Authentication",

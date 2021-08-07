@@ -44,46 +44,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand('razroo-vscode-plugin.authenticateViaWebview', () => {
-      // Create and show a new webview
 
-      const panel = vscode.window.createWebviewPanel(
-        'catCoding', // Identifies the type of the webview. Used internally
-        'Razroo Authentication', // Title of the panel displayed to the user
-        vscode.ViewColumn.Active, // Editor column to show the new webview panel in.
-        {
-          // Enable scripts in the webview
-          enableScripts: true,
-        }
-      );
-
-      panel.webview.html = getWebviewContent();
-    })
-  );
-
-  // GitHub Authentication
-  const githubDisposable = vscode.commands.registerCommand(
-    'extension.getGitHubUser',
-    async () => {
-
-      /**
-       * Octokit (https://github.com/octokit/rest.js#readme) is a library for making REST API
-       * calls to GitHub. It provides convenient typings that can be helpful for using the API.
-       *
-       * Documentation on GitHub's REST API can be found here: https://docs.github.com/en/rest
-       */
-      //const octokit = await credentials.getOctokit();
-      //console.log("octokit", octokit);
-      //const userInfo = await octokit.users.getAuthenticated();
-      //console.log("userInfo", userInfo);
-
-      //vscode.window.showInformationMessage(
-      //  `Logged into GitHub as ${userInfo.data.login}`
-      //);
-    }
-  );
-  context.subscriptions.push(githubDisposable);
 
   const auth0Authentication = vscode.commands.registerCommand(COMMAND_AUTH0_AUTH,
     async () => {
@@ -106,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
       io.on("connection", (socket: Socket) => {
           socket.on(token, (msg) => {
             const [refresh_token, id_token, access_token] = msg;
-            console.log('User is authenticated via web.');
+            showInformationMessage('User is authenticated via web.');
             context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, refresh_token);
             context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, access_token);
             context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, id_token);
@@ -164,8 +125,14 @@ export async function activate(context: vscode.ExtensionContext) {
         const bodyObject = JSON.parse(body);
 
         request.get({url: bodyObject.data.generateCode.downloadUrl , encoding: null}, async (err, res, body) => {
-          var zip = new AdmZip(body);
-          showOpenDialog({canSelectFiles: false, canSelectFolders: true , canSelectMany: false}).then((value: vscode.Uri[] | undefined) => {
+          var zip = new AdmZip(body);          
+          const defaultUri = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : null;
+          
+          let options =  
+          defaultUri ? {canSelectFiles: false, canSelectFolders: true , canSelectMany: false,
+            defaultUri} : {canSelectFiles: false, canSelectFolders: true , canSelectMany: false };
+          
+          showOpenDialog(options).then((value: vscode.Uri[] | undefined) => {
             if ( !value ) {
               // console.log("User did not select a folder");
               showInformationMessage("Please select a folder");
@@ -186,17 +153,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(getGenerateCode);
 }
 
-function getWebviewContent() {
-  return `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-  </head>
-  <body>
-  <button id="login">Click to Login</button>
-  </iframe>
-  </body>
-  </html>`;
-}
+
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {  }
