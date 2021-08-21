@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from 'uuid';
 import * as AdmZip from 'adm-zip';
 import * as request from 'request';
 import * as http from 'http2';
+import gql from 'graphql-tag';
+import client from './graphql/subscription';
 
 import { existVSCodeAuthenticate, getAuth0Url } from './utils';
 import {
@@ -50,6 +52,31 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
+
+  const subquery = gql(`
+subscription MySubscription {
+    generateCodeDownloadSub(vsCodeToken: "12345") {
+      vsCodeToken
+      downloadUrl
+      parameters
+    }
+  }
+`);
+
+  client.hydrated().then(function (client) {
+    //Now subscribe to results
+    const observable = client.subscribe({ query: subquery });
+
+    const realtimeResults = function realtimeResults(data: any) {
+      console.log('realtime data: ', data);
+    };
+
+    observable.subscribe({
+      next: realtimeResults,
+      complete: console.log,
+      error: console.log,
+    });
+  });
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
@@ -139,7 +166,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       await open(loginUrl);
 
-      await existVSCodeAuthenticate(token);
+      // await existVSCodeAuthenticate(token);
     }
   );
 
