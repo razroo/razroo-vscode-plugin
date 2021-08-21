@@ -7,9 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import * as AdmZip from 'adm-zip';
 import * as request from 'request';
 import * as http from 'http2';
-import gql from 'graphql-tag';
-import client from './graphql/subscription';
-
 import { existVSCodeAuthenticate, getAuth0Url } from './utils';
 import {
   AUTH0URL,
@@ -17,6 +14,7 @@ import {
   DEVAUTHURL,
   MEMENTO_RAZROO_ACCESS_TOKEN,
   MEMENTO_RAZROO_ID_TOKEN,
+  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
   MEMENTO_RAZROO_REFRESH_TOKEN,
   SOCKET_HOST,
@@ -52,31 +50,34 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
+  const vsCodeToken = context.workspaceState.get(
+    MEMENTO_RAZROO_ID_VS_CODE_TOKEN
+  );
+  console.log('idToken', vsCodeToken);
+  //   const subquery = gql(`
+  // subscription MySubscription {
+  //     generateCodeDownloadSub(vsCodeToken: "${vsCodeToken}") {
+  //       vsCodeToken
+  //       downloadUrl
+  //       parameters
+  //     }
+  //   }
+  // `);
 
-  const subquery = gql(`
-subscription MySubscription {
-    generateCodeDownloadSub(vsCodeToken: "12345") {
-      vsCodeToken
-      downloadUrl
-      parameters
-    }
-  }
-`);
+  //   client.hydrated().then(function (client) {
+  //     //Now subscribe to results
+  //     const observable = client.subscribe({ query: subquery });
 
-  client.hydrated().then(function (client) {
-    //Now subscribe to results
-    const observable = client.subscribe({ query: subquery });
+  //     const realtimeResults = function realtimeResults(data: any) {
+  //       console.log('realtime data: ', data);
+  //     };
 
-    const realtimeResults = function realtimeResults(data: any) {
-      console.log('realtime data: ', data);
-    };
-
-    observable.subscribe({
-      next: realtimeResults,
-      complete: console.log,
-      error: console.log,
-    });
-  });
+  //     observable.subscribe({
+  //       next: realtimeResults,
+  //       complete: console.log,
+  //       error: console.log,
+  //     });
+  //   });
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
@@ -129,6 +130,7 @@ subscription MySubscription {
       console.log('inside auth0Authentcation');
 
       const token = uuidv4();
+      context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
       const host = SOCKET_HOST;
       const loginUrl = getAuth0Url(token, host);
 
@@ -166,7 +168,7 @@ subscription MySubscription {
 
       await open(loginUrl);
 
-      // await existVSCodeAuthenticate(token);
+      await existVSCodeAuthenticate(context);
     }
   );
 
@@ -226,7 +228,7 @@ subscription MySubscription {
           }
 
           // console.log("Response: ", response);
-          // console.log("Body: ", body);
+          console.log('Body: ', body);
 
           const bodyObject = JSON.parse(body);
 
@@ -251,6 +253,17 @@ subscription MySubscription {
                     canSelectMany: false,
                   };
 
+              const folderName = `${context.extensionPath}/new_folder`;
+
+              // if (!fs.existsSync(folderName)) {
+              //   fs.mkdirSync(folderName);
+              // }
+              // vscode.workspace.updateWorkspaceFolders(0, undefined, {
+              //   uri: vscode.Uri.parse(`${folderName}`),
+              //   name: 'New Folder',
+              // });
+
+              // zip.extractAllTo(folderName, false);
               showOpenDialog(options).then(
                 (value: vscode.Uri[] | undefined) => {
                   if (!value) {

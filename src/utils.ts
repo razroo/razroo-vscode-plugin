@@ -1,5 +1,14 @@
-import { AUTH0URL } from './constants';
+import {
+  AUTH0URL,
+  MEMENTO_RAZROO_ID_TOKEN,
+  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
+} from './constants';
 import * as request from 'request';
+import * as vscode from 'vscode';
+import gql from 'graphql-tag';
+import client from './graphql/subscription';
+import * as AdmZip from 'adm-zip';
+import * as fs from 'fs';
 
 export const validateEmail = (email: string) => {
   const res =
@@ -14,31 +23,46 @@ export const getAuth0Url = (token: string, socketHost: string) => {
   return loginUrl;
 };
 
-export const existVSCodeAuthenticate = async (token: string) => {
+export const saveFiles = async (
+  data: any,
+  context: vscode.ExtensionContext
+) => {
+  const url = data.data.generateCodeDownloadSub.downloadUrl;
+  console.log('url', url);
+  request.get({ url, encoding: null }, async (err, res, body) => {
+    var zip = new AdmZip(body);
+
+    const folderName = `${context.extensionPath}/razroo_files`;
+
+    if (!fs.existsSync(folderName)) {
+      fs.mkdirSync(folderName);
+    }
+    vscode.workspace.updateWorkspaceFolders(0, undefined, {
+      uri: vscode.Uri.parse(`${folderName}`),
+      name: 'razroo_files',
+    });
+
+    zip.extractAllTo(folderName, false);
+  });
+};
+
+export const existVSCodeAuthenticate = async (
+  context: vscode.ExtensionContext
+) => {
   console.log('Start');
-  let response;
 
+  const vsCodeToken = context.workspaceState.get(
+    MEMENTO_RAZROO_ID_VS_CODE_TOKEN
+  );
+  const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const url = 'https://e6gvzer89l.execute-api.us-east-1.amazonaws.com/Stage';
   for (let i = 0; i < 1; ) {
-    // const url = 'http://localhost:3000/dev/graphql';
-    // const body = {
-    //   query: `query Query($_vsCodeToken: String!) {
-    //       authenticationVsCode(vsCodeToken: $_vsCodeToken) {
-    //         vsCodeToken
-    //         githubId
-    //         idToken
-    //         refreshToken
-    //       }
-    //     }`,
-    //   variables: { _vsCodeToken: token },
-    // };
-
-    const url = 'https://dxmhv6e367.execute-api.us-east-1.amazonaws.com/Stage';
     request.get(
       {
-        url: url + `/authenticationVSCode/vsCodeToken/${token}`,
+        url: url + `/authenticationVSCode/vsCodeToken/${vsCodeToken}`,
       },
-      async (error, response, body) => {
-        console.log('response', response);
+      async (error, res, body) => {
+        console.log('response', res);
         console.log('body', body);
         console.log('error', error);
         body = JSON.parse(body);
@@ -48,16 +72,21 @@ export const existVSCodeAuthenticate = async (token: string) => {
         );
         console.log(
           'authentication vscode if',
-          body?.authenticationVSCode?.vsCodeToken === token
+          body?.authenticationVSCode?.vsCodeToken === vsCodeToken
         );
-        if (
-          body?.authenticationVSCode &&
-          body?.authenticationVSCode?.vsCodeToken === token &&
-          body?.statusCode === 200
-        ) {
-          console.log('Correct token');
+        if (body?.statusCode === 200 && body?.authenticationVSCode) {
+          if (body?.authenticationVSCode?.idToken !== idToken) {
+            console.log('Correct token');
+            context.workspaceState.update(
+              MEMENTO_RAZROO_ID_TOKEN,
+              body?.authenticationVSCode?.idToken
+            );
+            eval(`response = ${body?.authenticationVSCode?.vsCodeToken}`);
+
+            //Emit event of resubscribe
+          }
+          console.log('idToken still valid.');
           i++;
-          response = body?.authenticationVSCode;
         }
       }
     );
@@ -70,8 +99,34 @@ export const existVSCodeAuthenticate = async (token: string) => {
     // }
     await sleep(3000);
   }
-  console.log('End', response);
-  return response;
+
+  const subquery = gql(`
+  subscription MySubscription {
+      generateCodeDownloadSub(vsCodeToken: "${vsCodeToken}") {
+        vsCodeToken
+        downloadUrl
+        parameters
+      }
+    }
+  `);
+
+  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
+    .hydrated()
+    .then(async function (client) {
+      //Now subscribe to results
+      const observable = client.subscribe({ query: subquery });
+
+      const realtimeResults = async function realtimeResults(data: any) {
+        console.log('realtime data: ', data);
+        await saveFiles(data, context);
+      };
+
+      observable.subscribe({
+        next: realtimeResults,
+        complete: console.log,
+        error: console.log,
+      });
+    });
 };
 
 function sleep(ms: number) {
