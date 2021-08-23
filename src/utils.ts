@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 import client from './graphql/subscription';
 import * as AdmZip from 'adm-zip';
 import * as fs from 'fs';
+import { URL_API_GATEGAY } from './graphql/awsConstants';
 
 export const validateEmail = (email: string) => {
   const res =
@@ -29,19 +30,19 @@ export const saveFiles = async (
 ) => {
   const url = data.data.generateCodeDownloadSub.downloadUrl;
   console.log('url', url);
+  //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
     var zip = new AdmZip(body);
-
+    //Create new folder if not exist
     const folderName = `${context.extensionPath}/razroo_files`;
-
     if (!fs.existsSync(folderName)) {
       fs.mkdirSync(folderName);
     }
+    //Update the workspace with the new folder and the new files
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
       uri: vscode.Uri.parse(`${folderName}`),
       name: 'razroo_files',
     });
-
     zip.extractAllTo(folderName, false);
   });
 };
@@ -55,51 +56,38 @@ export const existVSCodeAuthenticate = async (
     MEMENTO_RAZROO_ID_VS_CODE_TOKEN
   );
   const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
-  const url = 'https://e6gvzer89l.execute-api.us-east-1.amazonaws.com/Stage';
+
+  // Loop to obtain the idToken to subscribes in grapqh
   for (let i = 0; i < 1; ) {
     request.get(
       {
-        url: url + `/authenticationVSCode/vsCodeToken/${vsCodeToken}`,
+        url:
+          URL_API_GATEGAY + `/authenticationVSCode/vsCodeToken/${vsCodeToken}`,
       },
       async (error, res, body) => {
         console.log('response', res);
         console.log('body', body);
         console.log('error', error);
         body = JSON.parse(body);
-        console.log(
-          'authentication vscode',
-          body?.authenticationVSCode?.vsCodeToken
-        );
-        console.log(
-          'authentication vscode if',
-          body?.authenticationVSCode?.vsCodeToken === vsCodeToken
-        );
-        if (body?.statusCode === 200 && body?.authenticationVSCode) {
-          if (body?.authenticationVSCode?.idToken !== idToken) {
+        const authenticationVSCode = body?.authenticationVSCode;
+        //Check if the authenticationVSCode token not is empty and the idToken is new
+        if (body?.statusCode === 200 && authenticationVSCode) {
+          if (authenticationVSCode.idToken !== idToken) {
             console.log('Correct token');
             context.workspaceState.update(
               MEMENTO_RAZROO_ID_TOKEN,
-              body?.authenticationVSCode?.idToken
+              authenticationVSCode.idToken
             );
-            eval(`response = ${body?.authenticationVSCode?.vsCodeToken}`);
-
-            //Emit event of resubscribe
           }
           console.log('idToken still valid.');
           i++;
         }
       }
     );
-    // response = await axios.get(`url/authenticationVSCode/vsCodeToken/${token}`);
-    // if (
-    //   response?.data?.authenticationVSCode &&
-    //   Object.keys(response?.data?.authenticationVSCode).length
-    // ) {
-    //   i++;
-    // }
     await sleep(3000);
   }
 
+  //Query to subscribe in graphql
   const subquery = gql(`
   subscription MySubscription {
       generateCodeDownloadSub(vsCodeToken: "${vsCodeToken}") {
@@ -110,6 +98,7 @@ export const existVSCodeAuthenticate = async (
     }
   `);
 
+  //Subscribe with appsync client
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
     .hydrated()
     .then(async function (client) {
@@ -118,6 +107,7 @@ export const existVSCodeAuthenticate = async (
 
       const realtimeResults = async function realtimeResults(data: any) {
         console.log('realtime data: ', data);
+        //Save the files in a new folder
         await saveFiles(data, context);
       };
 

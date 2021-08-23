@@ -12,7 +12,6 @@
   "activationEvents": [
     "onCommand:razroo-vscode-plugin.initialization",
     "onCommand:extension.auth0Authentication",
-    "onCommand:extension.NewAuth0Authentication",
     "onCommand:extension.getGenerateCode"
   ],
   "main": "./out/extension.js",
@@ -25,10 +24,6 @@
       {
         "command": "extension.auth0Authentication",
         "title": "Razroo Auth0 Authentication"
-      },
-      {
-        "command": "extension.NewAuth0Authentication",
-        "title": "New Razroo Auth0 Authentication"
       },
       {
         "command": "extension.getGenerateCode",

@@ -50,82 +50,9 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
-  const vsCodeToken = context.workspaceState.get(
-    MEMENTO_RAZROO_ID_VS_CODE_TOKEN
-  );
-  console.log('idToken', vsCodeToken);
-  //   const subquery = gql(`
-  // subscription MySubscription {
-  //     generateCodeDownloadSub(vsCodeToken: "${vsCodeToken}") {
-  //       vsCodeToken
-  //       downloadUrl
-  //       parameters
-  //     }
-  //   }
-  // `);
-
-  //   client.hydrated().then(function (client) {
-  //     //Now subscribe to results
-  //     const observable = client.subscribe({ query: subquery });
-
-  //     const realtimeResults = function realtimeResults(data: any) {
-  //       console.log('realtime data: ', data);
-  //     };
-
-  //     observable.subscribe({
-  //       next: realtimeResults,
-  //       complete: console.log,
-  //       error: console.log,
-  //     });
-  //   });
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async () => {
-      console.log('inside auth0Authentcation');
-      //Auth0 Authentication
-      // const githubEmail = await vscode.window.showInputBox({ title: "Your GitHub Email", placeHolder: "Your Github email", prompt: "Please type in your Github email", validateInput: (value) => validateEmail(value) });
-      // console.log("githubEmail", githubEmail);
-      const token = uuidv4();
-      const host = SOCKET_HOST;
-      const loginUrl = getAuth0Url(token, host);
-
-      const httpServer = createServer();
-      const io = new Server(httpServer, {
-        cors: {
-          origin: [DEVAUTHURL, AUTH0URL],
-          methods: ['GET', 'POST'],
-        },
-      });
-
-      io.on('connection', (socket: Socket) => {
-        socket.on(token, (msg) => {
-          const [refresh_token, id_token, access_token] = msg;
-          showInformationMessage('User is authenticated via web.');
-          context.workspaceState.update(
-            MEMENTO_RAZROO_REFRESH_TOKEN,
-            refresh_token
-          );
-          context.workspaceState.update(
-            MEMENTO_RAZROO_ACCESS_TOKEN,
-            access_token
-          );
-          context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, id_token);
-          context.workspaceState.update(
-            MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
-            token
-          );
-        });
-      });
-      httpServer.listen(3000);
-
-      await open(loginUrl);
-    }
-  );
-  context.subscriptions.push(auth0Authentication);
-
-  const NewAuth0Authentication = vscode.commands.registerCommand(
-    'extension.NewAuth0Authentication',
     async () => {
       console.log('inside auth0Authentcation');
 
@@ -171,8 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
       await existVSCodeAuthenticate(context);
     }
   );
-
-  context.subscriptions.push(NewAuth0Authentication);
+  context.subscriptions.push(auth0Authentication);
 
   const getGenerateCode = vscode.commands.registerCommand(
     'extension.getGenerateCode',
@@ -227,9 +153,6 @@ export async function activate(context: vscode.ExtensionContext) {
             return;
           }
 
-          // console.log("Response: ", response);
-          console.log('Body: ', body);
-
           const bodyObject = JSON.parse(body);
 
           request.get(
@@ -253,17 +176,6 @@ export async function activate(context: vscode.ExtensionContext) {
                     canSelectMany: false,
                   };
 
-              const folderName = `${context.extensionPath}/new_folder`;
-
-              // if (!fs.existsSync(folderName)) {
-              //   fs.mkdirSync(folderName);
-              // }
-              // vscode.workspace.updateWorkspaceFolders(0, undefined, {
-              //   uri: vscode.Uri.parse(`${folderName}`),
-              //   name: 'New Folder',
-              // });
-
-              // zip.extractAllTo(folderName, false);
               showOpenDialog(options).then(
                 (value: vscode.Uri[] | undefined) => {
                   if (!value) {
