@@ -1,15 +1,32 @@
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import fileSystem = require('fs');
-import path = require('path');
-import { Credentials } from './credentials';
+import open = require('open');
+import { createServer } from 'http';
+import { Server, Socket } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
+import * as AdmZip from 'adm-zip';
+import * as request from 'request';
+import * as http from 'http2';
+import { existVSCodeAuthenticate, getAuth0Url } from './utils';
+import {
+  AUTH0URL,
+  COMMAND_AUTH0_AUTH,
+  DEVAUTHURL,
+  MEMENTO_RAZROO_ACCESS_TOKEN,
+  MEMENTO_RAZROO_ID_TOKEN,
+  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
+  MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
+  MEMENTO_RAZROO_REFRESH_TOKEN,
+  SOCKET_HOST,
+} from './constants';
+
+const showErrorMessage = vscode.window.showErrorMessage;
+const showInformationMessage = vscode.window.showInformationMessage;
+const showOpenDialog = vscode.window.showOpenDialog;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  const credentials = new Credentials();
-  await credentials.initialize(context);
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
@@ -34,59 +51,157 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable);
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand('razroo-vscode-plugin.authenticate', () => {
-      // Create and show a new webview
-
-      const panel = vscode.window.createWebviewPanel(
-        'catCoding', // Identifies the type of the webview. Used internally
-        'Razroo Authentication', // Title of the panel displayed to the user
-        vscode.ViewColumn.Active, // Editor column to show the new webview panel in.
-        {
-          // Enable scripts in the webview
-          enableScripts: true,
-        }
-      );
-
-      panel.webview.html = getWebviewContent();
-    })
-  );
-
-  // GitHub Authentication
-  const githubDisposable = vscode.commands.registerCommand(
-    'extension.getGitHubUser',
+  const auth0Authentication = vscode.commands.registerCommand(
+    COMMAND_AUTH0_AUTH,
     async () => {
-		console.log("inside getGitHubUser");
-      /**
-       * Octokit (https://github.com/octokit/rest.js#readme) is a library for making REST API
-       * calls to GitHub. It provides convenient typings that can be helpful for using the API.
-       *
-       * Documentation on GitHub's REST API can be found here: https://docs.github.com/en/rest
-       */
-      const octokit = await credentials.getOctokit();
-	  console.log("octokit",octokit);
-      const userInfo = await octokit.users.getAuthenticated();
-	  console.log("userInfo", userInfo);
+      console.log('inside auth0Authentcation');
 
-      vscode.window.showInformationMessage(
-        `Logged into GitHub as ${userInfo.data.login}`
+      const token = uuidv4();
+      context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
+      const host = SOCKET_HOST;
+      const loginUrl = getAuth0Url(token, host);
+
+      const httpServer = createServer();
+      const io = new Server(httpServer, {
+        cors: {
+          origin: [DEVAUTHURL, AUTH0URL],
+          methods: ['GET', 'POST'],
+        },
+      });
+
+      io.on('connection', (socket: Socket) => {
+        socket.on(token, (msg) => {
+          const [refresh_token, id_token, access_token] = msg;
+          showInformationMessage('User is authenticated via web.');
+          console.log('refresh_token', refresh_token);
+          console.log('id_token', id_token);
+          console.log('access_token', access_token);
+          context.workspaceState.update(
+            MEMENTO_RAZROO_REFRESH_TOKEN,
+            refresh_token
+          );
+          context.workspaceState.update(
+            MEMENTO_RAZROO_ACCESS_TOKEN,
+            access_token
+          );
+          context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, id_token);
+          context.workspaceState.update(
+            MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
+            token
+          );
+        });
+      });
+      httpServer.listen(3000);
+
+      await open(loginUrl);
+
+      await existVSCodeAuthenticate(context);
+    }
+  );
+  context.subscriptions.push(auth0Authentication);
+
+  const getGenerateCode = vscode.commands.registerCommand(
+    'extension.getGenerateCode',
+    async () => {
+      // get token
+      const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+      console.log('Token: ', token);
+      if (!token) {
+        console.error('Token is null');
+        showErrorMessage('Session has expired. Please login again.');
+        vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+        return;
+      }
+      // generate prompt
+      const templateId = await vscode.window.showInputBox({
+        title: 'Your templateId',
+        placeHolder: 'Your templateId',
+        prompt: 'Please type in the templateId',
+      });
+      console.log('templateId: ' + templateId);
+
+      const url =
+        'https://vuerbsj4cjffvfzx7cph4iy7se.appsync-api.us-east-1.amazonaws.com/graphql';
+      const body = {
+        query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
+        variables: {},
+      };
+      request.post(
+        {
+          url,
+          body: JSON.stringify(body),
+          headers: {
+            Authorization: token,
+            'Content-Type': 'application/json',
+          },
+          gzip: true,
+        },
+        async (error, response, body) => {
+          // console.log("error: ",error);
+          if (
+            response.statusCode === http.constants.HTTP_STATUS_FORBIDDEN ||
+            response.statusCode === http.constants.HTTP_STATUS_UNAUTHORIZED
+          ) {
+            showErrorMessage('Session has expired. Please login again.');
+            vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+            return;
+          }
+          if (error) {
+            await showErrorMessage(
+              'Something went wrong. Please contact support.'
+            );
+            return;
+          }
+
+          const bodyObject = JSON.parse(body);
+
+          request.get(
+            { url: bodyObject.data.generateCode.downloadUrl, encoding: null },
+            async (err, res, body) => {
+              var zip = new AdmZip(body);
+              const defaultUri = vscode.workspace.workspaceFolders
+                ? vscode.workspace.workspaceFolders[0].uri
+                : null;
+
+              let options = defaultUri
+                ? {
+                    canSelectFiles: false,
+                    canSelectFolders: true,
+                    canSelectMany: false,
+                    defaultUri,
+                  }
+                : {
+                    canSelectFiles: false,
+                    canSelectFolders: true,
+                    canSelectMany: false,
+                  };
+
+              showOpenDialog(options).then(
+                (value: vscode.Uri[] | undefined) => {
+                  if (!value) {
+                    // console.log("User did not select a folder");
+                    showInformationMessage('Please select a folder');
+                    return;
+                  }
+                  const dir = value[0];
+                  try {
+                    // console.log("Dir: ", dir.fsPath);
+                    zip.extractAllTo(dir.fsPath, false);
+                  } catch (error) {
+                    // let the user know that the download faile, check folder permission, or ask support.
+                    showErrorMessage(
+                      'We had problems writting in that folder, please check for permissions'
+                    );
+                  }
+                }
+              );
+            }
+          );
+        }
       );
     }
   );
-
-  context.subscriptions.push(githubDisposable);
-}
-
-function getWebviewContent() {
-  return `<!DOCTYPE html>
-  <html lang="en">
-  <head>
-  </head>
-  <body>
-  <iframe src="https://zeta.razroo.com/">
-  </iframe>
-  </body>
-  </html>`;
+  context.subscriptions.push(getGenerateCode);
 }
 
 // this method is called when your extension is deactivated
