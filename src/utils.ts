@@ -28,7 +28,7 @@ export const saveFiles = async (
   data: any,
   context: vscode.ExtensionContext
 ) => {
-  const url = data.data.generateCodeDownloadSub.downloadUrl;
+  const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   console.log('url', url);
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
@@ -52,7 +52,7 @@ export const existVSCodeAuthenticate = async (
 ) => {
   console.log('Start');
 
-  const vsCodeToken = context.workspaceState.get(
+  const vsCodeInstanceId = context.workspaceState.get(
     MEMENTO_RAZROO_ID_VS_CODE_TOKEN
   );
   const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
@@ -62,7 +62,8 @@ export const existVSCodeAuthenticate = async (
     request.get(
       {
         url:
-          URL_API_GATEGAY + `/authenticationVSCode/vsCodeToken/${vsCodeToken}`,
+          URL_API_GATEGAY +
+          `/authenticationVSCode/vsCodeInstanceId/${vsCodeInstanceId}`,
       },
       async (error, res, body) => {
         console.log('response', res);
@@ -71,7 +72,7 @@ export const existVSCodeAuthenticate = async (
         body = JSON.parse(body);
         const authenticationVSCode = body?.authenticationVSCode;
         //Check if the authenticationVSCode token not is empty and the idToken is new
-        if (body?.statusCode === 200 && authenticationVSCode) {
+        if (res?.statusCode === 200 && authenticationVSCode) {
           if (authenticationVSCode.idToken !== idToken) {
             console.log('Correct token');
             context.workspaceState.update(
@@ -90,8 +91,8 @@ export const existVSCodeAuthenticate = async (
   //Query to subscribe in graphql
   const subquery = gql(`
   subscription MySubscription {
-      generateCodeDownloadSub(vsCodeToken: "${vsCodeToken}") {
-        vsCodeToken
+      generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
+        vsCodeInstanceId
         downloadUrl
         parameters
       }
