@@ -41,7 +41,7 @@ export const saveFiles = async (
     //Update the workspace with the new folder and the new files
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
       uri: vscode.Uri.parse(`${folderName}`),
-      name: 'razroo_files',
+      name: '',
     });
     zip.extractAllTo(folderName, false);
   });
