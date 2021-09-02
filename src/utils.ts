@@ -34,7 +34,7 @@ export const saveFiles = async (
   request.get({ url, encoding: null }, async (err, res, body) => {
     var zip = new AdmZip(body);
     //Create new folder if not exist
-    const folderName = `${context.extensionPath}/razroo_files`;
+    const folderName = `${context.extensionPath}/`;
     if (!fs.existsSync(folderName)) {
       fs.mkdirSync(folderName);
     }
