@@ -15,9 +15,23 @@ import * as fs from 'fs';
 import { URL_API_GATEGAY } from './graphql/awsConstants';
 import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
+import { readdir } from 'fs/promises';
+import * as path from 'path';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
+
+async function* getFiles(dir: string) {
+  const dirents = await readdir(dir, { withFileTypes: true });
+  for (const dirent of dirents) {
+    const res = path.resolve(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      yield* getFiles(res);
+    } else {
+      yield res;
+    }
+  }
+}
 
 export const validateEmail = (email: string) => {
   const res =
@@ -59,19 +73,25 @@ export const saveFiles = async (
       zip.extractAllTo(folderName, false);
       showInformationMessage('Extracted files in the workspace.');
     }
-    else {
-      if(process.env.scope === 'DEVELOPMENT' ) {
-        fs.mkdirSync(context.extensionPath);
-        vscode.workspace.updateWorkspaceFolders(0, 0, {
-          uri: vscode.Uri.parse(`${context.extensionPath}`),
-        });
-        zip.extractAllTo(context.extensionPath, false);
-        showInformationMessage('Extracted files in the workspace.');
-      }
-      else {
-        vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
-      }
+    zip.extractAllTo(folderName, false);
+    const files: string[] = [];
+    for await (const f of getFiles(folderName)) {
+      files.push(f);
     }
+    files.forEach((file) => {
+      fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+        console.log('error file', err);
+        if (!err) {
+          console.log(file + ' has been copied!');
+        }
+      });
+    });
+    fs.rmdirSync(folderName + '/templates', { recursive: true });
+    //Update the workspace with the new folder and the new files
+    vscode.workspace.updateWorkspaceFolders(0, undefined, {
+      uri: vscode.Uri.parse(`${folderName}`),
+      name: 'razroo_files',
+    });
   });
 };
 
