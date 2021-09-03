@@ -30,6 +30,36 @@
         "command": "extension.getGenerateCode",
         "title": "Razroo download template"
       }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+          {
+              "id": "razroo-bar",
+              "title": "Razroo",
+              "icon": "src/icon/razroo-logo.svg"
+          }
+      ]
+    },
+    "views": {
+      "razroo-bar": [
+        {
+          "id": "razroo-authentication",
+          "name": "Authentication"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "razroo-authentication",
+        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:extension.auth0Authentication)",
+        "when": "config.git.enabled && git.state == initialized && workbenchState == empty && !authenticate"
+      },
+      {
+        "view": "razroo-authentication",
+        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:extension.auth0Authentication)",
+        "when": "config.git.enabled && git.state == initialized && workbenchState == empty && authenticate",
+        "enablement": "!authenticate"
+      }
     ]
   },
   "scripts": {

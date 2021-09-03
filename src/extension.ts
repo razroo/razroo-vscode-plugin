@@ -73,6 +73,7 @@ export async function activate(context: vscode.ExtensionContext) {
         socket.on(token, (msg) => {
           const [refresh_token, id_token, access_token] = msg;
           showInformationMessage('User is authenticated via web.');
+          vscode.commands.executeCommand('setContext', 'authenticate', true);
           console.log('refresh_token', refresh_token);
           console.log('id_token', id_token);
           console.log('access_token', access_token);
