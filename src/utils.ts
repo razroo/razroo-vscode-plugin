@@ -30,20 +30,38 @@ export const saveFiles = async (
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   console.log('url', url);
+  let orange = vscode.window.createOutputChannel("Orange");
+  orange.appendLine("url");
+  orange.appendLine(url);
+
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
+    let folderName;
     var zip = new AdmZip(body);
-    //Create new folder if not exist
-    const folderName = `${context.extensionPath}/`;
-    if (!fs.existsSync(folderName)) {
-      fs.mkdirSync(folderName);
+
+    if(vscode.workspace.workspaceFolders !== undefined) {
+      let currentWorkspaceFolder = vscode.workspace.workspaceFolders[0].uri.path ;
+      let currentWorkspaceFile = vscode.workspace.workspaceFolders[0].uri.fsPath ; 
+
+      folderName = currentWorkspaceFolder;
+
+      vscode.workspace.updateWorkspaceFolders(0, 0, {
+        uri: vscode.Uri.parse(`${folderName}`),
+      });
+      zip.extractAllTo(folderName, false);
     }
-    //Update the workspace with the new folder and the new files
-    vscode.workspace.updateWorkspaceFolders(0, undefined, {
-      uri: vscode.Uri.parse(`${folderName}`),
-      name: '',
-    });
-    zip.extractAllTo(folderName, false);
+    else {
+      if(process.env.scope === 'DEVELOPMENT' ) {
+        fs.mkdirSync(context.extensionPath);
+        vscode.workspace.updateWorkspaceFolders(0, 0, {
+          uri: vscode.Uri.parse(`${context.extensionPath}`),
+        });
+        zip.extractAllTo(context.extensionPath, false);
+      }
+      else {
+        vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
+      }
+    }
   });
 };
 
