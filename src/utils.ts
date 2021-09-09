@@ -57,6 +57,7 @@ export const saveFiles = async (
         uri: vscode.Uri.parse(`${folderName}`),
       });
       zip.extractAllTo(folderName, false);
+      showInformationMessage('Extracted files in the workspace.');
     }
     else {
       if(process.env.scope === 'DEVELOPMENT' ) {
@@ -65,11 +66,12 @@ export const saveFiles = async (
           uri: vscode.Uri.parse(`${context.extensionPath}`),
         });
         zip.extractAllTo(context.extensionPath, false);
-    showInformationMessage('Extracted files in the workspace.');
+        showInformationMessage('Extracted files in the workspace.');
       }
       else {
         vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
       }
+    }
   });
 };
 
