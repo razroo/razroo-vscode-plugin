@@ -172,7 +172,7 @@ export const existVSCodeAuthenticate = async (
         });
       });
   } else {
-    showErrorMessage('Connection error to graphql.');
+    showErrorMessage('Connection error');
   }
 
   return { error: errorGetAuthentication };
@@ -203,7 +203,6 @@ async function refreshToken(refresh_token: string, errorRefreshToken: boolean) {
       } catch (error) {
         console.log('Error refreshToken');
         errorRefreshToken = true;
-        showErrorMessage('Refresh token error.');
       }
 
       progress.report({ increment: 100 });

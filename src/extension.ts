@@ -109,9 +109,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
           progress.report({ increment: 100 });
           if (error) {
-            showErrorMessage('Authenticated error, please try again.');
+            showErrorMessage('Authentication error, please try again.');
           } else {
-            showInformationMessage('User is authenticated via web.');
+            showInformationMessage(
+              'User successfully authenticated with Razroo.'
+            );
           }
         }
       );
