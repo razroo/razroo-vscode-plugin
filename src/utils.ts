@@ -1,7 +1,10 @@
 import {
   AUTH0URL,
+  AUTH0_CLIENT_ID,
+  AUTH0_DOMAIN,
   MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
+  MEMENTO_RAZROO_REFRESH_TOKEN,
 } from './constants';
 import * as request from 'request';
 import * as vscode from 'vscode';
@@ -10,6 +13,11 @@ import client from './graphql/subscription';
 import * as AdmZip from 'adm-zip';
 import * as fs from 'fs';
 import { URL_API_GATEGAY } from './graphql/awsConstants';
+import { AuthenticationClient } from 'auth0';
+import jwt_decode from 'jwt-decode';
+
+const showErrorMessage = vscode.window.showErrorMessage;
+const showInformationMessage = vscode.window.showInformationMessage;
 
 export const validateEmail = (email: string) => {
   const res =
@@ -49,6 +57,7 @@ export const saveFiles = async (
         uri: vscode.Uri.parse(`${folderName}`),
       });
       zip.extractAllTo(folderName, false);
+      showInformationMessage('Extracted files in the workspace.');
     }
     else {
       if(process.env.scope === 'DEVELOPMENT' ) {
@@ -57,6 +66,7 @@ export const saveFiles = async (
           uri: vscode.Uri.parse(`${context.extensionPath}`),
         });
         zip.extractAllTo(context.extensionPath, false);
+        showInformationMessage('Extracted files in the workspace.');
       }
       else {
         vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
@@ -76,6 +86,8 @@ export const existVSCodeAuthenticate = async (
   const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
 
   // Loop to obtain the idToken to subscribes in grapqh
+  let cont = 0;
+  let errorGetAuthentication = false;
   for (let i = 0; i < 1; ) {
     request.get(
       {
@@ -97,17 +109,40 @@ export const existVSCodeAuthenticate = async (
               MEMENTO_RAZROO_ID_TOKEN,
               authenticationVSCode.idToken
             );
+            context.workspaceState.update(
+              MEMENTO_RAZROO_REFRESH_TOKEN,
+              authenticationVSCode.refreshToken
+            );
           }
           console.log('idToken still valid.');
           i++;
         }
       }
     );
-    await sleep(3000);
+    await sleep(2000);
+    cont++;
+    //After one minute. Finish
+    if (cont === 30) {
+      i++;
+      cont = 0;
+      errorGetAuthentication = true;
+    }
   }
 
-  //Query to subscribe in graphql
-  const subquery = gql(`
+  let errorRefreshToken = false;
+  if (
+    isExpiredToken(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
+  ) {
+    showErrorMessage('Id token expired.');
+    errorRefreshToken = await refreshToken(
+      `${context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN)}`,
+      errorRefreshToken
+    );
+  }
+
+  if (!errorGetAuthentication && !errorRefreshToken) {
+    //Query to subscribe in graphql
+    const subquery = gql(`
   subscription MySubscription {
       generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
         vsCodeInstanceId
@@ -117,26 +152,72 @@ export const existVSCodeAuthenticate = async (
     }
   `);
 
-  //Subscribe with appsync client
-  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
-    .hydrated()
-    .then(async function (client) {
-      //Now subscribe to results
-      const observable = client.subscribe({ query: subquery });
+    //Subscribe with appsync client
+    client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
+      .hydrated()
+      .then(async function (client) {
+        //Now subscribe to results
+        const observable = client.subscribe({ query: subquery });
 
-      const realtimeResults = async function realtimeResults(data: any) {
-        console.log('realtime data: ', data);
-        //Save the files in a new folder
-        await saveFiles(data, context);
-      };
+        const realtimeResults = async function realtimeResults(data: any) {
+          console.log('realtime data: ', data);
+          //Save the files in a new folder
+          await saveFiles(data, context);
+        };
 
-      observable.subscribe({
-        next: realtimeResults,
-        complete: console.log,
-        error: console.log,
+        observable.subscribe({
+          next: realtimeResults,
+          complete: console.log,
+          error: console.log,
+        });
       });
-    });
+  } else {
+    showErrorMessage('Connection error');
+  }
+
+  return { error: errorGetAuthentication };
 };
+
+async function refreshToken(refresh_token: string, errorRefreshToken: boolean) {
+  const auth0 = new AuthenticationClient({
+    domain: AUTH0_DOMAIN,
+    clientId: AUTH0_CLIENT_ID,
+  });
+
+  vscode.window.withProgress(
+    {
+      location: vscode.ProgressLocation.Window,
+      cancellable: false,
+      title: 'Authentication in Razroo',
+    },
+    async (progress) => {
+      progress.report({ increment: 0 });
+
+      try {
+        const responseRefreshToken = await auth0.refreshToken({
+          refresh_token,
+        });
+        console.log('responseRefreshToken', responseRefreshToken);
+        //TODO update the vscode-authentication table with the id_token and the refresh_token new
+        showInformationMessage('Refresh token successful.');
+      } catch (error) {
+        console.log('Error refreshToken');
+        errorRefreshToken = true;
+      }
+
+      progress.report({ increment: 100 });
+    }
+  );
+
+  return errorRefreshToken;
+}
+
+function isExpiredToken(idToken: string) {
+  var decodedToken: any = jwt_decode(idToken);
+  const tokenExpiredDate = decodedToken?.exp;
+  const dateNowInSecondsEpoch = Math.round(new Date().getTime() / 1000);
+  return dateNowInSecondsEpoch >= tokenExpiredDate;
+}
 
 function sleep(ms: number) {
   return new Promise((resolve) => {

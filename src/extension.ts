@@ -72,7 +72,8 @@ export async function activate(context: vscode.ExtensionContext) {
       io.on('connection', (socket: Socket) => {
         socket.on(token, (msg) => {
           const [refresh_token, id_token, access_token] = msg;
-          showInformationMessage('User is authenticated via web.');
+
+          vscode.commands.executeCommand('setContext', 'authenticate', true);
           console.log('refresh_token', refresh_token);
           console.log('id_token', id_token);
           console.log('access_token', access_token);
@@ -95,7 +96,27 @@ export async function activate(context: vscode.ExtensionContext) {
 
       await open(loginUrl);
 
-      await existVSCodeAuthenticate(context);
+      vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Window,
+          cancellable: false,
+          title: 'Authentication in Razroo',
+        },
+        async (progress) => {
+          progress.report({ increment: 0 });
+
+          const { error } = await existVSCodeAuthenticate(context);
+
+          progress.report({ increment: 100 });
+          if (error) {
+            showErrorMessage('Authentication error, please try again.');
+          } else {
+            showInformationMessage(
+              'User successfully authenticated with Razroo.'
+            );
+          }
+        }
+      );
     }
   );
   context.subscriptions.push(auth0Authentication);
