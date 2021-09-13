@@ -52,27 +52,11 @@ export const saveFiles = async (
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   console.log('url', url);
-  let orange = vscode.window.createOutputChannel("Orange");
-  orange.appendLine("url");
-  orange.appendLine(url);
 
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
-    let folderName;
+    const folderName = `${context.extensionPath}/razroo_files`;
     var zip = new AdmZip(body);
-
-    if(vscode.workspace.workspaceFolders !== undefined) {
-      let currentWorkspaceFolder = vscode.workspace.workspaceFolders[0].uri.path ;
-      let currentWorkspaceFile = vscode.workspace.workspaceFolders[0].uri.fsPath ; 
-
-      folderName = currentWorkspaceFolder;
-
-      vscode.workspace.updateWorkspaceFolders(0, 0, {
-        uri: vscode.Uri.parse(`${folderName}`),
-      });
-      zip.extractAllTo(folderName, false);
-      showInformationMessage('Extracted files in the workspace.');
-    }
     zip.extractAllTo(folderName, false);
     const files: string[] = [];
     for await (const f of getFiles(folderName)) {
@@ -92,6 +76,7 @@ export const saveFiles = async (
       uri: vscode.Uri.parse(`${folderName}`),
       name: 'razroo_files',
     });
+    showInformationMessage('Extracted files in the workspace.');
   });
 };
 
