@@ -22,10 +22,10 @@ const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
 
 async function* getFiles(dir: string) {
-  const dirents = await readdir(dir, { withFileTypes: true });
-  for (const dirent of dirents) {
-    const res = path.resolve(dir, dirent.name);
-    if (dirent.isDirectory()) {
+  const directories = await readdir(dir, { withFileTypes: true });
+  for (const directory of directories) {
+    const res = path.resolve(dir, directory.name);
+    if (directory.isDirectory()) {
       yield* getFiles(res);
     } else {
       yield res;
