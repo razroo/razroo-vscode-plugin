@@ -7,7 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import * as AdmZip from 'adm-zip';
 import * as request from 'request';
 import * as http from 'http2';
-import { existVSCodeAuthenticate, getAuth0Url } from './utils';
+import {
+  existVSCodeAuthenticate,
+  getAuth0Url,
+  getDirectoriesWithoutPrivatePath,
+} from './utils';
 import {
   AUTH0URL,
   COMMAND_AUTH0_AUTH,
@@ -59,7 +63,21 @@ export async function activate(context: vscode.ExtensionContext) {
       const token = uuidv4();
       context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
       const host = SOCKET_HOST;
-      const loginUrl = getAuth0Url(token, host);
+      // obtain full path of the folders of the workspace
+      const workspaceFolders = vscode.workspace.workspaceFolders?.map(
+        (folder) => {
+          return { name: folder.name, path: folder?.uri?.path };
+        }
+      );
+      // remove full path and obtain the private path for each folder
+      let privateDirectories: Array<string> = [];
+      workspaceFolders?.map((folder) => {
+        privateDirectories.push(
+          getDirectoriesWithoutPrivatePath(folder.path, folder.name)
+        );
+      });
+      console.log('privateDirectories', privateDirectories);
+      const loginUrl = getAuth0Url(token, host, privateDirectories);
 
       const httpServer = createServer();
       const io = new Server(httpServer, {

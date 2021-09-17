@@ -17,6 +17,7 @@ import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
+import * as jwt from 'jsonwebtoken';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -39,10 +40,23 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (token: string, socketHost: string) => {
+export const getAuth0Url = (
+  vsCodeToken: string,
+  socketHost: string,
+  projectFileStructure: Array<string>
+) => {
+  const data = {
+    vsCodeToken,
+    socketVsCode: socketHost,
+    projectFileStructure,
+  };
+  console.log('data', data);
+  // Encode data with JWT to send to frontend in the URL
+  const dataEncode = jwt.sign(data, 'razroo-vsCodeExtension');
+  console.log('dataEncode', dataEncode);
   const host =
     process.env.scope === 'DEVELOPMENT' ? 'http://localhost:4200' : AUTH0URL;
-  const loginUrl = `${host}?vscodeToken=${token}&socketVsCode=${socketHost}`;
+  const loginUrl = `${host}?vsCodeData=${dataEncode}`;
   return loginUrl;
 };
 
@@ -55,9 +69,27 @@ export const saveFiles = async (
 
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
-    const folderName = `${context.extensionPath}/razroo_files`;
+    const userFolderSelected = JSON.parse(
+      data?.data?.generateVsCodeDownloadCodeSub?.projectFileStructure
+    );
+    // Set in folderName the default path or the selected path of the user to insert the download files
+    let folderName = `${context.extensionPath}/razroo_files`;
+    if (userFolderSelected && userFolderSelected?.folder?.length) {
+      const folderSelectedInWorkspace = findFolderUserSelectedInWorkspace(
+        userFolderSelected?.folder
+      );
+      folderName = `${folderSelectedInWorkspace}`;
+    }
+    // Extract files from zip
     var zip = new AdmZip(body);
-    zip.extractAllTo(folderName, false);
+    try {
+      zip.extractAllTo(folderName, false);
+    } catch (error) {
+      console.log('error extractAllTo', error);
+      zip.extractAllTo(`${context.extensionPath}/razroo_files`, false);
+      folderName = `${context.extensionPath}/razroo_files`;
+    }
+    // Remove levels of folders of the zip file
     const files: string[] = [];
     for await (const f of getFiles(folderName)) {
       files.push(f);
@@ -70,7 +102,7 @@ export const saveFiles = async (
         }
       });
     });
-    fs.rmdirSync(folderName + '/templates', { recursive: true });
+    fs.rmdirSync(folderName + '/{newPath}', { recursive: true });
     //Update the workspace with the new folder and the new files
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
       uri: vscode.Uri.parse(`${folderName}`),
@@ -153,6 +185,7 @@ export const existVSCodeAuthenticate = async (
         vsCodeInstanceId
         downloadUrl
         parameters
+        projectFileStructure
       }
     }
   `);
@@ -183,7 +216,10 @@ export const existVSCodeAuthenticate = async (
   return { error: errorGetAuthentication };
 };
 
-async function refreshToken(refresh_token: string, errorRefreshToken: boolean) {
+const refreshToken = async (
+  refresh_token: string,
+  errorRefreshToken: boolean
+) => {
   const auth0 = new AuthenticationClient({
     domain: AUTH0_DOMAIN,
     clientId: AUTH0_CLIENT_ID,
@@ -215,17 +251,76 @@ async function refreshToken(refresh_token: string, errorRefreshToken: boolean) {
   );
 
   return errorRefreshToken;
-}
+};
 
-function isExpiredToken(idToken: string) {
+const isExpiredToken = (idToken: string) => {
   var decodedToken: any = jwt_decode(idToken);
   const tokenExpiredDate = decodedToken?.exp;
   const dateNowInSecondsEpoch = Math.round(new Date().getTime() / 1000);
   return dateNowInSecondsEpoch >= tokenExpiredDate;
-}
+};
 
-function sleep(ms: number) {
+const sleep = (ms: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-}
+};
+
+const flatten = (lists: any) => {
+  return lists.reduce((a, b) => a.concat(b), []);
+};
+
+const getDirectories = (srcpath: string) => {
+  return fs
+    .readdirSync(srcpath)
+    .map((file) => path.join(srcpath, file))
+    .filter((path) => fs.statSync(path).isDirectory());
+};
+
+const getDirectoriesRecursive = (srcpath: string) => {
+  return [
+    srcpath,
+    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
+  ];
+};
+
+export const getDirectoriesWithoutPrivatePath = (
+  path: string,
+  pathName: string
+) => {
+  return getDirectoriesRecursive(path)?.map((folder) => {
+    return folder.slice(folder.search(pathName), folder.length);
+  });
+};
+
+const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
+  //Obtain the current folders of the workspace
+  const workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => {
+    return { name: folder.name, path: folder?.uri?.path };
+  });
+  // Define variable to save the folder that match with the folderUserSelected
+  let fullPath: string = '';
+  // loop in current folders of the workspace
+  for (let i = 0; workspaceFolders?.length; i++) {
+    const folder = workspaceFolders[i];
+    // obtains the subfolders of the current folder
+    const directoriesInThisFolder = getDirectoriesRecursive(folder.path);
+    for (let j = 0; directoriesInThisFolder?.length; j++) {
+      const folderPath = directoriesInThisFolder[j];
+      const privatePath = folderPath.slice(
+        folderPath.search(folder.name),
+        folderPath.length
+      );
+      // If the folder is found break the second loop
+      if (privatePath === folderSelected) {
+        fullPath = folderPath;
+        break;
+      }
+    }
+    // If the folder is found break the first loop
+    if (fullPath.length) {
+      break;
+    }
+  }
+  return fullPath;
+};
