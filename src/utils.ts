@@ -15,9 +15,23 @@ import * as fs from 'fs';
 import { URL_API_GATEGAY } from './graphql/awsConstants';
 import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
+import { readdir } from 'fs/promises';
+import * as path from 'path';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
+
+async function* getFiles(dir: string) {
+  const directories = await readdir(dir, { withFileTypes: true });
+  for (const directory of directories) {
+    const res = path.resolve(dir, directory.name);
+    if (directory.isDirectory()) {
+      yield* getFiles(res);
+    } else {
+      yield res;
+    }
+  }
+}
 
 export const validateEmail = (email: string) => {
   const res =
@@ -38,40 +52,31 @@ export const saveFiles = async (
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   console.log('url', url);
-  let orange = vscode.window.createOutputChannel("Orange");
-  orange.appendLine("url");
-  orange.appendLine(url);
 
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
-    let folderName;
+    const folderName = `${context.extensionPath}/razroo_files`;
     var zip = new AdmZip(body);
-
-    if(vscode.workspace.workspaceFolders !== undefined) {
-      let currentWorkspaceFolder = vscode.workspace.workspaceFolders[0].uri.path ;
-      let currentWorkspaceFile = vscode.workspace.workspaceFolders[0].uri.fsPath ; 
-
-      folderName = currentWorkspaceFolder;
-
-      vscode.workspace.updateWorkspaceFolders(0, 0, {
-        uri: vscode.Uri.parse(`${folderName}`),
+    zip.extractAllTo(folderName, false);
+    const files: string[] = [];
+    for await (const f of getFiles(folderName)) {
+      files.push(f);
+    }
+    files.forEach((file) => {
+      fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+        console.log('error file', err);
+        if (!err) {
+          console.log(file + ' has been copied!');
+        }
       });
-      zip.extractAllTo(folderName, false);
-      showInformationMessage('Extracted files in the workspace.');
-    }
-    else {
-      if(process.env.scope === 'DEVELOPMENT' ) {
-        fs.mkdirSync(context.extensionPath);
-        vscode.workspace.updateWorkspaceFolders(0, 0, {
-          uri: vscode.Uri.parse(`${context.extensionPath}`),
-        });
-        zip.extractAllTo(context.extensionPath, false);
-        showInformationMessage('Extracted files in the workspace.');
-      }
-      else {
-        vscode.window.showErrorMessage("YOUR-EXTENSION: Working folder not found, open a folder an try again");
-      }
-    }
+    });
+    fs.rmdirSync(folderName + '/templates', { recursive: true });
+    //Update the workspace with the new folder and the new files
+    vscode.workspace.updateWorkspaceFolders(0, undefined, {
+      uri: vscode.Uri.parse(`${folderName}`),
+      name: 'razroo_files',
+    });
+    showInformationMessage('Extracted files in the workspace.');
   });
 };
 
