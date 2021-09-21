@@ -52,12 +52,12 @@
       {
         "view": "razroo-authentication",
         "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:extension.auth0Authentication)",
-        "when": "config.git.enabled && git.state == initialized && !authenticate"
+        "when": "!authenticate"
       },
       {
         "view": "razroo-authentication",
         "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:extension.auth0Authentication)",
-        "when": "config.git.enabled && git.state == initialized && authenticate",
+        "when": "authenticate",
         "enablement": "!authenticate"
       }
     ]
