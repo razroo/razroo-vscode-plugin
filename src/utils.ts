@@ -55,11 +55,20 @@ export const saveFiles = async (
 
   //Get files of S3
   request.get({ url, encoding: null }, async (err, res, body) => {
-    const folderName = `${context.extensionPath}/razroo_files`;
+    const userFolderSelected =
+      data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
+    // Set in folderName the default path or the selected path of the user to insert the download files
+    let folderName = `${context.extensionPath}/razroo_files`;
+    if (userFolderSelected?.length) {
+      const folderSelectedInWorkspace =
+        findFolderUserSelectedInWorkspace(userFolderSelected);
+      folderName = `${folderSelectedInWorkspace}`;
+    }
+    // Extract files from zip
     var zip = new AdmZip(body);
     zip.extractAllTo(folderName, false);
     const files: string[] = [];
-    for await (const f of getFiles(folderName)) {
+    for await (const f of getFiles(folderName + '/{newPath}')) {
       files.push(f);
     }
     files.forEach((file) => {
@@ -153,6 +162,7 @@ export const existVSCodeAuthenticate = async (
         vsCodeInstanceId
         downloadUrl
         parameters
+        customInsertPath
       }
     }
   `);
@@ -229,3 +239,70 @@ function sleep(ms: number) {
     setTimeout(resolve, ms);
   });
 }
+
+const flatten = (lists: any) => {
+  return lists.reduce((a, b) => a.concat(b), []);
+};
+
+const getDirectories = (srcpath: string) => {
+  return fs
+    .readdirSync(srcpath)
+    .map((file) => path.join(srcpath, file))
+    .filter((path) => fs.statSync(path).isDirectory());
+};
+
+const getDirectoriesRecursive = (srcpath: string) => {
+  return [
+    srcpath,
+    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
+  ];
+};
+
+export const getDirectoriesWithoutPrivatePath = (
+  path: string,
+  pathName: string
+) => {
+  return getDirectoriesRecursive(path)?.map((folder) => {
+    return folder.slice(folder.search(pathName), folder.length);
+  });
+};
+
+const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
+  //Obtain the current folders of the workspace
+  const workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => {
+    return { name: folder.name, path: folder?.uri?.path };
+  });
+  const workspaceFoldersLength = workspaceFolders
+    ? workspaceFolders?.length
+    : 0;
+  // Define variable to save the folder that match with the folderUserSelected
+  let fullPath: string = '';
+  // loop in current folders of the workspace
+  for (let i = 0; i <= workspaceFoldersLength; i++) {
+    const folder = workspaceFolders?.[i];
+    if (!folder) {
+      break;
+    }
+    // obtains the subfolders of the current folder
+    const directoriesInThisFolder = getDirectoriesRecursive(folder?.path);
+    for (let j = 0; j <= directoriesInThisFolder?.length; j++) {
+      const folderPath = directoriesInThisFolder[j];
+      if (folderPath) {
+        const privatePath = folderPath?.slice(
+          folderPath.search(folder.name),
+          folderPath.length
+        );
+        // If the folder is found break the second loop
+        if (privatePath === folderSelected) {
+          fullPath = folderPath;
+          break;
+        }
+      }
+    }
+    // If the folder is found break the first loop
+    if (fullPath.length) {
+      break;
+    }
+  }
+  return fullPath;
+};
