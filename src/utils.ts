@@ -17,6 +17,7 @@ import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
+import * as jwt from 'jsonwebtoken';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -39,10 +40,23 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (token: string, socketHost: string) => {
+export const getAuth0Url = (
+  vsCodeToken: string,
+  socketHost: string,
+  projectFileStructure: Array<string>
+) => {
+  const data = {
+    vsCodeToken,
+    socketVsCode: socketHost,
+    projectFileStructure,
+  };
+  console.log('data', data);
+  // Encode data with JWT to send to frontend in the URL
+  const dataEncode = jwt.sign(data, 'razroo-vsCodeExtension');
+  console.log('dataEncode', dataEncode);
   const host =
     process.env.scope === 'DEVELOPMENT' ? 'http://localhost:4200' : AUTH0URL;
-  const loginUrl = `${host}?vscodeToken=${token}&socketVsCode=${socketHost}`;
+  const loginUrl = `${host}?vsCodeData=${dataEncode}`;
   return loginUrl;
 };
 
@@ -66,7 +80,14 @@ export const saveFiles = async (
     }
     // Extract files from zip
     var zip = new AdmZip(body);
-    zip.extractAllTo(folderName, false);
+    try {
+      zip.extractAllTo(folderName, false);
+    } catch (error) {
+      console.log('error extractAllTo', error);
+      zip.extractAllTo(`${context.extensionPath}/razroo_files`, false);
+      folderName = `${context.extensionPath}/razroo_files`;
+    }
+    // Remove levels of folders of the zip file
     const files: string[] = [];
     for await (const f of getFiles(folderName + '/{newPath}')) {
       files.push(f);
@@ -79,7 +100,7 @@ export const saveFiles = async (
         }
       });
     });
-    fs.rmdirSync(folderName + '/templates', { recursive: true });
+    fs.rmdirSync(folderName + '/{newPath}', { recursive: true });
     //Update the workspace with the new folder and the new files
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
       uri: vscode.Uri.parse(`${folderName}`),
