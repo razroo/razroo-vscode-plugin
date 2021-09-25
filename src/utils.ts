@@ -12,7 +12,7 @@ import gql from 'graphql-tag';
 import client from './graphql/subscription';
 import * as AdmZip from 'adm-zip';
 import * as fs from 'fs';
-import { URL_API_GATEGAY } from './graphql/awsConstants';
+import { URL_API_GATEGAY, URL_GRAPHQL } from './graphql/awsConstants';
 import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
@@ -40,15 +40,10 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (
-  vsCodeToken: string,
-  socketHost: string,
-  projectFileStructure: Array<string>
-) => {
+export const getAuth0Url = (vsCodeToken: string, socketHost: string) => {
   const data = {
     vsCodeToken,
     socketVsCode: socketHost,
-    projectFileStructure,
   };
   console.log('data', data);
   // Encode data with JWT to send to frontend in the URL
@@ -176,6 +171,11 @@ export const existVSCodeAuthenticate = async (
   }
 
   if (!errorGetAuthentication && !errorRefreshToken) {
+    await updatePrivateDirectorisInVSCodeAuthentication(
+      `${vsCodeInstanceId}`,
+      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`
+    );
+
     //Query to subscribe in graphql
     const subquery = gql(`
   subscription MySubscription {
@@ -326,4 +326,53 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
     }
   }
   return fullPath;
+};
+
+const updatePrivateDirectorisInVSCodeAuthentication = async (
+  vsCodeToken: string,
+  idToken: string
+) => {
+  // obtain full path of the folders of the workspace
+  const workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => {
+    return { name: folder.name, path: folder?.uri?.path };
+  });
+  // remove full path and obtain the private path for each folder
+  let privateDirectories: Array<string> = [];
+  workspaceFolders?.map((folder) => {
+    privateDirectories.push(
+      getDirectoriesWithoutPrivatePath(folder.path, folder.name)
+    );
+  });
+  //update vscode-authentication table with the privateDirectories
+  const query =
+    'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
+    '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
+    '{ githubId idToken refreshToken vsCodeInstanceId privateDirectories} }';
+  const url = URL_GRAPHQL;
+  const body = {
+    query,
+    variables: {
+      updateVSCodeAuthenticationParameters: {
+        vsCodeInstanceId: vsCodeToken,
+        updatedParameters: `{\"privateDirectories\":\"${privateDirectories}\"}`,
+      },
+    },
+  };
+  request.post(
+    {
+      url,
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'charset=utf-8',
+        Authorization: `${idToken}`,
+      },
+      gzip: true,
+    },
+    async (error, response, body) => {
+      console.log('response', response);
+      console.log('body', body);
+      console.log('error', error);
+    }
+  );
 };

@@ -63,21 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const token = uuidv4();
       context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
       const host = SOCKET_HOST;
-      // obtain full path of the folders of the workspace
-      const workspaceFolders = vscode.workspace.workspaceFolders?.map(
-        (folder) => {
-          return { name: folder.name, path: folder?.uri?.path };
-        }
-      );
-      // remove full path and obtain the private path for each folder
-      let privateDirectories: Array<string> = [];
-      workspaceFolders?.map((folder) => {
-        privateDirectories.push(
-          getDirectoriesWithoutPrivatePath(folder.path, folder.name)
-        );
-      });
-      console.log('privateDirectories', privateDirectories);
-      const loginUrl = getAuth0Url(token, host, privateDirectories);
+      const loginUrl = getAuth0Url(token, host);
 
       const httpServer = createServer();
       const io = new Server(httpServer, {
