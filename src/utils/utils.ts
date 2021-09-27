@@ -5,19 +5,21 @@ import {
   MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   MEMENTO_RAZROO_REFRESH_TOKEN,
-} from './constants';
-import * as request from 'request';
+} from '../constants';
 import * as vscode from 'vscode';
-import gql from 'graphql-tag';
-import client from './graphql/subscription';
 import * as AdmZip from 'adm-zip';
 import * as fs from 'fs';
-import { URL_API_GATEGAY, URL_GRAPHQL } from './graphql/awsConstants';
 import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
+import { subscribeToGenerateVsCodeDownloadCodeSub } from './grapqhl.utils';
+import {
+  getFileS3,
+  getVSCodeAuthentication,
+  updatePrivateDirectoriesRequest,
+} from './request.utils';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -40,10 +42,9 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (vsCodeToken: string, socketHost: string) => {
+export const getAuth0Url = (vsCodeToken: string) => {
   const data = {
     vsCodeToken,
-    socketVsCode: socketHost,
   };
   console.log('data', data);
   // Encode data with JWT to send to frontend in the URL
@@ -63,46 +64,47 @@ export const saveFiles = async (
   console.log('url', url);
 
   //Get files of S3
-  request.get({ url, encoding: null }, async (err, res, body) => {
-    const userFolderSelected =
-      data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
-    // Set in folderName the default path or the selected path of the user to insert the download files
-    let folderName = `${context.extensionPath}/razroo_files`;
-    if (userFolderSelected?.length) {
-      const folderSelectedInWorkspace =
-        findFolderUserSelectedInWorkspace(userFolderSelected);
-      folderName = `${folderSelectedInWorkspace}`;
-    }
-    // Extract files from zip
-    var zip = new AdmZip(body);
-    try {
-      zip.extractAllTo(folderName, false);
-    } catch (error) {
-      console.log('error extractAllTo', error);
-      zip.extractAllTo(`${context.extensionPath}/razroo_files`, false);
-      folderName = `${context.extensionPath}/razroo_files`;
-    }
-    // Remove levels of folders of the zip file
-    const files: string[] = [];
-    for await (const f of getFiles(folderName + '/{newPath}')) {
-      files.push(f);
-    }
-    files.forEach((file) => {
-      fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
-        console.log('error file', err);
-        if (!err) {
-          console.log(file + ' has been copied!');
-        }
-      });
+  const file = await getFileS3({ url });
+  console.log('file', file);
+
+  const userFolderSelected =
+    data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
+  // Set in folderName the default path or the selected path of the user to insert the download files
+  let folderName = `${context.extensionPath}/razroo_files`;
+  if (userFolderSelected?.length) {
+    const folderSelectedInWorkspace =
+      findFolderUserSelectedInWorkspace(userFolderSelected);
+    folderName = `${folderSelectedInWorkspace}`;
+  }
+  // Extract files from zip
+  var zip = new AdmZip(file);
+  try {
+    zip.extractAllTo(folderName, false);
+  } catch (error) {
+    console.log('error extractAllTo', error);
+    zip.extractAllTo(`${context.extensionPath}/razroo_files`, false);
+    folderName = `${context.extensionPath}/razroo_files`;
+  }
+  // Remove levels of folders of the zip file
+  const files: string[] = [];
+  for await (const f of getFiles(folderName + '/{newPath}')) {
+    files.push(f);
+  }
+  files.forEach((file) => {
+    fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+      console.log('error file', err);
+      if (!err) {
+        console.log(file + ' has been copied!');
+      }
     });
-    fs.rmdirSync(folderName + '/{newPath}', { recursive: true });
-    //Update the workspace with the new folder and the new files
-    vscode.workspace.updateWorkspaceFolders(0, undefined, {
-      uri: vscode.Uri.parse(`${folderName}`),
-      name: 'razroo_files',
-    });
-    showInformationMessage('Extracted files in the workspace.');
   });
+  fs.rmdirSync(folderName + '/{newPath}', { recursive: true });
+  //Update the workspace with the new folder and the new files
+  vscode.workspace.updateWorkspaceFolders(0, undefined, {
+    uri: vscode.Uri.parse(`${folderName}`),
+    name: 'razroo_files',
+  });
+  showInformationMessage('Extracted files in the workspace.');
 };
 
 export const existVSCodeAuthenticate = async (
@@ -119,36 +121,26 @@ export const existVSCodeAuthenticate = async (
   let cont = 0;
   let errorGetAuthentication = false;
   for (let i = 0; i < 1; ) {
-    request.get(
-      {
-        url:
-          URL_API_GATEGAY +
-          `/authenticationVSCode/vsCodeInstanceId/${vsCodeInstanceId}`,
-      },
-      async (error, res, body) => {
-        console.log('response', res);
-        console.log('body', body);
-        console.log('error', error);
-        body = JSON.parse(body);
-        const authenticationVSCode = body?.authenticationVSCode;
-        //Check if the authenticationVSCode token not is empty and the idToken is new
-        if (res?.statusCode === 200 && authenticationVSCode) {
-          if (authenticationVSCode.idToken !== idToken) {
-            console.log('Correct token');
-            context.workspaceState.update(
-              MEMENTO_RAZROO_ID_TOKEN,
-              authenticationVSCode.idToken
-            );
-            context.workspaceState.update(
-              MEMENTO_RAZROO_REFRESH_TOKEN,
-              authenticationVSCode.refreshToken
-            );
-          }
-          console.log('idToken still valid.');
-          i++;
-        }
+    const { authenticationVSCode, status } = await getVSCodeAuthentication({
+      vsCodeInstanceId,
+    });
+    // Check if the authenticationVSCode token not is empty and the idToken is new
+    if (status === 200 && authenticationVSCode) {
+      if (authenticationVSCode.idToken !== idToken) {
+        console.log('Correct token');
+        context.workspaceState.update(
+          MEMENTO_RAZROO_ID_TOKEN,
+          authenticationVSCode.idToken
+        );
+        context.workspaceState.update(
+          MEMENTO_RAZROO_REFRESH_TOKEN,
+          authenticationVSCode.refreshToken
+        );
       }
-    );
+      console.log('idToken still valid.');
+      i++;
+    }
+
     await sleep(2000);
     cont++;
     //After one minute. Finish
@@ -171,42 +163,12 @@ export const existVSCodeAuthenticate = async (
   }
 
   if (!errorGetAuthentication && !errorRefreshToken) {
-    await updatePrivateDirectorisInVSCodeAuthentication(
+    await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
       `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`
     );
 
-    //Query to subscribe in graphql
-    const subquery = gql(`
-  subscription MySubscription {
-      generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
-        vsCodeInstanceId
-        downloadUrl
-        parameters
-        customInsertPath
-      }
-    }
-  `);
-
-    //Subscribe with appsync client
-    client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
-      .hydrated()
-      .then(async function (client) {
-        //Now subscribe to results
-        const observable = client.subscribe({ query: subquery });
-
-        const realtimeResults = async function realtimeResults(data: any) {
-          console.log('realtime data: ', data);
-          //Save the files in a new folder
-          await saveFiles(data, context);
-        };
-
-        observable.subscribe({
-          next: realtimeResults,
-          complete: console.log,
-          error: console.log,
-        });
-      });
+    subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
   } else {
     showErrorMessage('Connection error');
   }
@@ -290,9 +252,7 @@ export const getDirectoriesWithoutPrivatePath = (
 
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   //Obtain the current folders of the workspace
-  const workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => {
-    return { name: folder.name, path: folder?.uri?.path };
-  });
+  const workspaceFolders = getWorkspaceFolders();
   const workspaceFoldersLength = workspaceFolders
     ? workspaceFolders?.length
     : 0;
@@ -328,14 +288,12 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   return fullPath;
 };
 
-const updatePrivateDirectorisInVSCodeAuthentication = async (
+const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string
 ) => {
   // obtain full path of the folders of the workspace
-  const workspaceFolders = vscode.workspace.workspaceFolders?.map((folder) => {
-    return { name: folder.name, path: folder?.uri?.path };
-  });
+  const workspaceFolders = getWorkspaceFolders();
   // remove full path and obtain the private path for each folder
   let privateDirectories: Array<string> = [];
   workspaceFolders?.map((folder) => {
@@ -344,35 +302,14 @@ const updatePrivateDirectorisInVSCodeAuthentication = async (
     );
   });
   //update vscode-authentication table with the privateDirectories
-  const query =
-    'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
-    '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
-    '{ githubId idToken refreshToken vsCodeInstanceId privateDirectories} }';
-  const url = URL_GRAPHQL;
-  const body = {
-    query,
-    variables: {
-      updateVSCodeAuthenticationParameters: {
-        vsCodeInstanceId: vsCodeToken,
-        updatedParameters: `{\"privateDirectories\":\"${privateDirectories}\"}`,
-      },
-    },
-  };
-  request.post(
-    {
-      url,
-      body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'charset=utf-8',
-        Authorization: `${idToken}`,
-      },
-      gzip: true,
-    },
-    async (error, response, body) => {
-      console.log('response', response);
-      console.log('body', body);
-      console.log('error', error);
-    }
-  );
+  await updatePrivateDirectoriesRequest({
+    vsCodeToken,
+    idToken,
+    privateDirectories,
+  });
+};
+const getWorkspaceFolders = () => {
+  return vscode.workspace?.workspaceFolders?.map((folder) => {
+    return { name: folder.name, path: folder?.uri?.path };
+  });
 };

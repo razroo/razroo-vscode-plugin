@@ -1,27 +1,15 @@
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import open = require('open');
-import { createServer } from 'http';
-import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import * as AdmZip from 'adm-zip';
 import * as request from 'request';
 import * as http from 'http2';
+import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils';
 import {
-  existVSCodeAuthenticate,
-  getAuth0Url,
-  getDirectoriesWithoutPrivatePath,
-} from './utils';
-import {
-  AUTH0URL,
   COMMAND_AUTH0_AUTH,
-  DEVAUTHURL,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-  MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
-  MEMENTO_RAZROO_REFRESH_TOKEN,
-  SOCKET_HOST,
 } from './constants';
 
 const showErrorMessage = vscode.window.showErrorMessage;
@@ -62,41 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       const token = uuidv4();
       context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
-      const host = SOCKET_HOST;
-      const loginUrl = getAuth0Url(token, host);
-
-      const httpServer = createServer();
-      const io = new Server(httpServer, {
-        cors: {
-          origin: [DEVAUTHURL, AUTH0URL],
-          methods: ['GET', 'POST'],
-        },
-      });
-
-      io.on('connection', (socket: Socket) => {
-        socket.on(token, (msg) => {
-          const [refresh_token, id_token, access_token] = msg;
-
-          vscode.commands.executeCommand('setContext', 'authenticate', true);
-          console.log('refresh_token', refresh_token);
-          console.log('id_token', id_token);
-          console.log('access_token', access_token);
-          context.workspaceState.update(
-            MEMENTO_RAZROO_REFRESH_TOKEN,
-            refresh_token
-          );
-          context.workspaceState.update(
-            MEMENTO_RAZROO_ACCESS_TOKEN,
-            access_token
-          );
-          context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, id_token);
-          context.workspaceState.update(
-            MEMENTO_RAZROO_LOGIN_SOCKET_CHANNEL,
-            token
-          );
-        });
-      });
-      httpServer.listen(3000);
+      const loginUrl = getAuth0Url(token);
 
       await open(loginUrl);
 
