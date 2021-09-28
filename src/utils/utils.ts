@@ -14,7 +14,7 @@ import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
-import { subscribeToGenerateVsCodeDownloadCodeSub } from './grapqhl.utils';
+import { subscribeToGenerateVsCodeDownloadCodeSub } from './graphql.utils';
 import {
   getFileS3,
   getVSCodeAuthentication,
@@ -155,10 +155,9 @@ export const existVSCodeAuthenticate = async (
   if (
     isExpiredToken(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
   ) {
-    showErrorMessage('Id token expired.');
-    errorRefreshToken = await refreshToken(
-      `${context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN)}`,
-      errorRefreshToken
+    showErrorMessage('idToken expired.');
+    errorRefreshToken = await getNewRefreshToken(
+      `${context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN)}`
     );
   }
 
@@ -176,7 +175,8 @@ export const existVSCodeAuthenticate = async (
   return { error: errorGetAuthentication };
 };
 
-async function refreshToken(refresh_token: string, errorRefreshToken: boolean) {
+async function getNewRefreshToken(refresh_token: string) {
+  let errorRefreshToken = false;
   const auth0 = new AuthenticationClient({
     domain: AUTH0_DOMAIN,
     clientId: AUTH0_CLIENT_ID,

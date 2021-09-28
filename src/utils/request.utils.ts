@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { URL_API_GATEGAY, URL_GRAPHQL } from '../graphql/awsConstants';
-import { updatePrivateDirectoriesQuery } from './grapqhl.utils';
+import { updatePrivateDirectoriesQuery } from './graphql.utils';
 
 export const getVSCodeAuthentication = async ({ vsCodeInstanceId }: any) => {
   let response: any;
