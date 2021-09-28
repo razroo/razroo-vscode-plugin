@@ -102,6 +102,7 @@
     "axios": "^0.21.4",
     "es6-promise": "^4.2.8",
     "file-system": "^2.2.2",
+    "follow-redirects": "^1.14.4",
     "graphql": "^14.0.0",
     "graphql-tag": "^2.12.5",
     "isomorphic-fetch": "^3.0.0",
