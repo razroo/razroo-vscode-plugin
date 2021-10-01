@@ -235,10 +235,12 @@ const getDirectories = (srcpath: string) => {
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
-  return [
-    srcpath,
-    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
-  ];
+  if(!srcpath.includes('.git') && !srcpath.includes('node_modules')){
+    return [
+      srcpath,
+      ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
+    ];
+  }
 };
 
 export const getDirectoriesWithoutPrivatePath = (
