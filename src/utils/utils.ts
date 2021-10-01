@@ -231,16 +231,14 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory());
+    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('node_modules') && !path.includes('.git'));
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
-  if(!srcpath.includes('.git') && !srcpath.includes('node_modules')){
     return [
       srcpath,
       ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
     ];
-  }
 };
 
 export const getDirectoriesWithoutPrivatePath = (
