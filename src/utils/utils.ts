@@ -87,7 +87,7 @@ export const saveFiles = async (
   }
   // Remove levels of folders of the zip file
   const files: string[] = [];
-  for await (const f of getFiles(folderName + '/{newPath}')) {
+  for await (const f of getFiles(folderName)) {
     files.push(f);
   }
   files.forEach((file) => {
@@ -98,7 +98,7 @@ export const saveFiles = async (
       }
     });
   });
-  fs.rmdirSync(folderName + '/{newPath}', { recursive: true });
+  fs.rmdirSync(folderName, { recursive: true });
   //Update the workspace with the new folder and the new files
   vscode.workspace.updateWorkspaceFolders(0, undefined, {
     uri: vscode.Uri.parse(`${folderName}`),
