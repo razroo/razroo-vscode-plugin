@@ -34,6 +34,9 @@
   - The provided test runner will only consider files matching the name pattern `**.test.ts`.
   - You can create folders inside the `test` folder to structure your tests any way you want.
 
+## Debugging 
+What i've found to be helpful to get the outputs i need: https://stackoverflow.com/questions/34085330/how-to-write-to-log-from-vscode-extension/58139566#58139566
+
 ## Go further
 
 - Reduce the extension size and improve the startup time by [bundling your extension](https://code.visualstudio.com/api/working-with-extensions/bundling-extension).
