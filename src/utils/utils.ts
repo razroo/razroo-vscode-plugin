@@ -61,11 +61,9 @@ export const saveFiles = async (
   context: vscode.ExtensionContext
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
-  console.log('url', url);
 
   //Get files of S3
   const file = await getFileS3({ url });
-  console.log('file', file);
 
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
@@ -76,29 +74,32 @@ export const saveFiles = async (
       findFolderUserSelectedInWorkspace(userFolderSelected);
     folderName = `${folderSelectedInWorkspace}`;
   }
+
   // Extract files from zip
   var zip = new AdmZip(file);
+
   try {
     zip.extractAllTo(folderName, false);
   } catch (error) {
     console.log('error extractAllTo', error);
-    zip.extractAllTo(`${context.extensionPath}/razroo_files`, false);
-    folderName = `${context.extensionPath}/razroo_files`;
   }
+
   // Remove levels of folders of the zip file
-  const files: string[] = [];
-  for await (const f of getFiles(folderName)) {
-    files.push(f);
-  }
-  files.forEach((file) => {
-    fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
-      console.log('error file', err);
-      if (!err) {
-        console.log(file + ' has been copied!');
-      }
-    });
-  });
-  fs.rmdirSync(folderName, { recursive: true });
+  // const files: string[] = [];
+  // for await (const f of getFiles(folderName)) {
+  //   files.push(f);
+  // }
+  // files.forEach((file) => {
+  //   fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+  //     if (!err) {
+  //       console.log(file + ' has been copied!');
+  //     }
+  //     else {
+  //       console.log('error file', err);
+  //     }
+  //   });
+  // });
+  // fs.rmdirSync(folderName, { recursive: true });
   //Update the workspace with the new folder and the new files
   vscode.workspace.updateWorkspaceFolders(0, undefined, {
     uri: vscode.Uri.parse(`${folderName}`),
