@@ -79,14 +79,14 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
 
   try {
-    zip.extractAllTo(`${context.extensionPath}/razroo_files_temp`, true);
+    zip.extractAllTo(`${folderName}/razroo_files_temp`, true);
   } catch (error) {
     console.log('error extractAllTo', error);
   }
 
   // Remove levels of folders of the zip file
   const tempFiles: string[] = [];
-  for await (const f of getFiles(`${context.extensionPath}/razroo_files_temp`)) {
+  for await (const f of getFiles(`${folderName}/razroo_files_temp`)) {
     tempFiles.push(f);
   }
   tempFiles.forEach((file) => {
@@ -99,7 +99,7 @@ export const saveFiles = async (
       }
     });
   });
-  fs.rmdirSync(`${context.extensionPath}/razroo_files_temp`, { recursive: true });
+  fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
   //Update the workspace with the new folder and the new files
   // vscode.workspace.updateWorkspaceFolders(0, undefined, {
   //   uri: vscode.Uri.parse(`${folderName}`),
