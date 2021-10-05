@@ -63,7 +63,7 @@ export const saveFiles = async (
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
 
   //Get files of S3
-  const file = await getFileS3({ url });
+  const files = await getFileS3({ url });
 
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
@@ -76,35 +76,35 @@ export const saveFiles = async (
   }
 
   // Extract files from zip
-  var zip = new AdmZip(file);
+  var zip = new AdmZip(files);
 
   try {
-    zip.extractAllTo(folderName, false);
+    zip.extractAllTo(`${context.extensionPath}/razroo_files_temp`, true);
   } catch (error) {
     console.log('error extractAllTo', error);
   }
 
   // Remove levels of folders of the zip file
-  // const files: string[] = [];
-  // for await (const f of getFiles(folderName)) {
-  //   files.push(f);
-  // }
-  // files.forEach((file) => {
-  //   fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
-  //     if (!err) {
-  //       console.log(file + ' has been copied!');
-  //     }
-  //     else {
-  //       console.log('error file', err);
-  //     }
-  //   });
-  // });
-  // fs.rmdirSync(folderName, { recursive: true });
-  //Update the workspace with the new folder and the new files
-  vscode.workspace.updateWorkspaceFolders(0, undefined, {
-    uri: vscode.Uri.parse(`${folderName}`),
-    name: 'razroo_files',
+  const tempFiles: string[] = [];
+  for await (const f of getFiles(`${context.extensionPath}/razroo_files_temp`)) {
+    tempFiles.push(f);
+  }
+  tempFiles.forEach((file) => {
+    fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+      if (!err) {
+        console.log(file + ' has been copied!');
+      }
+      else {
+        console.log('error file', err);
+      }
+    });
   });
+  fs.rmdirSync(`${context.extensionPath}/razroo_files_temp`, { recursive: true });
+  //Update the workspace with the new folder and the new files
+  // vscode.workspace.updateWorkspaceFolders(0, undefined, {
+  //   uri: vscode.Uri.parse(`${folderName}`),
+  //   name: 'razroo_files',
+  // });
   showInformationMessage('Extracted files in the workspace.');
 };
 
