@@ -68,7 +68,7 @@ export const saveFiles = async (
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
   // Set in folderName the default path or the selected path of the user to insert the download files
-  let folderName = `${context.extensionPath}/razroo_files`;
+  let folderName = `${context.extensionPath}/razroo_files_temp`;
   if (userFolderSelected?.length) {
     const folderSelectedInWorkspace =
       findFolderUserSelectedInWorkspace(userFolderSelected);
@@ -93,18 +93,22 @@ export const saveFiles = async (
     fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
       if (!err) {
         console.log(file + ' has been copied!');
-      }
-      else {
+      } else {
         console.log('error file', err);
       }
     });
   });
+  if (folderName !== `${folderName}/razroo_files_temp`) {
   fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
-  //Update the workspace with the new folder and the new files
-  // vscode.workspace.updateWorkspaceFolders(0, undefined, {
-  //   uri: vscode.Uri.parse(`${folderName}`),
-  //   name: 'razroo_files',
-  // });
+  } else {
+    fs.rmdirSync(`${folderName}/razroo_files_temp/{newPath}`, {
+      recursive: true,
+    });
+    vscode.workspace.updateWorkspaceFolders(0, undefined, {
+      uri: vscode.Uri.parse(`${folderName}`),
+      name: 'razroo_files',
+    });
+  }
   showInformationMessage('Extracted files in the workspace.');
 };
 
@@ -232,14 +236,19 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('node_modules') && !path.includes('.git'));
+    .filter(
+      (path) =>
+        fs.statSync(path).isDirectory() &&
+        !path.includes('node_modules') &&
+        !path.includes('.git')
+    );
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
-    return [
-      srcpath,
-      ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
-    ];
+  return [
+    srcpath,
+    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
+  ];
 };
 
 export const getDirectoriesWithoutPrivatePath = (
