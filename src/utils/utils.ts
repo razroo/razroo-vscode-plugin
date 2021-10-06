@@ -169,7 +169,8 @@ export const existVSCodeAuthenticate = async (
   if (!errorGetAuthentication && !errorRefreshToken) {
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
-      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`
+      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
+      context
     );
 
     subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
@@ -300,15 +301,25 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
 
 const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
-  idToken: string
+  idToken: string,
+  context: vscode.ExtensionContext
 ) => {
   // obtain full path of the folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
   // remove full path and obtain the private path for each folder
   let privateDirectories: Array<string> = [];
+  const excludeFolders = readExcludeFoldersFile(context);
   workspaceFolders?.map((folder) => {
+    const directories = getDirectoriesWithoutPrivatePath(
+      folder.path,
+      folder.name
+    );
+    //Remove folders by excludeFolders file and push in private directories array
     privateDirectories.push(
-      getDirectoriesWithoutPrivatePath(folder.path, folder.name)
+      directories?.filter(
+        (dir: string) =>
+          !excludeFoldersByExcludeFoldersFile(excludeFolders, dir)
+      )
     );
   });
   //update vscode-authentication table with the privateDirectories
@@ -322,4 +333,27 @@ const getWorkspaceFolders = () => {
   return vscode.workspace?.workspaceFolders?.map((folder) => {
     return { name: folder.name, path: folder?.uri?.path };
   });
+};
+
+const readExcludeFoldersFile = (context: vscode.ExtensionContext) => {
+  var excludeFolders: Array<string> = [];
+  try {
+    excludeFolders = fs
+      .readFileSync(`${context.extensionPath}/media/excludeFolders.txt`)
+      .toString()
+      .split('\n');
+    console.log('excludeFolders', excludeFolders);
+  } catch (error) {
+    console.log('Error open excludeFolders file', error);
+    excludeFolders = [];
+  }
+  return excludeFolders;
+};
+
+const excludeFoldersByExcludeFoldersFile = (
+  excludeFolders: Array<string>,
+  privateDirectory: string
+) => {
+  //Remove the folders that include the folders of the excludeFolders file
+  return excludeFolders.some((dir) => privateDirectory.includes(dir));
 };
