@@ -99,7 +99,7 @@ export const saveFiles = async (
     });
   });
   if (folderName !== `${folderName}/razroo_files_temp`) {
-  fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
+    fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
   } else {
     fs.rmdirSync(`${folderName}/razroo_files_temp/{newPath}`, {
       recursive: true,
@@ -308,17 +308,17 @@ const updatePrivateDirectoriesInVSCodeAuthentication = async (
   const workspaceFolders = getWorkspaceFolders();
   // remove full path and obtain the private path for each folder
   let privateDirectories: Array<string> = [];
-  const excludeFolders = readExcludeFoldersFile(context);
+
+  const excludeFolders = readGitIgnoreFile(context);
   workspaceFolders?.map((folder) => {
     const directories = getDirectoriesWithoutPrivatePath(
       folder.path,
       folder.name
     );
-    //Remove folders by excludeFolders file and push in private directories array
+    //Remove folders by .gitignore file and push in private directories array
     privateDirectories.push(
       directories?.filter(
-        (dir: string) =>
-          !excludeFoldersByExcludeFoldersFile(excludeFolders, dir)
+        (dir: string) => !existFolderInGitIgnoreFile(excludeFolders, dir)
       )
     );
   });
@@ -335,13 +335,16 @@ const getWorkspaceFolders = () => {
   });
 };
 
-const readExcludeFoldersFile = (context: vscode.ExtensionContext) => {
+const readGitIgnoreFile = (context: vscode.ExtensionContext) => {
   var excludeFolders: Array<string> = [];
   try {
     excludeFolders = fs
-      .readFileSync(`${context.extensionPath}/media/excludeFolders.txt`)
+      .readFileSync(
+        `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}/.gitignore`
+      )
       .toString()
-      .split('\n');
+      .split('\n')
+      .filter((str) => str.length);
     console.log('excludeFolders', excludeFolders);
   } catch (error) {
     console.log('Error open excludeFolders file', error);
@@ -350,10 +353,10 @@ const readExcludeFoldersFile = (context: vscode.ExtensionContext) => {
   return excludeFolders;
 };
 
-const excludeFoldersByExcludeFoldersFile = (
+const existFolderInGitIgnoreFile = (
   excludeFolders: Array<string>,
   privateDirectory: string
 ) => {
-  //Remove the folders that include the folders of the excludeFolders file
+  //Check that exist a folder that match with a folder of the .gitignore
   return excludeFolders.some((dir) => privateDirectory.includes(dir));
 };
