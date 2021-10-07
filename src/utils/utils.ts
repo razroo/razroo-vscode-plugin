@@ -68,7 +68,7 @@ export const saveFiles = async (
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
   // Set in folderName the default path or the selected path of the user to insert the download files
-  let folderName = `${context.extensionPath}/razroo_files`;
+  let folderName = `${context.extensionPath}/razroo_files_temp`;
   if (userFolderSelected?.length) {
     const folderSelectedInWorkspace =
       findFolderUserSelectedInWorkspace(userFolderSelected);
@@ -93,18 +93,23 @@ export const saveFiles = async (
     fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
       if (!err) {
         console.log(file + ' has been copied!');
-      }
-      else {
+      } else {
         console.log('error file', err);
       }
     });
   });
-  fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
-  //Update the workspace with the new folder and the new files
-  // vscode.workspace.updateWorkspaceFolders(0, undefined, {
-  //   uri: vscode.Uri.parse(`${folderName}`),
-  //   name: 'razroo_files',
-  // });
+  //If the folder is not the default folder then it is deleted, otherwise it is not
+  if (folderName !== `${folderName}/razroo_files_temp`) {
+    fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
+  } else {
+    fs.rmdirSync(`${folderName}/razroo_files_temp/{newPath}`, {
+      recursive: true,
+    });
+    vscode.workspace.updateWorkspaceFolders(0, undefined, {
+      uri: vscode.Uri.parse(`${folderName}`),
+      name: 'razroo_files',
+    });
+  }
   showInformationMessage('Extracted files in the workspace.');
 };
 
@@ -165,7 +170,8 @@ export const existVSCodeAuthenticate = async (
   if (!errorGetAuthentication && !errorRefreshToken) {
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
-      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`
+      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
+      context
     );
 
     subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
@@ -232,14 +238,14 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('node_modules') && !path.includes('.git'));
+    .filter((path) => fs.statSync(path).isDirectory());
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
-    return [
-      srcpath,
-      ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
-    ];
+  return [
+    srcpath,
+    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
+  ];
 };
 
 export const getDirectoriesWithoutPrivatePath = (
@@ -291,15 +297,25 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
 
 const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
-  idToken: string
+  idToken: string,
+  context: vscode.ExtensionContext
 ) => {
   // obtain full path of the folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
   // remove full path and obtain the private path for each folder
   let privateDirectories: Array<string> = [];
+
+  const excludeFolders = readGitIgnoreFile(context);
   workspaceFolders?.map((folder) => {
+    const directories = getDirectoriesWithoutPrivatePath(
+      folder.path,
+      folder.name
+    );
+    //Remove folders by .gitignore file and push in private directories array
     privateDirectories.push(
-      getDirectoriesWithoutPrivatePath(folder.path, folder.name)
+      directories?.filter(
+        (dir: string) => !existFolderInGitIgnoreFile(excludeFolders, dir)
+      )
     );
   });
   //update vscode-authentication table with the privateDirectories
@@ -313,4 +329,30 @@ const getWorkspaceFolders = () => {
   return vscode.workspace?.workspaceFolders?.map((folder) => {
     return { name: folder.name, path: folder?.uri?.path };
   });
+};
+
+const readGitIgnoreFile = (context: vscode.ExtensionContext) => {
+  var excludeFolders: Array<string> = [];
+  try {
+    excludeFolders = fs
+      .readFileSync(
+        `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}/.gitignore`
+      )
+      .toString()
+      .split('\n')
+      .filter((str) => str.length);
+    console.log('excludeFolders', excludeFolders);
+  } catch (error) {
+    console.log('Error open excludeFolders file', error);
+    excludeFolders = [];
+  }
+  return excludeFolders;
+};
+
+const existFolderInGitIgnoreFile = (
+  excludeFolders: Array<string>,
+  privateDirectory: string
+) => {
+  //Check that exist a folder that match with a folder of the .gitignore
+  return excludeFolders.some((dir) => privateDirectory.includes(dir));
 };
