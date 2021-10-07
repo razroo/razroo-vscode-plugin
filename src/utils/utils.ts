@@ -98,6 +98,7 @@ export const saveFiles = async (
       }
     });
   });
+  //If the folder is not the default folder then it is deleted, otherwise it is not
   if (folderName !== `${folderName}/razroo_files_temp`) {
     fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
   } else {
@@ -237,12 +238,7 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter(
-      (path) =>
-        fs.statSync(path).isDirectory() &&
-        !path.includes('node_modules') &&
-        !path.includes('.git')
-    );
+    .filter((path) => fs.statSync(path).isDirectory());
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
