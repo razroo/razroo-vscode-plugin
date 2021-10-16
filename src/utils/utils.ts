@@ -14,11 +14,13 @@ import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
-import { subscribeToGenerateVsCodeDownloadCodeSub } from './graphql.utils';
+import { 
+  subscribeToGenerateVsCodeDownloadCodeSub, 
+  updatePrivateDirectoriesRequest
+} from './graphql.utils';
 import {
   getFileS3,
   getVSCodeAuthentication,
-  updatePrivateDirectoriesRequest,
 } from './request.utils';
 
 const showErrorMessage = vscode.window.showErrorMessage;
@@ -171,7 +173,6 @@ export const existVSCodeAuthenticate = async (
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
       `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
-      context
     );
 
     subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
@@ -217,7 +218,7 @@ async function getNewRefreshToken(refresh_token: string) {
   return errorRefreshToken;
 }
 
-function isExpiredToken(idToken: string) {
+export function isExpiredToken(idToken: string) {
   var decodedToken: any = jwt_decode(idToken);
   const tokenExpiredDate = decodedToken?.exp;
   const dateNowInSecondsEpoch = Math.round(new Date().getTime() / 1000);
@@ -295,17 +296,16 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   return fullPath;
 };
 
-const updatePrivateDirectoriesInVSCodeAuthentication = async (
+export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string,
-  context: vscode.ExtensionContext
 ) => {
   // obtain full path of the folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
   // remove full path and obtain the private path for each folder
   let privateDirectories: Array<string> = [];
 
-  const excludeFolders = readGitIgnoreFile(context);
+  const excludeFolders = readGitIgnoreFile();
   workspaceFolders?.map((folder) => {
     const directories = getDirectoriesWithoutPrivatePath(
       folder.path,
@@ -319,19 +319,21 @@ const updatePrivateDirectoriesInVSCodeAuthentication = async (
     );
   });
   //update vscode-authentication table with the privateDirectories
-  await updatePrivateDirectoriesRequest({
+  const response = await updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
     privateDirectories,
   });
+  return response;
 };
+
 const getWorkspaceFolders = () => {
   return vscode.workspace?.workspaceFolders?.map((folder) => {
     return { name: folder.name, path: folder?.uri?.path };
   });
 };
 
-const readGitIgnoreFile = (context: vscode.ExtensionContext) => {
+const readGitIgnoreFile = () => {
   var excludeFolders: Array<string> = [];
   try {
     excludeFolders = fs
