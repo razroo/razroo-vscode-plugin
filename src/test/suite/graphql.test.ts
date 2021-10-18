@@ -16,9 +16,9 @@ suite('Graphql tests', () => {
         mock.reset();
 	});
 
-	test('Update the privateDirectories attribute of the vscode authentication table with execute_test_privateDirectories value', () => {
+	test('Should update the privateDirectories attribute of the vscode authentication table with execute_test_privateDirectories', () => {
 		const privateDirectories = "execute_test_privateDirectories";
-        mock.onPost(URL_GRAPHQL).reply(200, vsCodeAuthenticationObject)
+        mock.onPost(URL_GRAPHQL).reply(200, vsCodeAuthenticationObject);
 		updatePrivateDirectoriesRequest({
 			vsCodeToken: vsCodeAuthenticationObject.vsCodeInstanceId,
 			idToken, 
@@ -26,10 +26,10 @@ suite('Graphql tests', () => {
 		}).then(response => {
             expect(response).equal(vsCodeAuthenticationObject);
 			expect(mock.history.post.length).equal(1);
-        })
+        });
 	});
 
-	test('Get url to download zip from S3', () => {
+	test('Should get download url of zip file from S3', () => {
         const data = {
             generateCode: {
                 downloadUrl: 'urlTest'
@@ -42,11 +42,11 @@ suite('Graphql tests', () => {
         });
 	});
 	
-	test('Obtain zip file to S3', () => {
+	test('Should obtain zip file from S3', () => {
         const data = {
             data: ['1f210', 'c49ae', '892fe']
-        }
-        mock.onPost(URL_GRAPHQL).reply(200, data)
+        };
+        mock.onPost(URL_GRAPHQL).reply(200, data);
         getFileS3({url: 'urlTest'}).then(response => {
             expect(Object.keys(response)).to.have.lengthOf.greaterThan(0);
             expect(mock.history.post.length).equal(1);

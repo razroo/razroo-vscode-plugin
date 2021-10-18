@@ -28,7 +28,7 @@ suite('Utils tests', () => {
 		assert.strictEqual(vsCodeInstanceId, vsCodeInstaceIdExpected?.vsCodeToken);
 	});
 
-	test('Update successful private directories in vscode authentication table', () => {
+	test('Should update private directories in vs code authentication table', () => {
 		mock.onPost(URL_GRAPHQL).reply(200, vsCodeAuthenticationObject);
 		updatePrivateDirectoriesInVSCodeAuthentication('instance_to_testing', idToken).then( (response) => {
 			expect(response).equal(vsCodeAuthenticationObject);
@@ -36,7 +36,7 @@ suite('Utils tests', () => {
 		});
 	});
 
-	test('IdToken not isExpiredToken funciton', () => {
+	test('IdToken should not equal isExpiredToken', () => {
 		assert.isNotTrue(isExpiredToken(idToken));
 	});
 

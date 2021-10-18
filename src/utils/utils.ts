@@ -319,12 +319,11 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     );
   });
   //update vscode-authentication table with the privateDirectories
-  const response = await updatePrivateDirectoriesRequest({
+  return await updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
     privateDirectories,
   });
-  return response;
 };
 
 const getWorkspaceFolders = () => {
