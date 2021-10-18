@@ -45,7 +45,7 @@ subscription MySubscription {
 export const updatePrivateDirectoriesQuery =
   'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
   '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
-  '{ githubId idToken refreshToken vsCodeInstanceId privateDirectories} }';
+  '{ userId idToken refreshToken vsCodeInstanceId privateDirectories} }';
 
 export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
