@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { URL_API_GATEGAY, } from '../graphql/awsConstants';
+import { URL_API_GATEWAY, } from '../graphql/awsConstants';
 
 export const getVSCodeAuthentication = async ({ vsCodeInstanceId }: any) => {
   let response: any;
   const url =
-    URL_API_GATEGAY +
-    `/authenticationVSCode/vsCodeInstanceId/${vsCodeInstanceId}`;
+    URL_API_GATEWAY + `/authenticationVSCode/vsCodeInstanceId/${vsCodeInstanceId}`;
   try {
     response = await axios.get(`${url}`);
     return {
