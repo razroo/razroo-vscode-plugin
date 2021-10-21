@@ -132,7 +132,7 @@ export const existVSCodeAuthenticate = async (
     const { authenticationVSCode, status } = await getVSCodeAuthentication({
       vsCodeInstanceId,
     });
-    // Check if the authenticationVSCode token not is empty and the idToken is new
+    // Check if the authenticationVSCode token is not empty and the idToken is new
     if (status === 200 && authenticationVSCode) {
       if (authenticationVSCode.idToken !== idToken) {
         console.log('Correct token');
