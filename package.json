@@ -19,24 +19,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:razroo-vscode-plugin.initialization",
-    "onCommand:extension.auth0Authentication",
-    "onCommand:extension.getGenerateCode"
+    "onCommand:extension.auth0Authentication"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "razroo-vscode-plugin.initialization",
-        "title": "Razroo Initialization"
-      },
-      {
         "command": "extension.auth0Authentication",
         "title": "Razroo Auth0 Authentication"
-      },
-      {
-        "command": "extension.getGenerateCode",
-        "title": "Razroo download template"
       }
     ],
     "viewsContainers": {
