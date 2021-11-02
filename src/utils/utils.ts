@@ -239,7 +239,7 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory());
+    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('.git'));
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
