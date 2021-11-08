@@ -70,7 +70,7 @@ export const saveFiles = async (
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
   // Set in folderName the default path or the selected path of the user to insert the download files
-  let folderName = `${context.extensionPath}/razroo_files_temp`;
+  let folderName = path.join(context.extensionPath, 'razroo_files_temp');
   if (userFolderSelected?.length) {
     const folderSelectedInWorkspace =
       findFolderUserSelectedInWorkspace(userFolderSelected);
@@ -81,18 +81,18 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
 
   try {
-    zip.extractAllTo(`${folderName}/razroo_files_temp`, true);
+    zip.extractAllTo(path.join(folderName,'razroo_files_temp'), true);
   } catch (error) {
     console.log('error extractAllTo', error);
   }
 
   // Remove levels of folders of the zip file
   const tempFiles: string[] = [];
-  for await (const f of getFiles(`${folderName}/razroo_files_temp`)) {
+  for await (const f of getFiles(path.join(folderName,'razroo_files_temp'))) {
     tempFiles.push(f);
   }
   tempFiles.forEach((file) => {
-    fs.copyFile(file, folderName + '/' + path.basename(file), (err) => {
+    fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
       if (!err) {
         console.log(file + ' has been copied!');
       } else {
@@ -101,10 +101,10 @@ export const saveFiles = async (
     });
   });
   //If the folder is not the default folder then it is deleted, otherwise it is not
-  if (folderName !== `${folderName}/razroo_files_temp`) {
-    fs.rmdirSync(`${folderName}/razroo_files_temp`, { recursive: true });
+  if (folderName !== path.join(folderName,'razroo_files_temp')) {
+    fs.rmdirSync(path.join(folderName,'razroo_files_temp'), { recursive: true });
   } else {
-    fs.rmdirSync(`${folderName}/razroo_files_temp/{newPath}`, {
+    fs.rmdirSync(path.join(folderName,'razroo_files_temp', 'newPath'), {
       recursive: true,
     });
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
