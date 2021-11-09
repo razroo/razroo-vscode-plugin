@@ -328,7 +328,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 
 const getWorkspaceFolders = () => {
   return vscode.workspace?.workspaceFolders?.map((folder) => {
-    return { name: folder.name, path: folder?.uri?.path };
+    return { name: folder.name, path: folder?.uri?.fsPath };
   });
 };
 
