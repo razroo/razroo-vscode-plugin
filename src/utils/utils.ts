@@ -336,9 +336,7 @@ const readGitIgnoreFile = () => {
   var excludeFolders: Array<string> = [];
   try {
     excludeFolders = fs
-      .readFileSync(
-        `${vscode.workspace.workspaceFolders?.[0].uri.fsPath}/.gitignore`
-      )
+      .readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'))
       .toString()
       .split('\n')
       .filter((str) => str.length);
