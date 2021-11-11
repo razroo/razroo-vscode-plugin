@@ -25,6 +25,7 @@ function client(idToken: string) {
       type,
       jwtToken: idToken,
     },
+    disableOffline: false
   });
 }
 
