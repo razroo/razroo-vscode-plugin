@@ -31,7 +31,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // The commandId parameter must match the command field in package.json
   
   // 1 is production mode
-  let isProduction = context.extensionMode === 1;
+  const isProduction = context.extensionMode === 1;
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
