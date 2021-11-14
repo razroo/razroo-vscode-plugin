@@ -1,3 +1,4 @@
+import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import open = require('open');
@@ -100,7 +101,7 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log('templateId: ' + templateId);
 
       const url =
-        'https://vuerbsj4cjffvfzx7cph4iy7se.appsync-api.us-east-1.amazonaws.com/graphql';
+        process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
       const body = {
         query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
         variables: {},
