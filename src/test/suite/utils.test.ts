@@ -21,7 +21,7 @@ suite('Utils tests', () => {
 	vscode.window.showInformationMessage('Start all tests.');
 	test('Generate URL with JWT data to authenticate in the backend', () => {
 		const vsCodeInstanceId = uuidv4();
-		const loginUrl = getAuth0Url(vsCodeInstanceId);
+		const loginUrl = getAuth0Url(vsCodeInstanceId, false);
 		const headToRemoved = loginUrl.search('=') + 1;
 		const jwtData = loginUrl.slice(headToRemoved, loginUrl.length);
 		const vsCodeInstaceIdExpected: any = jwt.verify(jwtData, 'razroo-vsCodeExtension');
@@ -30,7 +30,7 @@ suite('Utils tests', () => {
 
 	test('Should update private directories in vs code authentication table', () => {
 		mock.onPost(URL_GRAPHQL).reply(200, vsCodeAuthenticationObject);
-		updatePrivateDirectoriesInVSCodeAuthentication('instance_to_testing', idToken).then( (response) => {
+		updatePrivateDirectoriesInVSCodeAuthentication('instance_to_testing', idToken, true).then( (response) => {
 			expect(response).equal(vsCodeAuthenticationObject);
 			expect(mock.history.post.length).equal(1);
 		});

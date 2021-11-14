@@ -51,8 +51,9 @@ export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
   idToken,
   privateDirectories,
+  isProduction,
 }: any) => {
-  const url = process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
+  const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: updatePrivateDirectoriesQuery,
     variables: {
