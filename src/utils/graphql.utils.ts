@@ -21,8 +21,9 @@ subscription MySubscription {
   }
 `);
 
+let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
-  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
+  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -51,8 +52,9 @@ export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
   idToken,
   privateDirectories,
+  isProduction,
 }: any) => {
-  const url = process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
+  const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: updatePrivateDirectoriesQuery,
     variables: {

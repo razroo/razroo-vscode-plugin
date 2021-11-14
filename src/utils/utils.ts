@@ -44,7 +44,7 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (vsCodeToken: string) => {
+export const getAuth0Url = (vsCodeToken: string, isProduction: boolean) => {
   const data = {
     vsCodeToken,
   };
@@ -52,8 +52,7 @@ export const getAuth0Url = (vsCodeToken: string) => {
   // Encode data with JWT to send to frontend in the URL
   const dataEncode = jwt.sign(data, 'razroo-vsCodeExtension');
   console.log('dataEncode', dataEncode);
-  const host =
-    process.env.scope === 'DEVELOPMENT' ? 'http://localhost:4200' : AUTH0URL;
+  const host = isProduction === true ? AUTH0URL : 'http://localhost:4200';
   const loginUrl = `${host}?vsCodeData=${dataEncode}`;
   return loginUrl;
 };
@@ -170,9 +169,12 @@ export const existVSCodeAuthenticate = async (
   }
 
   if (!errorGetAuthentication && !errorRefreshToken) {
+    let isProduction = context.extensionMode === 1;
+
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
       `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
+      isProduction
     );
 
     subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
@@ -299,6 +301,7 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string,
+  isProduction: boolean
 ) => {
   // obtain full path of the folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
@@ -323,6 +326,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     vsCodeToken,
     idToken,
     privateDirectories,
+    isProduction
   });
 };
 

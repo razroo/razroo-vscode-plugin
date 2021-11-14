@@ -29,6 +29,9 @@ export async function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
+  
+  // 1 is production mode
+  let isProduction = context.extensionMode === 1;
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
@@ -51,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       const token = uuidv4();
       context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
-      const loginUrl = getAuth0Url(token);
+      const loginUrl = getAuth0Url(token, isProduction);
 
       await open(loginUrl);
 
@@ -100,8 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
       });
       console.log('templateId: ' + templateId);
 
-      const url =
-        process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
+      const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
       const body = {
         query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
         variables: {},
