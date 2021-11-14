@@ -127,9 +127,12 @@ export const existVSCodeAuthenticate = async (
   // Loop to obtain the idToken to subscribes in grapqh
   let cont = 0;
   let errorGetAuthentication = false;
+  const isProduction = context.extensionMode === 1;
+  
   for (let i = 0; i < 1; ) {
     const { authenticationVSCode, status } = await getVSCodeAuthentication({
       vsCodeInstanceId,
+      isProduction,
     });
     // Check if the authenticationVSCode token is not empty and the idToken is new
     if (status === 200 && authenticationVSCode) {
@@ -169,7 +172,7 @@ export const existVSCodeAuthenticate = async (
   }
 
   if (!errorGetAuthentication && !errorRefreshToken) {
-    let isProduction = context.extensionMode === 1;
+    const isProduction = context.extensionMode === 1;
 
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
