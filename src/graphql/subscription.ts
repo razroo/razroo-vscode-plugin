@@ -8,7 +8,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 // Require exports file with endpoint and auth info
-import { URL_GRAPHQL, REGION } from './awsConstants';
+import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants';
 
 // Require AppSync module
 import { AUTH_TYPE } from 'aws-appsync/lib/client';
@@ -19,7 +19,7 @@ const type = AUTH_TYPE.OPENID_CONNECT;
 // Set up Apollo client
 function client(idToken: string) {
   return new AWSAppSyncClient({
-    url: URL_GRAPHQL,
+    url: process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL,
     region: REGION,
     auth: {
       type,
