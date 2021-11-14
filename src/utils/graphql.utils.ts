@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import { MEMENTO_RAZROO_ID_TOKEN } from '../constants';
-import { URL_GRAPHQL } from '../graphql/awsConstants';
+import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
 import axios from 'axios';
@@ -52,7 +52,7 @@ export const updatePrivateDirectoriesRequest = async ({
   idToken,
   privateDirectories,
 }: any) => {
-  const url = URL_GRAPHQL;
+  const url = process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
   const body = {
     query: updatePrivateDirectoriesQuery,
     variables: {
@@ -81,7 +81,7 @@ export const getGenerateVsCodeDownload = async ({
   idToken,
   templateId,
 }: any) => {
-  const url = URL_GRAPHQL;
+  const url = process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
   const body = {
     query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
     variables: {},
