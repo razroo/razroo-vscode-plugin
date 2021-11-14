@@ -1,4 +1,4 @@
-import { getGenerateVsCodeDownload, updatePrivateDirectoriesRequest } from "../../utils/graphql.utils";
+import { updatePrivateDirectoriesRequest } from "../../utils/graphql.utils";
 import MockAdapter from 'axios-mock-adapter';
 import { URL_GRAPHQL } from '../../graphql/awsConstants';
 import { mockAxios, getMockIdToken, getVsCodeAuthenticationMock } from "./utils/utils";
@@ -25,19 +25,6 @@ suite('Graphql tests', () => {
 			privateDirectories
 		}).then(response => {
             expect(response).equal(vsCodeAuthenticationObject);
-			expect(mock.history.post.length).equal(1);
-        });
-	});
-
-	test('Should get download url of zip file from S3', () => {
-        const data = {
-            generateCode: {
-                downloadUrl: 'urlTest'
-            }
-        };
-		mock.onGet(URL_GRAPHQL).reply(200, data);
-        getGenerateVsCodeDownload({idToken, templateId: 'button'}).then(response => {
-            expect(response).equal(data);
 			expect(mock.history.post.length).equal(1);
         });
 	});

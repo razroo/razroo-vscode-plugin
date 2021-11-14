@@ -78,27 +78,3 @@ export const updatePrivateDirectoriesRequest = async ({
     return error;
   }
 };
-
-export const getGenerateVsCodeDownload = async ({
-  idToken,
-  templateId,
-}: any) => {
-  const url = process.env.scope === 'DEVELOPMENT' ? URL_GRAPHQL : URL_PROD_GRAPHQL;
-  const body = {
-    query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
-    variables: {},
-  };
-  try {
-    const response = await axios.post(url, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'charset=utf-8',
-        Authorization: `${idToken}`,
-      },
-    });
-    return response?.data;
-  } catch (error) {
-    console.log('error updatePrivateDirectoriesRequest', error);
-    return error;
-  }
-};
