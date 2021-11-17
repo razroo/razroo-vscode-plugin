@@ -9,17 +9,6 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = ({
   vsCodeInstanceId,
   context,
 }: any) => {
-  //Query to subscribe in graphql
-  const subquery = gql(`
-subscription MySubscription {
-    generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
-      vsCodeInstanceId
-      downloadUrl
-      parameters
-      customInsertPath
-    }
-  }
-`);
 
 let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
@@ -27,7 +16,17 @@ let isProduction = context.extensionMode === 1;
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
-      const observable = client.subscribe({ query: subquery });
+      const observable = client.subscribe({ query: gql(`
+        subscription MySubscription {
+            generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
+              vsCodeInstanceId
+              downloadUrl
+              parameters
+              customInsertPath
+            }
+          }
+        `)
+      });
 
       const realtimeResults = async function realtimeResults(data: any) {
         console.log('realtime data: ', data);
@@ -43,11 +42,6 @@ let isProduction = context.extensionMode === 1;
     });
 };
 
-export const updatePrivateDirectoriesQuery =
-  'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
-  '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
-  '{ userId idToken refreshToken vsCodeInstanceId privateDirectories} }';
-
 export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
   idToken,
@@ -56,7 +50,9 @@ export const updatePrivateDirectoriesRequest = async ({
 }: any) => {
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: updatePrivateDirectoriesQuery,
+    query: 'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
+      '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
+      '{ userId idToken refreshToken vsCodeInstanceId privateDirectories} }',
     variables: {
       updateVSCodeAuthenticationParameters: {
         vsCodeInstanceId: vsCodeToken,
