@@ -135,9 +135,10 @@ export const existVSCodeAuthenticate = async (
       isProduction,
     });
     // Check if the authenticationVSCode token is not empty and the idToken is new
+    // Update plugin info to match dynamodb
     if (status === 200 && authenticationVSCode) {
       if (authenticationVSCode.idToken !== idToken) {
-        console.log('Correct token');
+        console.log('Update vscode with updated idToken');
         context.workspaceState.update(
           MEMENTO_RAZROO_ID_TOKEN,
           authenticationVSCode.idToken
@@ -147,7 +148,7 @@ export const existVSCodeAuthenticate = async (
           authenticationVSCode.refreshToken
         );
       }
-      console.log('idToken still valid.');
+      else { console.log('idToken still valid.'); }
       i++;
     }
 
@@ -210,6 +211,7 @@ async function getNewRefreshToken(refresh_token: string) {
         });
         console.log('responseRefreshToken', responseRefreshToken);
         //TODO update the vscode-authentication table with the id_token and the refresh_token new
+        //Do we still have to do this? Try testing with old token.
         showInformationMessage('Refresh token successful.');
       } catch (error) {
         console.log('Error refreshToken');

@@ -52,8 +52,11 @@ export async function activate(context: vscode.ExtensionContext) {
     async () => {
       console.log('inside auth0Authentcation');
 
-      const token = uuidv4();
-      context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
+      let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
+      if (!token) { 
+        token = uuidv4();
+        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
+      }
       const loginUrl = getAuth0Url(token, isProduction);
 
       await open(loginUrl);
