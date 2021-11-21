@@ -9,12 +9,12 @@ export const getVSCodeAuthentication = async ({ vsCodeInstanceId, isProduction }
   try {
     response = await axios.get(`${url}`);
     return {
-      authenticationVSCode: response.data?.authenticationVSCode,
+      vsCodeAuthInfo: response.data?.vsCodeAuthInfo,
       status: response.status,
     };
   } catch (error) {
     console.log('error getVSCodeAuthentication', error);
-    return { authenticationVSCode: undefined, status: response?.status };
+    return { vsCodeAuthInfo: undefined, status: response?.status };
   }
 };
 

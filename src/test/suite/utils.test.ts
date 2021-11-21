@@ -30,7 +30,7 @@ suite('Utils tests', () => {
 
 	test('Should update private directories in vs code authentication table', () => {
 		mock.onPost(URL_GRAPHQL).reply(200, vsCodeAuthenticationObject);
-		updatePrivateDirectoriesInVSCodeAuthentication('instance_to_testing', idToken, true).then( (response) => {
+		updatePrivateDirectoriesInVSCodeAuthentication('instance_to_testing', idToken, true, '1234').then( (response) => {
 			expect(response).equal(vsCodeAuthenticationObject);
 			expect(mock.history.post.length).equal(1);
 		});

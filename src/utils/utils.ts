@@ -5,6 +5,7 @@ import {
   MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   MEMENTO_RAZROO_REFRESH_TOKEN,
+  MEMENTO_RAZROO_USER_ID
 } from '../constants';
 import * as vscode from 'vscode';
 import * as AdmZip from 'adm-zip';
@@ -130,22 +131,26 @@ export const existVSCodeAuthenticate = async (
   const isProduction = context.extensionMode === 1;
   
   for (let i = 0; i < 1; ) {
-    const { authenticationVSCode, status } = await getVSCodeAuthentication({
+    const { vsCodeAuthInfo, status } = await getVSCodeAuthentication({
       vsCodeInstanceId,
       isProduction,
     });
     // Check if the authenticationVSCode token is not empty and the idToken is new
     // Update plugin info to match dynamodb
-    if (status === 200 && authenticationVSCode) {
-      if (authenticationVSCode.idToken !== idToken) {
+    if (status === 200 && vsCodeAuthInfo) {
+      if (vsCodeAuthInfo.idToken !== idToken) {
         console.log('Update vscode with updated idToken');
         context.workspaceState.update(
           MEMENTO_RAZROO_ID_TOKEN,
-          authenticationVSCode.idToken
+          vsCodeAuthInfo.idToken
         );
         context.workspaceState.update(
           MEMENTO_RAZROO_REFRESH_TOKEN,
-          authenticationVSCode.refreshToken
+          vsCodeAuthInfo.refreshToken
+        );
+        context.workspaceState.update(
+          MEMENTO_RAZROO_USER_ID,
+          vsCodeAuthInfo.userId
         );
       }
       else { console.log('idToken still valid.'); }
@@ -178,7 +183,8 @@ export const existVSCodeAuthenticate = async (
     await updatePrivateDirectoriesInVSCodeAuthentication(
       `${vsCodeInstanceId}`,
       `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
-      isProduction
+      isProduction,
+      `${context.workspaceState.get(MEMENTO_RAZROO_USER_ID)}`
     );
 
     subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
@@ -306,7 +312,8 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string,
-  isProduction: boolean
+  isProduction: boolean,
+  userId: string
 ) => {
   // obtain full path of the folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
@@ -327,11 +334,12 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     );
   });
   //update vscode-authentication table with the privateDirectories
-  return await updatePrivateDirectoriesRequest({
+  return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
     privateDirectories,
-    isProduction
+    isProduction,
+    userId
   });
 };
 
