@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { MEMENTO_RAZROO_ID_TOKEN } from '../constants';
+import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
@@ -47,18 +47,13 @@ export const updatePrivateDirectoriesRequest = async ({
   idToken,
   privateDirectories,
   isProduction,
+  userId
 }: any) => {
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: 'mutation updateVSCodeAuthentication($updateVSCodeAuthenticationParameters: UpdateVSCodeAuthenticationInput) ' +
-      '{ updateVSCodeAuthentication(updateVSCodeAuthenticationParameters: $updateVSCodeAuthenticationParameters) ' +
+    query: 'mutation updateVSCodeAuthentication() ' +
+      `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", privateDirectories: "${privateDirectories}") ` +
       '{ userId idToken refreshToken vsCodeInstanceId privateDirectories} }',
-    variables: {
-      updateVSCodeAuthenticationParameters: {
-        vsCodeInstanceId: vsCodeToken,
-        updatedParameters: `{\"privateDirectories\":\"${privateDirectories}\"}`,
-      },
-    },
   };
   try {
     const response = await axios.post(url, body, {
