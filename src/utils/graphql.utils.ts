@@ -51,9 +51,9 @@ export const updatePrivateDirectoriesRequest = async ({
 }: any) => {
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: 'mutation updateVSCodeAuthentication() ' +
+    query: 'mutation updateVSCodeAuthentication ' +
       `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", privateDirectories: "${privateDirectories}") ` +
-      '{ userId idToken refreshToken vsCodeInstanceId privateDirectories} }',
+      '{ idToken refreshToken vsCodeInstances { privateDirectories vsCodeInstanceId }} }',
   };
   try {
     const response = await axios.post(url, body, {
