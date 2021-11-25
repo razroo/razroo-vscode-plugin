@@ -49,6 +49,9 @@ export const updatePrivateDirectoriesRequest = async ({
   isProduction,
   userId
 }: any) => {
+  if(privateDirectories['0'].find(file => file.includes('\\'))){
+    privateDirectories['0'] = privateDirectories['0'].map((e: string) => e.replace(/\\/g, "/"));
+  }
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: 'mutation updateVSCodeAuthentication ' +
