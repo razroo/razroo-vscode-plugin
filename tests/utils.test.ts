@@ -1,21 +1,24 @@
-import { getMockIdToken, mockAxios, getVsCodeAuthenticationMock } from './test-utils';
-import { URL_GRAPHQL } from './../src/graphql/awsConstants';
-import { getAuth0Url, updatePrivateDirectoriesInVSCodeAuthentication, isExpiredToken } from './../src/utils/utils';
+import * as vscode from 'vscode';
 import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
+import { getAuth0Url, isExpiredToken, updatePrivateDirectoriesInVSCodeAuthentication } from '../../utils/utils';
+import { beforeEach } from 'mocha';
 import {assert, expect} from 'chai';
 import MockAdapter from 'axios-mock-adapter';
+import { mockAxios, getMockIdToken, getVsCodeAuthenticationMock } from './utils/utils';
+import { URL_GRAPHQL } from '../../graphql/awsConstants';
 
 const mock = new MockAdapter(mockAxios);
 const idToken = getMockIdToken();
 const vsCodeAuthenticationObject = getVsCodeAuthenticationMock();
 
-describe('Utils tests', () => {
+suite('Utils tests', () => {
 	
 	beforeEach(() => {
 		mock.reset();
 	});
 
+	vscode.window.showInformationMessage('Start all tests.');
 	test('Generate URL with JWT data to authenticate in the backend', () => {
 		const vsCodeInstanceId = uuidv4();
 		const loginUrl = getAuth0Url(vsCodeInstanceId, false);
