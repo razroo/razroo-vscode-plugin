@@ -272,6 +272,9 @@ export const getDirectoriesWithoutPrivatePath = (
 };
 
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
+  if(process.platform === "win32"){
+    folderSelected = folderSelected.replace(/\//g, "\\\\");
+  }
   //Obtain the current folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
   const workspaceFoldersLength = workspaceFolders
@@ -325,7 +328,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     const directories = getDirectoriesWithoutPrivatePath(
       folder.path,
       folder.name
-    );
+    ).map(file => file.replace(/\\/g, "/"));
     //Remove folders by .gitignore file and push in private directories array
     privateDirectories.push(
       directories?.filter(
