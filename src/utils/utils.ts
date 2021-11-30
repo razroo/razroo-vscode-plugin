@@ -69,12 +69,14 @@ export const saveFiles = async (
 
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
+  console.log("USER FOLDER SELECTED: ", userFolderSelected);
   // Set in folderName the default path or the selected path of the user to insert the download files
   let folderName = path.join(context.extensionPath, 'razroo_files_temp');
   if (userFolderSelected?.length) {
     const folderSelectedInWorkspace =
       findFolderUserSelectedInWorkspace(userFolderSelected);
     folderName = `${folderSelectedInWorkspace}`;
+    console.log("FOLDER NAME: ", folderName);
   }
 
   // Extract files from zip
@@ -92,6 +94,7 @@ export const saveFiles = async (
     tempFiles.push(f);
   }
   tempFiles.forEach((file) => {
+    console.log("BASENAME: ",  path.basename(file))
     fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
       if (!err) {
         console.log(file + ' has been copied!');
@@ -101,6 +104,7 @@ export const saveFiles = async (
     });
   });
   //If the folder is not the default folder then it is deleted, otherwise it is not
+  console.log("FOLDER NAME: ", folderName, "END FOLDER NAME");
   if (folderName !== path.join(folderName,'razroo_files_temp')) {
     fs.rmdirSync(path.join(folderName,'razroo_files_temp'), { recursive: true });
   } else {
@@ -273,10 +277,13 @@ export const getDirectoriesWithoutPrivatePath = (
 
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   if(process.platform === "win32"){
-    folderSelected = folderSelected.replace(/\//g, "\\\\");
+    //If windows, correct path for windows file system
+    folderSelected = folderSelected.replace(/\//g, "\\");
   }
+  console.log("NEW FOLDER SELECTED: ", folderSelected);
   //Obtain the current folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
+  console.log("WORKSPACE FOLDERS: ", workspaceFolders);
   const workspaceFoldersLength = workspaceFolders
     ? workspaceFolders?.length
     : 0;
@@ -290,6 +297,7 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
     }
     // obtains the subfolders of the current folder
     const directoriesInThisFolder = getDirectoriesRecursive(folder?.path);
+    console.log("DIRECTORIES IN FOLDER: ", directoriesInThisFolder);
     for (let j = 0; j <= directoriesInThisFolder?.length; j++) {
       const folderPath = directoriesInThisFolder[j];
       if (folderPath) {
@@ -336,6 +344,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
       )
     );
   });
+  console.log("PRIV DIRECTORIES", privateDirectories)
   //update vscode-authentication table with the privateDirectories
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
@@ -345,8 +354,9 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     userId
   });
 };
-
+    
 const getWorkspaceFolders = () => {
+  console.log("VSCODE WORKSPACE FOLDERS: ", vscode.workspace?.workspaceFolders);
   return vscode.workspace?.workspaceFolders?.map((folder) => {
     return { name: folder.name, path: folder?.uri?.fsPath };
   });
