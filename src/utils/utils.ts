@@ -277,9 +277,10 @@ export const getDirectoriesWithoutPrivatePath = (
 
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   if(process.platform === "win32"){
+    //If windows, correct path for windows file system
     folderSelected = folderSelected.replace(/\//g, "\\");
   }
-  console.log("NEW FOLDER SELECTED: ", folderSelected);// sample\\apps\\folder
+  console.log("NEW FOLDER SELECTED: ", folderSelected);
   //Obtain the current folders of the workspace
   const workspaceFolders = getWorkspaceFolders();
   console.log("WORKSPACE FOLDERS: ", workspaceFolders);
