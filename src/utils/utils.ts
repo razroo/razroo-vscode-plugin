@@ -242,6 +242,10 @@ export function isExpiredToken(idToken: string) {
   return dateNowInSecondsEpoch >= tokenExpiredDate;
 }
 
+export function executeTerminalCommand(terminalCommand: string) {
+  
+}
+
 function sleep(ms: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
