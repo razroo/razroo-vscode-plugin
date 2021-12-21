@@ -317,6 +317,11 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
       break;
     }
   }
+  if(fullPath.length < 1){
+    let newFolderPath = path.join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''))
+    fs.mkdirSync(newFolderPath, { recursive: true })
+    fullPath = newFolderPath;
+  }
   return fullPath;
 };
 
