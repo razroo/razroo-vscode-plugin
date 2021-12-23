@@ -191,7 +191,7 @@ export const existVSCodeAuthenticate = async (
       `${context.workspaceState.get(MEMENTO_RAZROO_USER_ID)}`
     );
 
-    subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
+    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
   } else {
     showErrorMessage('Connection error');
   }
