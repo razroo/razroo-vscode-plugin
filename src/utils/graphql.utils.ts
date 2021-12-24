@@ -45,13 +45,12 @@ let isProduction = context.extensionMode === 1;
     });
 };
 
-export async function getPackageJsonString(packageJsonFilePath: string) {
+export async function getPackageJson(packageJsonFilePath: string) {
   const packageJson = await readPackageJson(packageJsonFilePath);
 
-  const newPackageJsonObject = {
+  return {
     name: packageJson ? packageJson.name : '',
   };
-  return JSON.stringify(newPackageJsonObject);
 }
 
 export const updatePrivateDirectoriesRequest = async ({
@@ -62,12 +61,12 @@ export const updatePrivateDirectoriesRequest = async ({
   userId
 }: any) => {
   const packageJsonFilePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, 'package.json');
-  const packageJsonString = await getPackageJsonString(packageJsonFilePath);
+  const newPackageJson = await getPackageJson(packageJsonFilePath);
 
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: 'mutation updateVSCodeAuthentication ' +
-      `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", privateDirectories: "${privateDirectories}", packageJsonParams: "${packageJsonString}") ` +
+      `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", packageJsonParams: "${newPackageJson}", privateDirectories: "${privateDirectories}")` +
       '{ idToken refreshToken vsCodeInstances { privateDirectories vsCodeInstanceId packageJsonParams}} }',
   };
   try {
