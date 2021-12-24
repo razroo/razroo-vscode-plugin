@@ -4,6 +4,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
 import axios from 'axios';
+import { readPackageJson } from '@razroo/razroo-angular-devkit';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = ({
   vsCodeInstanceId,
@@ -42,6 +43,14 @@ let isProduction = context.extensionMode === 1;
     });
 };
 
+export async function getPackageJsonString(packageJsonFilePath: string) {
+  const packageJson = await readPackageJson(packageJsonFilePath);
+
+  return {
+    name: packageJson ? packageJson.name : '',
+  }.toString();
+}
+
 export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
   idToken,
@@ -49,10 +58,12 @@ export const updatePrivateDirectoriesRequest = async ({
   isProduction,
   userId
 }: any) => {
+  const packageJsonString = await getPackageJsonString("package.json");
+  
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: 'mutation updateVSCodeAuthentication ' +
-      `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", privateDirectories: "${privateDirectories}") ` +
+      `{ updateVSCodeAuthentication(userId: "${userId}", vsCodeInstanceId: "${vsCodeToken}", privateDirectories: "${privateDirectories}", packageJsonParams: ${packageJsonString}) ` +
       '{ idToken refreshToken vsCodeInstances { privateDirectories vsCodeInstanceId }} }',
   };
   try {
