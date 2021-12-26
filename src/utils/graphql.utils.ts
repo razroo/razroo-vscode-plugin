@@ -83,7 +83,7 @@ export const updatePrivateDirectoriesRequest = async ({
       userId: userId,
       vsCodeInstanceId: vsCodeToken,
       idToken: idToken,
-      privateDirectories: privateDirectories,
+      privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
     }  
   };
