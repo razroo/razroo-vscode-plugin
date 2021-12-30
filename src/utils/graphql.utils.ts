@@ -4,7 +4,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
 import axios from 'axios';
-import { readPackageJson } from '@razroo/razroo-angular-devkit';
+import { getProjectDependencies, readPackageJson } from '@razroo/razroo-angular-devkit';
 import * as vscode from 'vscode';
 import * as path from 'path';
 
@@ -63,6 +63,10 @@ export const updatePrivateDirectoriesRequest = async ({
 }: any) => {
   const packageJsonFilePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, 'package.json');
   const packageJsonParams = await getPackageJson(packageJsonFilePath);
+  const projectDependencies = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
+  
+  console.log('projectDependencies');
+  console.log(projectDependencies);
 
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
