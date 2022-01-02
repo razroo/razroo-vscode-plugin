@@ -4,7 +4,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
 import axios from 'axios';
-import { getProjectDependencies, readPackageJson } from '@razroo/razroo-angular-devkit';
+import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-angular-devkit';
 import * as vscode from 'vscode';
 import * as path from 'path';
 
@@ -45,11 +45,15 @@ let isProduction = context.extensionMode === 1;
     });
 };
 
-export async function getPackageJson(packageJsonFilePath: string) {
+export async function getPackageJson(workspacePath: string) {
+  const packageJsonFilePath = path.join(workspacePath, 'package.json');
   const packageJson = await readPackageJson(packageJsonFilePath);
+  const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
+  const transformedProjectDependencies = determineLanguagesUsed(projectDependenciesMap);
 
   const newlyTransformedJson = {
     name: packageJson ? packageJson.name : '',
+    languages: transformedProjectDependencies
   };
   return JSON.stringify(newlyTransformedJson);
 }
@@ -61,12 +65,9 @@ export const updatePrivateDirectoriesRequest = async ({
   isProduction,
   userId
 }: any) => {
-  const packageJsonFilePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, 'package.json');
-  const packageJsonParams = await getPackageJson(packageJsonFilePath);
-  const projectDependencies = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
-  
-  console.log('projectDependencies');
-  console.log(projectDependencies);
+  const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+
+  const packageJsonParams = await getPackageJson(workspacePath as any);
 
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
