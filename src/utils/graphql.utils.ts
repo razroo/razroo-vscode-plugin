@@ -49,7 +49,7 @@ export async function getPackageJson(workspacePath: string) {
   const packageJsonFilePath = path.join(workspacePath, 'package.json');
   const packageJson = await readPackageJson(packageJsonFilePath);
   const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
-  const transformedProjectDependencies = determineLanguagesUsed(projectDependenciesMap);
+  const transformedProjectDependencies = await determineLanguagesUsed(projectDependenciesMap);
 
   const newlyTransformedJson = {
     name: packageJson ? packageJson.name : '',
