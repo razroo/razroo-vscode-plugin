@@ -80,7 +80,10 @@ export const updatePrivateDirectoriesRequest = async ({
           vsCodeInstances {
             privateDirectories
             vsCodeInstanceId
-            packageJsonParams
+            packageJsonParams {
+              name
+              languages
+            }
           }
         }
       }`,
