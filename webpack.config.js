@@ -28,10 +28,16 @@ const config = {
     alias: {
       // provides alternate implementation for node module and source files
     },
+    preferRelative: true,
     fallback: {
       "assert": false,
       "console": false,
       "crypto": false,
+      "fs": false,
+      "tls": false,
+      "net": false,
+      "path": false,
+      "os": false,
       "http": false,
       "https": false,
       "stream": false,
@@ -44,6 +50,12 @@ const config = {
   },
   module: {
     rules: [
+      {
+        test: /\.m?js/,
+        resolve: {
+            fullySpecified: false
+        }
+      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
