@@ -1,16 +1,17 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "es6",
+		"target": "es2020",
 		"outDir": "out",
 		"lib": [
-			"es6"
+			"es2020"
 		],
 		"sourceMap": true,
 		"rootDir": "src",
 		"strict": true,   /* enable all strict type-checking options */
 		"skipLibCheck": true,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"esModuleInterop": true,
 		// "allowJs": true
 		/* Additional Checks */
 		// "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
