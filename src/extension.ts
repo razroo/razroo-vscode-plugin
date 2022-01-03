@@ -1,7 +1,7 @@
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import open = require('open');
+const open = require('open');
 import { v4 as uuidv4 } from 'uuid';
 const AdmZip = require('adm-zip');
 import * as request from 'request';
