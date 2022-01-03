@@ -8,7 +8,7 @@ import {
   MEMENTO_RAZROO_USER_ID
 } from '../constants';
 import * as vscode from 'vscode';
-import * as AdmZip from 'adm-zip';
+const AdmZip = require('adm-zip');
 import * as fs from 'fs';
 import { AuthenticationClient } from 'auth0';
 import jwt_decode from 'jwt-decode';
