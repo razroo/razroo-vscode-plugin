@@ -14,7 +14,7 @@
   "scripts": {
     "vscode:prepublish": "npm run esbuild-base -- --minify",
     "compile": "tsc -p ./",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild --external:'@angular-devkit/schematics' --external:'fsevents' ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "watch": "tsc -watch -p ./",
@@ -92,9 +92,8 @@
     "vscode-test": "^1.5.2"
   },
   "dependencies": {
-    "@angular-devkit/architect": "^0.1301.2",
     "@aws-sdk/signature-v4-crt": "^3.45.0",
-    "@razroo/razroo-angular-devkit": "^1.2.4",
+    "@razroo/razroo-angular-devkit": "^1.2.6",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
     "apollo-cache-inmemory": "^1.6.6",
