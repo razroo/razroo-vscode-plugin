@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "Razroo VSCode Plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "engines": {
     "vscode": "^1.57.0"
   },
@@ -33,7 +33,7 @@
   "activationEvents": [
     "onCommand:extension.auth0Authentication"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -121,6 +121,7 @@
     "mime": "^2.6.0",
     "mocha": "^8.4.0",
     "open": "^8.2.1",
+    "path": "^0.12.7",
     "prettier": "^2.5.1",
     "redux": "3.7.2",
     "request": "^2.88.2",

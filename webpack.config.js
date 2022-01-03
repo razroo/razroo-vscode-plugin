@@ -29,6 +29,14 @@ const config = {
       // provides alternate implementation for node module and source files
     },
     fallback: {
+      "assert": false,
+      "console": false,
+      "crypto": false,
+      "http": false,
+      "https": false,
+      "stream": false,
+      "vm": false,
+      "zlib": false,
       // Webpack 5 no longer polyfills Node.js core modules automatically.
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
       // for the list of Node.js core module polyfills.
