@@ -3,7 +3,7 @@ import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import * as vscode from 'vscode';
 import open = require('open');
 import { v4 as uuidv4 } from 'uuid';
-import * as AdmZip from 'adm-zip';
+const AdmZip = require('adm-zip');
 import * as request from 'request';
 import * as http from 'http2';
 import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils';
