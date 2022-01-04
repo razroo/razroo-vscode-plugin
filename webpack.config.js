@@ -21,6 +21,7 @@ const config = {
     libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]'
   },
+  externalsPresets: { node: true },
   externals: [
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
     nodeExternals()
@@ -34,28 +35,6 @@ const config = {
     },
     preferRelative: true,
     fallback: {
-      "assert": false,
-      "constants": false,
-      "console": false,
-      "crypto": false,
-      "fs": false,
-      "tls": false,
-      "net": false,
-      "path": false,
-      "os": false,
-      "http": false,
-      "https": false,
-      "http2": false,
-      "stream": false,
-      "vm": false,
-      "zlib": false,
-      "child_process": false,
-      "readline": false,
-      "perf_hooks": false,
-      "dns": false,
-      "module": false,
-      "@angular-devkit/schematics": false,
-      "v8": false,
       // Webpack 5 no longer polyfills Node.js core modules automatically.
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
       // for the list of Node.js core module polyfills.
