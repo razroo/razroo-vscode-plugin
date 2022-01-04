@@ -12,6 +12,11 @@ const nodeExternals = require('webpack-node-externals');
 const config = {
   mode: 'none',
   target: 'webworker', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
+  externalsPresets: { node: true },
+  externals: [
+    nodeExternals(),
+    {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
+  ],
   devtool: 'source-map',
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   node: false,
@@ -22,10 +27,6 @@ const config = {
     libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]'
   },
-  externalsPresets: { node: true },
-  externals: [
-    {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
-  ],  
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
