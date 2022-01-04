@@ -79,6 +79,9 @@ const config = {
         use: [
           {
             loader: 'ts-loader'
+          },
+          {
+            loader: 'url-loader'
           }
         ]
       }
