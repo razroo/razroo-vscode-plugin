@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "0.5.9",
+  "version": "0.6.0",
   "engines": {
     "vscode": "^1.58.0"
   },
@@ -22,7 +22,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile": "webpack --mode production",
     "publish": "vsce publish --no-dependencies",
-    "esbuild-base": "esbuild --external:'@angular-devkit/schematics' --external:'fsevents' ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
     "watch": "tsc -watch -p ./",
@@ -108,6 +108,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@angular-devkit/schematics": "^13.1.2",
     "@aws-sdk/signature-v4-crt": "^3.45.0",
     "@razroo/razroo-angular-devkit": "^1.2.7",
     "@types/jsonwebtoken": "^8.5.5",
