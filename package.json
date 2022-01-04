@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "engines": {
     "vscode": "^1.58.0"
   },
@@ -136,6 +136,7 @@
     "prettier": "^2.5.1",
     "redux": "3.7.2",
     "request": "^2.88.2",
+    "resolve": "^1.21.0",
     "subscriptions-transport-ws": "^0.9.19",
     "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2",
