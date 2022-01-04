@@ -26,7 +26,35 @@ const config = {
   externals: [
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
     nodeExternals({
-      modulesFromFile: true,
+      allowlist: ["@aws-sdk/signature-v4-crt",
+      "@razroo/razroo-angular-devkit",
+      "adm-zip",
+      "apollo-cache-inmemory",
+      "apollo-client",
+      "auth0",
+      "aws-appsync",
+      "aws-sdk",
+      "axios",
+      "cookiejar",
+      "es6-promise",
+      "file-system",
+      "follow-redirects",
+      "formidable",
+      "graphql",
+      "graphql-tag",
+      "isomorphic-fetch",
+      "jwt-decode",
+      "mime",
+      "mocha",
+      "open",
+      "path",
+      "prettier",
+      "redux",
+      "request",
+      "subscriptions-transport-ws",
+      "superagent-proxy",
+      "uuid",
+      "ws"]
     })
   ],  
   resolve: {
