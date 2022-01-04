@@ -26,7 +26,9 @@ const config = {
   externals: [
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
     nodeExternals({
-      allowlist: ['uuid', 'request']
+      importType: 'commonjs',
+      modulesDir: 'node_modules',
+      modulesFromFile: true,
     })
   ],  
   resolve: {
