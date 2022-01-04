@@ -66,6 +66,14 @@ const config = {
         }
       },
       {
+        test: /\.node/,
+        use: [
+          {
+            loader: 'url-loader'
+          }
+        ]
+      },
+      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [
