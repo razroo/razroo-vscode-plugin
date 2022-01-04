@@ -51,6 +51,7 @@ const config = {
       "prettier",
       "redux",
       "request",
+      "tough-cookie",
       "subscriptions-transport-ws",
       "superagent-proxy",
       "uuid",
