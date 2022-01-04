@@ -80,9 +80,6 @@ const config = {
           {
             loader: 'ts-loader'
           },
-          {
-            loader: 'url-loader'
-          }
         ]
       }
     ]
