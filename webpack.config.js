@@ -41,6 +41,7 @@ const config = {
       "os": false,
       "http": false,
       "https": false,
+      "http2": false,
       "stream": false,
       "vm": false,
       "zlib": false,
