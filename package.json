@@ -35,14 +35,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:razroo-vscode-plugin.auth0Authentication"
+    "onCommand:extension.auth0Authentication"
   ],
-  "main": "./dist/extension.js",
-  "browser": "./dist/extension.js",
+  "main": "./dist/extension",
   "contributes": {
     "commands": [
       {
-        "command": "razroo-vscode-plugin.auth0Authentication",
+        "command": "extension.auth0Authentication",
         "title": "Razroo Auth0 Authentication"
       }
     ],
@@ -66,12 +65,12 @@
     "viewsWelcome": [
       {
         "view": "razroo-authentication",
-        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:razroo-vscode-plugin.auth0Authentication)",
+        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:extension.auth0Authentication)",
         "when": "!authenticate"
       },
       {
         "view": "razroo-authentication",
-        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:razroo-vscode-plugin.auth0Authentication)",
+        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:extension.auth0Authentication)",
         "when": "authenticate",
         "enablement": "!authenticate"
       }
@@ -105,7 +104,8 @@
     "url-loader": "^4.1.1",
     "vscode-test": "^1.5.2",
     "webpack": "^5.65.0",
-    "webpack-cli": "^4.9.1"
+    "webpack-cli": "^4.9.1",
+    "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
     "@aws-sdk/signature-v4-crt": "^3.45.0",
