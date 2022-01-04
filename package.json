@@ -5,7 +5,7 @@
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.4.9",
   "engines": {
-    "vscode": "^1.32.0"
+    "vscode": "^1.57.0"
   },
   "galleryBanner": {
     "color": "#1d2f42",
