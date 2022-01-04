@@ -5,7 +5,7 @@
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.4.8",
   "engines": {
-    "vscode": "^1.57.0"
+    "vscode": "^1.32.0"
   },
   "galleryBanner": {
     "color": "#1d2f42",
@@ -37,7 +37,8 @@
   "activationEvents": [
     "onCommand:razroo-vscode-plugin.auth0Authentication"
   ],
-  "main": "./dist/extension",
+  "main": "./dist/extension.js",
+  "browser": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -98,6 +99,7 @@
     "glob": "^7.1.7",
     "jest": "^27.3.1",
     "path-browserify": "^1.0.1",
+    "process": "^0.11.10",
     "ts-loader": "^9.2.6",
     "typescript": "4.2.4",
     "url-loader": "^4.1.1",
