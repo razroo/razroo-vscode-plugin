@@ -1,9 +1,9 @@
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
-// The module 'vscode' contains the VS Code extensibility API
-import * as vscode from 'vscode';
 const open = require('open');
 import { v4 as uuidv4 } from 'uuid';
 const AdmZip = require('adm-zip');
+// The module 'vscode' contains the VS Code extensibility API
+import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
 import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils';
@@ -13,13 +13,12 @@ import {
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
 } from './constants';
 
-const showErrorMessage = vscode.window.showErrorMessage;
-const showInformationMessage = vscode.window.showInformationMessage;
-const showOpenDialog = vscode.window.showOpenDialog;
-
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+  const showErrorMessage = vscode.window.showErrorMessage;
+  const showInformationMessage = vscode.window.showInformationMessage;
+  const showOpenDialog = vscode.window.showOpenDialog;
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log(
