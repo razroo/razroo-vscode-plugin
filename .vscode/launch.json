@@ -7,17 +7,15 @@
 	"configurations": [
 		{
 			"name": "Run Extension",
-			"type": "extensionHost",
+			"type": "pwa-extensionHost",
+			"debugWebWorkerHost": true,
 			"request": "launch",
-			"env": {
-				"scope": "DEVELOPMENT"
-			},
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-    			"--extensionTestsPath=${workspaceFolder}/out/test"
+				"--extensionDevelopmentKind=web"
 			],
-			"outFiles": ["${workspaceFolder}/out/test/**/*.js"],
-			"preLaunchTask": "${defaultBuildTask}"
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "npm: webpack-dev"
 		},
 		{
 			"name": "Extension Tests",
@@ -25,12 +23,13 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-    			"--extensionTestsPath=${workspaceFolder}/out/test"
+				"--extensionDevelopmentKind=web",
+				"--extensionTestsPath=${workspaceFolder}/dist/web/test/suite/index"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/test/**/*.js"
 			],
-			"preLaunchTask": "npm: test-compile"
+			"preLaunchTask": "npm: webpack-dev"
 		}
 	]
 }

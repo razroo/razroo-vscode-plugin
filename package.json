@@ -1,11 +1,15 @@
 {
   "name": "razroo-vscode-plugin",
   "publisher": "Razroo",
-  "displayName": "Razroo VSCode Plugin",
+  "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.4.8",
   "engines": {
     "vscode": "^1.57.0"
+  },
+  "galleryBanner": {
+    "color": "#1d2f42",
+    "theme": "dark"
   },
   "repository": {
     "type": "git",
@@ -16,7 +20,7 @@
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile": "tsc -p ./",
+    "compile": "webpack --mode production",
     "publish": "vsce publish --no-dependencies",
     "esbuild-base": "esbuild --external:'@angular-devkit/schematics' --external:'fsevents' ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "esbuild": "npm run esbuild-base -- --sourcemap",
@@ -31,13 +35,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.auth0Authentication"
+    "onCommand:razroo-vscode-plugin.auth0Authentication"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.auth0Authentication",
+        "command": "razroo-vscode-plugin.auth0Authentication",
         "title": "Razroo Auth0 Authentication"
       }
     ],
@@ -61,12 +65,12 @@
     "viewsWelcome": [
       {
         "view": "razroo-authentication",
-        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:extension.auth0Authentication)",
+        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:razroo-vscode-plugin.auth0Authentication)",
         "when": "!authenticate"
       },
       {
         "view": "razroo-authentication",
-        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:extension.auth0Authentication)",
+        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:razroo-vscode-plugin.auth0Authentication)",
         "when": "authenticate",
         "enablement": "!authenticate"
       }
