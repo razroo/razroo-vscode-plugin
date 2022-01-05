@@ -1,4 +1,10 @@
-# Welcome to your VS Code Extension
+# Razroo VS Code Extension
+
+Note: We are currently working on moving over the build to webpack. The webpack isn't properly bundling node_modules. Nor is it properly building the node_modules using the npm command. Therefore I currently use npm when runnign locally. Webpack is working in the manner. Re: buiding, i use yarn. So i have to: 
+1.`yarn install`
+2. `vsce publish --yarn`
+
+This is how I am currently getting things to work as expected. 
 
 ## What's in the folder
 
