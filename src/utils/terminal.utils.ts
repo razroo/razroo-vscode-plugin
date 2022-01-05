@@ -12,7 +12,7 @@ async function execShell(cmd: string) {
 }
 
 //example, will be removed once fully integrated
-const currentDir = execShell('pwd').then(data => {
+const currentDir = execShell('npm install test').then(data => {
     console.log('data');
     console.log(data);
 });
