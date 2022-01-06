@@ -99,13 +99,9 @@ export const saveFiles = async (
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
-      console.log('folderName');
-      console.log(folderName);
-
-      execShell(commandToExecute, folderName).then(commandToExecuteData => {
-        console.log(commandToExecuteData);
-        showInformationMessage('Command Executed.');
-      }); 
+      const terminal = vscode.window.createTerminal(`Razroo Terminal`);
+      terminal.show();
+      terminal.sendText(commandToExecute);
     }
 
     fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
