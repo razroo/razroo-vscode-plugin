@@ -23,6 +23,8 @@ import {
   getFileS3,
   getVSCodeAuthentication,
 } from './request.utils';
+import { execShell } from './terminal.utils';
+import { composeFileOperators } from '@angular-devkit/schematics';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -95,8 +97,12 @@ export const saveFiles = async (
   }
   tempFiles.forEach((file: any) => {
     if(path.extname(file) === ".sh") {
-      console.log('is sh');
-      console.log(file);
+      const commandToExecute = fs.readFileSync(file).toString();
+
+      execShell(commandToExecute).then(commandToExecuteData => {
+        console.log(commandToExecuteData);
+        showInformationMessage('Command Executed.');
+      }); 
     }
 
     fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {

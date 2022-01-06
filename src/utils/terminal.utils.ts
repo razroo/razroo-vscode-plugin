@@ -1,6 +1,6 @@
 import * as cp from "child_process";
 
-async function execShell(cmd: string) {
+export async function execShell(cmd: string) {
     return new Promise<string>((resolve, reject) => {
         cp.exec(cmd, (err, out) => {
             if (err) {
@@ -10,9 +10,3 @@ async function execShell(cmd: string) {
         });
     });
 }
-
-//example, will be removed once fully integrated
-const currentDir = execShell('pwd').then(data => {
-    console.log('data');
-    console.log(data);
-});
