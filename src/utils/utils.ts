@@ -63,7 +63,7 @@ export const saveFiles = async (
   context: vscode.ExtensionContext
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
-
+  
   //Get files of S3
   const files = await getFileS3({ url });
 
@@ -93,8 +93,12 @@ export const saveFiles = async (
   for await (const f of getFiles(path.join(folderName,'razroo_files_temp'))) {
     tempFiles.push(f);
   }
-  tempFiles.forEach((file) => {
-    console.log("BASENAME: ",  path.basename(file))
+  tempFiles.forEach((file: any) => {
+    if(path.extname(file) === ".sh") {
+      console.log('is sh');
+      console.log(file);
+    }
+
     fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
       if (!err) {
         console.log(file + ' has been copied!');
@@ -104,7 +108,6 @@ export const saveFiles = async (
     });
   });
   //If the folder is not the default folder then it is deleted, otherwise it is not
-  console.log("FOLDER NAME: ", folderName, "END FOLDER NAME");
   if (folderName !== path.join(folderName,'razroo_files_temp')) {
     fs.rmdirSync(path.join(folderName,'razroo_files_temp'), { recursive: true });
   } else {
