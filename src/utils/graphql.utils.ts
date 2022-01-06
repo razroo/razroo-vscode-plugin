@@ -26,6 +26,10 @@ let isProduction = context.extensionMode === 1;
               downloadUrl
               parameters
               customInsertPath
+              template {
+                id
+                type
+              }
             }
           }
         `)
