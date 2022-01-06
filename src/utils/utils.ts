@@ -99,7 +99,10 @@ export const saveFiles = async (
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
-      execShell(commandToExecute).then(commandToExecuteData => {
+      console.log('folderName');
+      console.log(folderName);
+
+      execShell(commandToExecute, folderName).then(commandToExecuteData => {
         console.log(commandToExecuteData);
         showInformationMessage('Command Executed.');
       }); 
