@@ -30,12 +30,11 @@ module.exports = {
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-    extensions: ['.ts', '.js'],
+    extensions: ['.js'],
     alias: {
       // provides alternate implementation for node module and source files
     },
     preferRelative: true,
-    fullySpecified: true,
     fallback: {
       // Webpack 5 no longer polyfills Node.js core modules automatically.
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
@@ -54,17 +53,8 @@ module.exports = {
         ]
       },
       {
-        test: /\.ts$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              compilerOptions: {
-                  "module": "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-              }
-            }
-          },
-        ]
+        test: /\.tsx?$/,
+        use: "ts-loader"
       }
     ]
   },
