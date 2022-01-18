@@ -23,8 +23,6 @@ import {
   getFileS3,
   getVSCodeAuthentication,
 } from './request.utils';
-import { execShell } from './terminal.utils';
-import { composeFileOperators } from '@angular-devkit/schematics';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -65,6 +63,7 @@ export const saveFiles = async (
   context: vscode.ExtensionContext
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
+  const type = data.data.generateVsCodeDownloadCodeSub.template.type;
   
   //Get files of S3
   const files = await getFileS3({ url });
@@ -96,6 +95,10 @@ export const saveFiles = async (
     tempFiles.push(f);
   }
   tempFiles.forEach((file: any) => {
+    if(type === 'edit' && path.extname(file) === ".sh") {
+
+    }
+    
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
