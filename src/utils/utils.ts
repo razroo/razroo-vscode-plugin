@@ -95,10 +95,12 @@ export const saveFiles = async (
     tempFiles.push(f);
   }
   tempFiles.forEach((file: any) => {
-    if(type === 'edit' && path.extname(file) === ".sh") {
-
+    if(type === 'edit' && path.extname(file) === ".json") {
+      const editJson = JSON.parse(fs.readFileSync(file).toString());
+      console.log('editJson');
+      console.log(editJson);
     }
-    
+
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
