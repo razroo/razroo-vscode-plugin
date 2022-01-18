@@ -5,7 +5,7 @@
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.6.7",
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.63.1"
   },
   "galleryBanner": {
     "color": "#1d2f42",
@@ -101,7 +101,7 @@
     "process": "^0.11.10",
     "resolve-typescript-plugin": "^1.1.4",
     "ts-loader": "^9.2.6",
-    "typescript": "^4.5.4",
+    "typescript": "^4.6.0-dev.20220118",
     "url-loader": "^4.1.1",
     "vscode-test": "^1.5.2",
     "webpack": "^5.65.0",
@@ -143,5 +143,6 @@
     "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2",
     "ws": "^8.2.0"
+    
   }
 }
