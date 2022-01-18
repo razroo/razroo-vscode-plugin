@@ -2,14 +2,16 @@
 
 'use strict';
 
-const path = require('path');
-const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
+import path from 'path';
+import webpack from 'webpack';
+import nodeExternals from 'webpack-node-externals';
+const __dirname = path.resolve();
 
 /**@type {import('webpack').Configuration}*/
 /* eslint @typescript-eslint/no-var-requires: "off" */
 
-const config = {
+// @ts-ignore
+export default {
   mode: 'none',
   target: 'webworker', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
   externalsPresets: { node: true },
@@ -83,4 +85,3 @@ const config = {
 	],
   
 };
-module.exports = config;

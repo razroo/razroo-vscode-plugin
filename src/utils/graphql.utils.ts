@@ -4,7 +4,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';
 import axios from 'axios';
-import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-angular-devkit';
+import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-devkit';
 import * as vscode from 'vscode';
 import * as path from 'path';
 
