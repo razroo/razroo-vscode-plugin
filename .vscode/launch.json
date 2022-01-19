@@ -13,7 +13,7 @@
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ],
-            "preLaunchTask": "npm: webpack-dev"
+            "preLaunchTask": "${defaultBuildTask}"
         },
         {
             "name": "Extension Tests",
@@ -27,7 +27,7 @@
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
             ],
-            "preLaunchTask": "npm: test-compile"
+            "preLaunchTask": "${defaultBuildTask}"
         }
     ]
 }
