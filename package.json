@@ -4,9 +4,15 @@
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.6.7",
+  "type": "module",
   "engines": {
     "vscode": "^1.63.1"
   },
+  "main": "./dist/extension",
+  "exports": {
+    ".": "./index.js"
+  },
+  "types": "index.d.ts",
   "galleryBanner": {
     "color": "#1d2f42",
     "theme": "dark"
@@ -17,8 +23,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "webpack": "webpack --mode development",
-    "webpack-dev": "webpack --mode development --watch",
+    "webpack": "webpack",
+    "webpack-dev": "webpack --mode development",
+    "webpack-dev-watch": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile": "webpack --mode production",
     "publish": "vsce publish --no-dependencies",
@@ -37,7 +44,6 @@
   "activationEvents": [
     "onCommand:extension.auth0Authentication"
   ],
-  "main": "./dist/extension",
   "contributes": {
     "commands": [
       {
@@ -78,6 +84,7 @@
   },
   "devDependencies": {
     "@octokit/rest": "^18.0.0",
+    "@softwareventures/tsconfig": "^5.1.0",
     "@types/adm-zip": "^0.4.34",
     "@types/auth0": "^2.34.9",
     "@types/chai": "^4.2.22",
@@ -143,6 +150,5 @@
     "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2",
     "ws": "^8.2.0"
-    
   }
 }

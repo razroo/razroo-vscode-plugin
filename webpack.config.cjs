@@ -5,6 +5,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ResolveTypeScriptPlugin = require("resolve-typescript-plugin");
+const nodeExternals = require('webpack-node-externals');
 
 /**@type {import('webpack').Configuration}*/
 /* eslint @typescript-eslint/no-var-requires: "off" */
@@ -14,7 +15,7 @@ module.exports = {
   externalsPresets: { node: true },
   externals: [
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
-    
+    nodeExternals()
   ],
   devtool: 'source-map',
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -23,7 +24,6 @@ module.exports = {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, 'dist'),
     filename: 'extension.js',
-    libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]'
   },
   resolve: {
@@ -39,7 +39,9 @@ module.exports = {
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
       // for the list of Node.js core module polyfills.
     },
-    plugins: [new ResolveTypeScriptPlugin()],
+    plugins: [new ResolveTypeScriptPlugin({
+      includeNodeModules: false
+    })],
   },
   module: {
     rules: [
@@ -52,16 +54,9 @@ module.exports = {
         ]
       },
       {
-        test: /\.ts$/,
         exclude: /node_modules/,
-        use: [{
-            loader: 'ts-loader',
-            options: {
-                compilerOptions: {
-                    "module": "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-                }
-            }
-        }]
+        test: /\.ts$/,
+        use: "ts-loader"
       }
     ]
   },

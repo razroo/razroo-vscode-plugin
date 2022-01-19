@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants';
+import { MEMENTO_RAZROO_ID_TOKEN } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles } from './utils';

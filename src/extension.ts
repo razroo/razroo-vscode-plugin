@@ -21,23 +21,14 @@ export async function activate(context: vscode.ExtensionContext) {
   const showOpenDialog = vscode.window.showOpenDialog;
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log(
-    'Congratulations, your extension "razroo-vscode-plugin" is now active!'
-  );
-  console.log(__dirname);
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
+  console.log("extensionMode");
+  console.log(context);
   
   // 1 is production mode
   const isProduction = context.extensionMode === 1;
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      console.log('DirName', __dirname);
-      console.log('FileName', __filename);
       vscode.window.showInformationMessage(
         'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
       );
@@ -56,6 +47,9 @@ export async function activate(context: vscode.ExtensionContext) {
         token = uuidv4();
         context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
       }
+      console.log('isProduction');
+      console.log(isProduction);
+
       const loginUrl = getAuth0Url(token, isProduction);
 
       await open(loginUrl);
