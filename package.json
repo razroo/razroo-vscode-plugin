@@ -4,15 +4,10 @@
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.6.8",
-  "type": "module",
   "engines": {
     "vscode": "^1.63.1"
   },
-  "main": "./dist/extension.cjs",
-  "exports": {
-    ".": "./index.js"
-  },
-  "types": "index.d.ts",
+  "main": "./dist/extension.js",
   "galleryBanner": {
     "color": "#1d2f42",
     "theme": "dark"
@@ -23,8 +18,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "webpack": "webpack",
-    "webpack-dev": "webpack --mode development",
+    "webpack": "webpack --config ./webpack.config.cjs",
+    "webpack-dev": "webpack --config ./webpack.config.cjs --stats-error-details",
+    "esm": "esm",
     "webpack-dev-watch": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile": "webpack --mode production",
@@ -83,6 +79,9 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/preset-env": "^7.16.8",
+    "@babel/preset-typescript": "^7.16.7",
     "@octokit/rest": "^18.0.0",
     "@softwareventures/tsconfig": "^5.1.0",
     "@types/adm-zip": "^0.4.34",
@@ -98,9 +97,11 @@
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "axios-mock-adapter": "^1.20.0",
+    "babel-loader": "^8.2.3",
     "chai": "^4.3.4",
     "esbuild": "^0.14.10",
     "eslint": "^7.27.0",
+    "esm": "^3.2.25",
     "file-loader": "^6.2.0",
     "glob": "^7.1.7",
     "jest": "^27.3.1",
@@ -149,6 +150,7 @@
     "subscriptions-transport-ws": "^0.9.19",
     "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2",
+    "vscode": "^1.1.37",
     "ws": "^8.2.0"
   }
 }
