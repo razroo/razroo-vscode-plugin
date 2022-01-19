@@ -4,10 +4,15 @@
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.6.7",
+  "type": "module",
   "engines": {
     "vscode": "^1.63.1"
   },
   "main": "./dist/extension",
+  "exports": {
+    ".": "./index.js"
+  },
+  "types": "index.d.ts",
   "galleryBanner": {
     "color": "#1d2f42",
     "theme": "dark"
@@ -17,14 +22,17 @@
     "url": "https://github.com/razroo/razroo-vscode-plugin"
   },
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "vscode:prepublish": "npm run package",
+    "webpack": "webpack",
+    "webpack-dev": "webpack --mode development",
+    "webpack-dev-watch": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile": "tsc -p ./",
+    "compile": "webpack --mode production",
     "publish": "vsce publish --no-dependencies",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run esbuild-base",
-    "esbuild-watch": "npm run esbuild-base --watch",
-    "watch": "scope=DEVELOPMENT tsc -p ./",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
@@ -86,7 +94,7 @@
     "@types/node": "14.x",
     "@types/request": "^2.48.7",
     "@types/uuid": "^8.3.1",
-    "@types/vscode": "^1.63.1",
+    "@types/vscode": "^1.57.0",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
     "axios-mock-adapter": "^1.20.0",
@@ -141,7 +149,6 @@
     "subscriptions-transport-ws": "^0.9.19",
     "superagent-proxy": "^3.0.0",
     "uuid": "^8.3.2",
-    "vscode": "^1.1.37",
     "ws": "^8.2.0"
   }
 }
