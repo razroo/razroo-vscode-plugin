@@ -4,7 +4,6 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const nodeExternals = require('webpack-node-externals');
 const ResolveTypeScriptPlugin = require("resolve-typescript-plugin");
 
 /**@type {import('webpack').Configuration}*/
@@ -14,8 +13,8 @@ module.exports = {
   target: 'webworker', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
   externalsPresets: { node: true },
   externals: [
-    nodeExternals(),
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
+    
   ],
   devtool: 'source-map',
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -29,8 +28,8 @@ module.exports = {
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-    extensions: ['.js'],
+    mainFields: ['module', 'main'], // look for `browser` entry point in imported node modules
+    extensions: ['.ts', '.js'],
     alias: {
       // provides alternate implementation for node module and source files
     },
@@ -53,8 +52,16 @@ module.exports = {
         ]
       },
       {
-        test: /\.tsx?$/,
-        use: "ts-loader"
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [{
+            loader: 'ts-loader',
+            options: {
+                compilerOptions: {
+                    "module": "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
+                }
+            }
+        }]
       }
     ]
   },
