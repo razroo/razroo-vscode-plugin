@@ -1,5 +1,14 @@
 //@ts-check
 
+const esModules = ['parse5', 'vfile', 'to-vfile', 'hastscript', 'property-information',
+'unist-util-stringify-position', 'unist-util-inspect', 'hast-util-from-parse5', 
+'hast-util-parse-selector', 'space-separated-tokens', 'comma-separated-tokens',
+'web-namespaces', 'unist-util-visit', 'unist-util-is', 'hast-util-from-dom', 
+'unist-util-map', 'hast-util-to-dom', 'hast-util-raw', 'unist-util-position', 
+'hast-util-to-parse5', 'hast-to-hyperscript', 'zwitch', 'html-void-elements',
+'hast-util-to-html', 'hast-util-is-element', 'hast-util-whitespace', 'stringify-entities',
+'character-entities-legacy', 'character-entities-html4', 'ccount'];
+
 'use strict';
 
 const path = require('path');
@@ -15,7 +24,6 @@ module.exports = {
   externalsPresets: { node: true },
   externals: [
     {vscode: 'commonjs vscode'}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/}
-    nodeExternals()
   ],
   devtool: 'source-map',
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
@@ -23,13 +31,13 @@ module.exports = {
   output: {
     // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
     path: path.resolve(__dirname, 'dist'),
-    filename: 'extension.js',
+    filename: 'extension.cjs',
     devtoolModuleFilenameTemplate: '../[resource-path]'
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     mainFields: ['module', 'main'], // look for `browser` entry point in imported node modules
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.js', '.mjs'],
     alias: {
       // provides alternate implementation for node module and source files
     },
@@ -54,10 +62,19 @@ module.exports = {
         ]
       },
       {
+        test: /\.m?js/,
+        exclude: [
+          /node_modules\/(?!graphql).*/
+        ],
+        resolve: {
+            fullySpecified: false
+        }
+      },
+      {
         exclude: /node_modules/,
         test: /\.ts$/,
         use: "ts-loader"
-      }
+      },
     ]
   },
   performance: {

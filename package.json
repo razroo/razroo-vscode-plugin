@@ -8,7 +8,7 @@
   "engines": {
     "vscode": "^1.63.1"
   },
-  "main": "./dist/extension",
+  "main": "./dist/extension.cjs",
   "exports": {
     ".": "./index.js"
   },
