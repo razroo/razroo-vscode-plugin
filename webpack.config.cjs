@@ -11,7 +11,7 @@ const esModules = ['parse5', 'vfile', 'vfile-location', 'to-vfile', 'hastscript'
 'unist-util-visit-parents'];
 
 const esModulesAliases = {
-  'parse5': 'parse5', ]
+  'parse5': 'parse5',
   'vfile': 'vfile', 
   'vfile-location': 'vfile-location', 
   'to-vfile': 'to-vfile', 
@@ -53,8 +53,6 @@ const webpack = require('webpack');
 const ResolveTypeScriptPlugin = require("resolve-typescript-plugin");
 const nodeExternals = require('webpack-node-externals');
 
-/**@type {import('webpack').Configuration}*/
-/* eslint @typescript-eslint/no-var-requires: "off" */
 module.exports = {
   mode: 'none',
   target: 'webworker', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
@@ -115,12 +113,12 @@ module.exports = {
       },
       {
         test: /\.m?js/,
-        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', "es2015", "es2016"],
-            plugins: ['@babel/plugin-transform-runtime']
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-transform-runtime'],
+            sourceType: "unambiguous",
           },
         }
       },
