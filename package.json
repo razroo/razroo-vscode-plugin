@@ -4,9 +4,10 @@
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
   "version": "0.6.8",
+  "private": true,
   "engines": {
-    "vscode": "^1.63.1"
-  },
+		"vscode": "^1.32.0"
+	},
   "main": "./dist/extension.js",
   "galleryBanner": {
     "color": "#1d2f42",
@@ -18,10 +19,10 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "webpack": "webpack --config ./webpack.config.cjs",
-    "webpack-dev": "webpack --config ./webpack.config.cjs --stats-error-details",
+    "webpack": "webpack",
+    "webpack-dev": "webpack --stats-error-details",
     "esm": "esm",
-    "webpack-dev-watch": "webpack --mode development --watch",
+    "webpack-watch": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile": "webpack --mode production",
     "publish": "vsce publish --no-dependencies",
