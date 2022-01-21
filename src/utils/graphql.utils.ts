@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
-import { MEMENTO_RAZROO_ID_TOKEN } from '../constants';
-import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
-import client from '../graphql/subscription';
-import { saveFiles } from './utils';
+import { MEMENTO_RAZROO_ID_TOKEN } from '../constants.js';
+import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
+import client from '../graphql/subscription.js';
+import { saveFiles } from './utils.js';
 import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-devkit';
 import * as vscode from 'vscode';

@@ -6,7 +6,7 @@ import {
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   MEMENTO_RAZROO_REFRESH_TOKEN,
   MEMENTO_RAZROO_USER_ID
-} from '../constants';
+} from '../constants.js';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
@@ -18,11 +18,11 @@ import * as jwt from 'jsonwebtoken';
 import { 
   subscribeToGenerateVsCodeDownloadCodeSub, 
   updatePrivateDirectoriesRequest
-} from './graphql.utils';
+} from './graphql.utils.js';
 import {
   getFileS3,
   getVSCodeAuthentication,
-} from './request.utils';
+} from './request.utils.js';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { URL_API_GATEWAY, URL_API_GATEWAY_PROD} from '../graphql/awsConstants';
+import { URL_API_GATEWAY, URL_API_GATEWAY_PROD} from '../graphql/awsConstants.js';
 
 export const getVSCodeAuthentication = async ({ vsCodeInstanceId, isProduction }: any) => {
   let response: any;

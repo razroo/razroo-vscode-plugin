@@ -1,4 +1,4 @@
-import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
+import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants.js';
 const open = require('open');
 import { v4 as uuidv4 } from 'uuid';
 const AdmZip = require('adm-zip');
@@ -6,16 +6,17 @@ const AdmZip = require('adm-zip');
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils';
+import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils.js';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-} from './constants';
+} from './constants.js';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
+  console.log('this is called up top');
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;

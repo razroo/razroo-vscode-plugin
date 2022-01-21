@@ -1,8 +1,29 @@
 {
-	"extends": "@softwareventures/tsconfig",
 	"compilerOptions": {
-	  "declaration": false,
-	  "module": "ES2020",
-	  "noImplicitAny": false
-	}
+		"target": "es2019",
+		"moduleResolution": "Node",
+		"lib": ["ES2019"],
+		"outDir": "dist",
+		"module": "commonjs",
+		"downlevelIteration": true,
+		"forceConsistentCasingInFileNames": true,
+		"importHelpers": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"removeComments": false,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strict": true,
+		"stripInternal": true,
+		"declaration": false,
+		"rootDir": "src",
+		"skipLibCheck": true,
+	  	"noImplicitAny": false
+	},
+	"include": [
+		"src/**/*.ts",
+		"./node_modules/vscode/vscode.d.ts",
+		"./node_modules/vscode/lib/*",
+	]
   }
