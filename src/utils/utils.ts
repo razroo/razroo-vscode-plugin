@@ -6,7 +6,7 @@ import {
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   MEMENTO_RAZROO_REFRESH_TOKEN,
   MEMENTO_RAZROO_USER_ID
-} from '../constants';
+} from '../constants.js';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
@@ -18,13 +18,12 @@ import * as jwt from 'jsonwebtoken';
 import { 
   subscribeToGenerateVsCodeDownloadCodeSub, 
   updatePrivateDirectoriesRequest
-} from './graphql.utils';
+} from './graphql.utils.js';
 import {
   getFileS3,
   getVSCodeAuthentication,
-} from './request.utils';
-import { execShell } from './terminal.utils';
-import { composeFileOperators } from '@angular-devkit/schematics';
+} from './request.utils.js';
+import { EditFile, insertCodeAfterElement } from '@razroo/razroo-devkit';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -65,10 +64,10 @@ export const saveFiles = async (
   context: vscode.ExtensionContext
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
+  const type = data.data.generateVsCodeDownloadCodeSub.template.type;
   
   //Get files of S3
   const files = await getFileS3({ url });
-
   const userFolderSelected =
     data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
   console.log("USER FOLDER SELECTED: ", userFolderSelected);
@@ -95,7 +94,34 @@ export const saveFiles = async (
   for await (const f of getFiles(path.join(folderName,'razroo_files_temp'))) {
     tempFiles.push(f);
   }
-  tempFiles.forEach((file: any) => {
+  tempFiles.forEach(async(file: any) => {
+    if(type === 'edit' && path.extname(file) === ".json") {
+      // for now getting the first item in the array for testing purposes
+      const editJson = JSON.parse(fs.readFileSync(file).toString());
+
+
+      editJson.updates.forEach(update => {
+        const newFile = path.join(folderName, path.basename(file));
+        const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${update.fileType}`);
+        const fileToBeAddedTo = fs.readFileSync(fileToBeAddedToPath, 'utf-8').toString();
+        
+        const editFile: EditFile = {
+          codeToAdd: update.codeToAdd,
+          fileToBeAddedTo: fileToBeAddedTo,
+          tagNameToInsert: update.tagNameToInsert,
+          siblingTagName: update.siblingTagName
+        };
+        
+        const convertedHtml = insertCodeAfterElement(editFile);
+  
+        fs.writeFile(fileToBeAddedToPath, convertedHtml, async(_) => {
+          console.log(`${fileToBeAddedToPath} has been edited`);
+        });
+      });
+      
+      showInformationMessage('Files have been edited. Lets goooo!!!');
+    }
+
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
@@ -104,13 +130,15 @@ export const saveFiles = async (
       terminal.sendText(commandToExecute);
     }
 
-    fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
-      if (!err) {
-        console.log(file + ' has been copied!');
-      } else {
-        console.log('error file', err);
-      }
-    });
+    if(type !== 'edit' && path.extname(file) !== ".sh") {
+      fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
+        if (!err) {
+          console.log(file + ' has been copied!');
+        } else {
+          console.log('error file', err);
+        }
+      });
+    }
   });
   //If the folder is not the default folder then it is deleted, otherwise it is not
   if (folderName !== path.join(folderName,'razroo_files_temp')) {

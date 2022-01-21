@@ -8,11 +8,10 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 // Require exports file with endpoint and auth info
-import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants';
+import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants.js';
 
 // Require AppSync module
-import { AUTH_TYPE } from 'aws-appsync/lib/client';
-import { AWSAppSyncClient } from 'aws-appsync';
+import { AWSAppSyncClient, AUTH_TYPE } from 'aws-appsync';
 
 const type = AUTH_TYPE.OPENID_CONNECT;
 
