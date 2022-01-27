@@ -23,7 +23,7 @@ import {
   getFileS3,
   getVSCodeAuthentication,
 } from './request.utils.js';
-import { EditFile, insertCodeAfterElement } from '@razroo/razroo-devkit';
+import { EditInput, morphCode } from '@razroo/razroo-devkit';
 
 const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -100,21 +100,17 @@ export const saveFiles = async (
       const editJson = JSON.parse(fs.readFileSync(file).toString());
 
 
-      editJson.updates.forEach(update => {
+      editJson.updates.forEach((editInput: EditInput) => {
         const newFile = path.join(folderName, path.basename(file));
-        const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${update.fileType}`);
+        const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${editInput.fileType}`);
         const fileToBeAddedTo = fs.readFileSync(fileToBeAddedToPath, 'utf-8').toString();
         
-        const editFile: EditFile = {
-          codeToAdd: update.codeToAdd,
-          fileToBeAddedTo: fileToBeAddedTo,
-          tagNameToInsert: update.tagNameToInsert,
-          siblingTagName: update.siblingTagName
-        };
+        // the fileToBeAddedTo needs to be manually added in.
+        const updatedEditInput = {...editInput, fileToBeAddedTo};
         
-        const convertedHtml = insertCodeAfterElement(editFile);
+        const convertedCode = morphCode(updatedEditInput);
   
-        fs.writeFile(fileToBeAddedToPath, convertedHtml, async(_) => {
+        fs.writeFile(fileToBeAddedToPath, convertedCode, async(_) => {
           console.log(`${fileToBeAddedToPath} has been edited`);
         });
       });
