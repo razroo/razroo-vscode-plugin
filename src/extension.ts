@@ -1,17 +1,22 @@
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants.js';
-const open = require('open');
 import { v4 as uuidv4 } from 'uuid';
 const AdmZip = require('adm-zip');
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { existVSCodeAuthenticate, getAuth0Url } from './utils/utils.js';
+import { getAuth0Url, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
+  MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
+  MEMENTO_RAZROO_REFRESH_TOKEN,
+  MEMENTO_RAZROO_USER_ID,
 } from './constants.js';
+import { createDisposableAuthServer } from './auth/local.js';
+import { Uri } from 'vscode';
+import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils.js';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -53,8 +58,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
       const loginUrl = getAuth0Url(token, isProduction);
 
-      await open(loginUrl);
-
       vscode.window.withProgress(
         {
           location: vscode.ProgressLocation.Window,
@@ -62,18 +65,24 @@ export async function activate(context: vscode.ExtensionContext) {
           title: 'Authentication in Razroo',
         },
         async (progress) => {
-          progress.report({ increment: 0 });
-
-          const { error } = await existVSCodeAuthenticate(context);
-
-          progress.report({ increment: 100 });
-          if (error) {
-            showErrorMessage('Authentication error, please try again.');
-          } else {
-            showInformationMessage(
-              'User successfully authenticated with Razroo.'
-            );
-          }
+          vscode.commands.executeCommand('vscode.open', Uri.parse(loginUrl)).then(() => {
+            const { createServerPromise, dispose } = createDisposableAuthServer();
+            createServerPromise
+              .then(({ idToken, refreshToken, userId }) => {
+                context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, idToken);
+                context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, refreshToken);
+                context.workspaceState.update(MEMENTO_RAZROO_USER_ID, userId);
+                return { idToken, refreshToken, userId };
+              })
+              .then(({ idToken, userId }) => updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId))
+              .then(() => subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context }))
+              .then(() => showInformationMessage('User successfully authenticated with Razroo.'))
+              .catch(() => showErrorMessage('Authentication error, please try again.'))
+              .finally(() => {
+                progress.report({ increment: 100 })
+                dispose();
+              });
+          });
         }
       );
     }

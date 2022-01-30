@@ -19,7 +19,8 @@
 		"declaration": false,
 		"rootDir": "src",
 		"skipLibCheck": true,
-	  	"noImplicitAny": false
+	  	"noImplicitAny": false,
+		"esModuleInterop": true
 	},
 	"include": [
 		"src/**/*.ts",
