@@ -75,12 +75,8 @@ export const updatePrivateDirectoriesRequest = async ({
 
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $idToken: String!, 
-      $privateDirectories: String, $packageJsonParams: AWSJSON ) {
-        updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, idToken: $idToken, 
-          privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams) {
-          idToken
-          refreshToken
+    query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON) {
+        updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams) {
           vsCodeInstances {
             privateDirectories
             vsCodeInstanceId
@@ -94,7 +90,6 @@ export const updatePrivateDirectoriesRequest = async ({
     variables: {
       userId: userId,
       vsCodeInstanceId: vsCodeToken,
-      idToken: idToken,
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
     }  
