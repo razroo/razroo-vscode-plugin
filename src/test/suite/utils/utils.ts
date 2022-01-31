@@ -8,7 +8,6 @@ export const getVsCodeAuthenticationMock = () => {
     return {
         "vsCodeInstanceId": "instance_to_testing",
         "userId": "test",
-        "idToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImxMUXNrcU9mSThQWU1EUmx1V1NHNCJ9.eyJuaWNrbmFtZSI6ImZlZGU5NjEyIiwibmFtZSI6ImZlZGVyaWNvZmVycmV5cmEyQGdtYWlsLmNvbSIsInBpY3R1cmUiOiJodHRwczovL2F2YXRhcnMuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3UvMzI4MDUzNjk_dj00IiwidXBkYXRlZF9hdCI6IjIwMjEtMTAtMTJUMjM6MTE6NDcuNDgxWiIsImVtYWlsIjoiZmVkZXJpY29mZXJyZXlyYTJAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlzcyI6Imh0dHBzOi8vaWQucmF6cm9vLmNvbS8iLCJzdWIiOiJnaXRodWJ8MzI4MDUzNjkiLCJhdWQiOiJBMHRMUllZZnlHR3R3eUM0b2RWaDUwam1VWktXOGJWSiIsImlhdCI6MTYzNDA4MDMxMSwiZXhwIjoxNjM0MTE2MzExLCJub25jZSI6IkxWTllkMHhSYkVJMWJFMVpkM1ZvZHpSUFgzZ3djbWR0ZVVRNWIwOVhORTVQY1ZGV1ptNWlVbmhvZUU5QiJ9.eNcfJQXac0tMdI-4uuEmrUSFEIFu3pgHzGpf56lebqnlb_ivaB0iPWKCj3otO_h4PIeodtGPJd3plD6M2_2mwxZD7-dmIRG1arMtcEmK3RWxNB-nI7dRPMCwcjj48fVfLJjKDQLFGRmjeaw7xJ67I4ZVI5oqpaXOvKtNCvbdFbuEgHRm2CUSsX_p97m2MdVy_hnO4Y8d9UmFOv4EZ3KhUnmxv9PG-EOJsr__EUNNE5hHdrdx86Tk6VDRMfU-B3UGqD_qiJlur9iTkawL1zIShUuZyyD9rWH-Cgzy4uC-BUSs6EIkxeEqie5iiRBQV8V2J5qVRu_lelzGXuk9CoFTcw",
         "privateDirectories": "test",
         "refreshToken": "test" 
     };
