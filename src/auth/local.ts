@@ -22,7 +22,7 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             app.post('/callback', (req, res) => {
                 const { idToken, refreshToken, userId, error } = req.body;
                 if (!error) {
-                    resolve({ idToken, refreshToken, userId } as any);
+                    resolve({ idToken, refreshToken, userId });
                 } else {
                     reject(error);
                 }
