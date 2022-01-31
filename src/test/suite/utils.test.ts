@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { v4 as uuidv4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
-import { getAuth0Url, isExpiredToken, updatePrivateDirectoriesInVSCodeAuthentication } from '../../utils/utils';
+import { getAuth0Url, updatePrivateDirectoriesInVSCodeAuthentication } from '../../utils/utils';
 import { beforeEach } from 'mocha';
 import {assert, expect} from 'chai';
 import MockAdapter from 'axios-mock-adapter';
@@ -35,10 +35,5 @@ suite('Utils tests', () => {
 			expect(mock.history.post.length).equal(1);
 		});
 	});
-
-	test('IdToken should not equal isExpiredToken', () => {
-		assert.isNotTrue(isExpiredToken(idToken));
-	});
-
 });
 

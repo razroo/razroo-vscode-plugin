@@ -1,17 +1,9 @@
 import {
   AUTH0URL,
-  // AUTH0_CLIENT_ID,
-  // AUTH0_DOMAIN,
-  // MEMENTO_RAZROO_ID_TOKEN,
-  // MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-  // MEMENTO_RAZROO_REFRESH_TOKEN,
-  // MEMENTO_RAZROO_USER_ID
 } from '../constants.js';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
-// import { AuthenticationClient } from 'auth0';
-import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
@@ -23,7 +15,6 @@ import {
 } from './request.utils.js';
 import { EditInput, morphCode } from '@razroo/razroo-devkit';
 
-// const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
 
 async function* getFiles(dir: string) {
@@ -148,49 +139,6 @@ export const saveFiles = async (
   }
   showInformationMessage('Extracted files in the workspace.');
 };
-
-// async function getNewRefreshToken(refresh_token: string) {
-//   let errorRefreshToken = false;
-//   const auth0 = new AuthenticationClient({
-//     domain: AUTH0_DOMAIN,
-//     clientId: AUTH0_CLIENT_ID,
-//   });
-
-//   vscode.window.withProgress(
-//     {
-//       location: vscode.ProgressLocation.Window,
-//       cancellable: false,
-//       title: 'Authentication in Razroo',
-//     },
-//     async (progress) => {
-//       progress.report({ increment: 0 });
-
-//       try {
-//         const responseRefreshToken = await auth0.refreshToken({
-//           refresh_token,
-//         });
-//         console.log('responseRefreshToken', responseRefreshToken);
-//         //TODO update the vscode-authentication table with the id_token and the refresh_token new
-//         //Do we still have to do this? Try testing with old token.
-//         showInformationMessage('Refresh token successful.');
-//       } catch (error) {
-//         console.log('Error refreshToken');
-//         errorRefreshToken = true;
-//       }
-
-//       progress.report({ increment: 100 });
-//     }
-//   );
-
-//   return errorRefreshToken;
-// }
-
-export function isExpiredToken(idToken: string) {
-  var decodedToken: any = jwt_decode(idToken);
-  const tokenExpiredDate = decodedToken?.exp;
-  const dateNowInSecondsEpoch = Math.round(new Date().getTime() / 1000);
-  return dateNowInSecondsEpoch >= tokenExpiredDate;
-}
 
 const flatten = (lists: any) => {
   return lists.reduce((a, b) => a.concat(b), []);
