@@ -76,8 +76,14 @@ export async function activate(context: vscode.ExtensionContext) {
               })
               .then(({ idToken, userId }) => updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId))
               .then(() => subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context }))
-              .then(() => showInformationMessage('User successfully authenticated with Razroo.'))
-              .catch(() => showErrorMessage('Authentication error, please try again.'))
+              .then(() => {
+                showInformationMessage('User successfully authenticated with Razroo.');
+                return;
+              })
+              .catch(() => {
+                showErrorMessage('Authentication error, please try again.')
+                return;
+              })
               .finally(() => {
                 progress.report({ increment: 100 })
                 dispose();
