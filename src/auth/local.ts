@@ -11,6 +11,7 @@ export interface CreateDisposableAuthServerPromiseResult {
 
 export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) => {
     let server;
+    let done = false;
     const createServerPromise = new Promise<CreateDisposableAuthServerPromiseResult>((resolve, reject) => {
         setTimeout(() => {
             reject(`Auth timeout error. No response for ${(timeout / 1000)} seconds.`);
@@ -20,13 +21,18 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             app.use(cors());
             app.use(express.json());
             app.post('/callback', (req, res) => {
-                const { idToken, refreshToken, userId, error } = req.body;
-                if (!error) {
-                    resolve({ idToken, refreshToken, userId });
+                if (!done) {
+                    const { idToken, refreshToken, userId, error } = req.body;
+                    if (!error) {
+                        resolve({ idToken, refreshToken, userId });
+                    } else {
+                        reject(error);
+                    }
+                    done = true;
+                    res.send();
                 } else {
-                    reject(error);
+                    res.sendStatus(403);
                 }
-                res.send({});
             });
 
             server = app.listen(8350);
