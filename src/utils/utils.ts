@@ -1,31 +1,20 @@
 import {
   AUTH0URL,
-  AUTH0_CLIENT_ID,
-  AUTH0_DOMAIN,
-  MEMENTO_RAZROO_ID_TOKEN,
-  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-  MEMENTO_RAZROO_REFRESH_TOKEN,
-  MEMENTO_RAZROO_USER_ID
 } from '../constants.js';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
-import { AuthenticationClient } from 'auth0';
-import jwt_decode from 'jwt-decode';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
 import { 
-  subscribeToGenerateVsCodeDownloadCodeSub, 
   updatePrivateDirectoriesRequest
 } from './graphql.utils.js';
 import {
   getFileS3,
-  getVSCodeAuthentication,
 } from './request.utils.js';
 import { EditInput, morphCode } from '@razroo/razroo-devkit';
 
-const showErrorMessage = vscode.window.showErrorMessage;
 const showInformationMessage = vscode.window.showInformationMessage;
 
 async function* getFiles(dir: string) {
@@ -150,135 +139,6 @@ export const saveFiles = async (
   }
   showInformationMessage('Extracted files in the workspace.');
 };
-
-export const existVSCodeAuthenticate = async (
-  context: vscode.ExtensionContext
-) => {
-  console.log('Start');
-
-  const vsCodeInstanceId = context.workspaceState.get(
-    MEMENTO_RAZROO_ID_VS_CODE_TOKEN
-  );
-  const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
-
-  // Loop to obtain the idToken to subscribes in grapqh
-  let cont = 0;
-  let errorGetAuthentication = false;
-  const isProduction = context.extensionMode === 1;
-  
-  for (let i = 0; i < 1; ) {
-    const { vsCodeAuthInfo, status } = await getVSCodeAuthentication({
-      vsCodeInstanceId,
-      isProduction,
-    });
-    // Check if the authenticationVSCode token is not empty and the idToken is new
-    // Update plugin info to match dynamodb
-    if (status === 200 && vsCodeAuthInfo) {
-      if (vsCodeAuthInfo.idToken !== idToken) {
-        console.log('Update vscode with updated idToken');
-        context.workspaceState.update(
-          MEMENTO_RAZROO_ID_TOKEN,
-          vsCodeAuthInfo.idToken
-        );
-        context.workspaceState.update(
-          MEMENTO_RAZROO_REFRESH_TOKEN,
-          vsCodeAuthInfo.refreshToken
-        );
-        context.workspaceState.update(
-          MEMENTO_RAZROO_USER_ID,
-          vsCodeAuthInfo.userId
-        );
-      }
-      else { console.log('idToken still valid.'); }
-      i++;
-    }
-
-    await sleep(2000);
-    cont++;
-    //After one minute. Finish
-    if (cont === 30) {
-      i++;
-      cont = 0;
-      errorGetAuthentication = true;
-    }
-  }
-
-  let errorRefreshToken = false;
-  if (
-    isExpiredToken(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`)
-  ) {
-    showErrorMessage('idToken expired.');
-    errorRefreshToken = await getNewRefreshToken(
-      `${context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN)}`
-    );
-  }
-
-  if (!errorGetAuthentication && !errorRefreshToken) {
-    const isProduction = context.extensionMode === 1;
-
-    await updatePrivateDirectoriesInVSCodeAuthentication(
-      `${vsCodeInstanceId}`,
-      `${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`,
-      isProduction,
-      `${context.workspaceState.get(MEMENTO_RAZROO_USER_ID)}`
-    );
-
-    subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context });
-  } else {
-    showErrorMessage('Connection error');
-  }
-
-  return { error: errorGetAuthentication };
-};
-
-async function getNewRefreshToken(refresh_token: string) {
-  let errorRefreshToken = false;
-  const auth0 = new AuthenticationClient({
-    domain: AUTH0_DOMAIN,
-    clientId: AUTH0_CLIENT_ID,
-  });
-
-  vscode.window.withProgress(
-    {
-      location: vscode.ProgressLocation.Window,
-      cancellable: false,
-      title: 'Authentication in Razroo',
-    },
-    async (progress) => {
-      progress.report({ increment: 0 });
-
-      try {
-        const responseRefreshToken = await auth0.refreshToken({
-          refresh_token,
-        });
-        console.log('responseRefreshToken', responseRefreshToken);
-        //TODO update the vscode-authentication table with the id_token and the refresh_token new
-        //Do we still have to do this? Try testing with old token.
-        showInformationMessage('Refresh token successful.');
-      } catch (error) {
-        console.log('Error refreshToken');
-        errorRefreshToken = true;
-      }
-
-      progress.report({ increment: 100 });
-    }
-  );
-
-  return errorRefreshToken;
-}
-
-export function isExpiredToken(idToken: string) {
-  var decodedToken: any = jwt_decode(idToken);
-  const tokenExpiredDate = decodedToken?.exp;
-  const dateNowInSecondsEpoch = Math.round(new Date().getTime() / 1000);
-  return dateNowInSecondsEpoch >= tokenExpiredDate;
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
 
 const flatten = (lists: any) => {
   return lists.reduce((a, b) => a.concat(b), []);
