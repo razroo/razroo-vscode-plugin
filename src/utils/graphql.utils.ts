@@ -77,13 +77,11 @@ export const updatePrivateDirectoriesRequest = async ({
   const body = {
     query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON) {
         updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams) {
-          vsCodeInstances {
-            privateDirectories
-            vsCodeInstanceId
-            packageJsonParams {
-              name
-              languages
-            }
+          privateDirectories
+          vsCodeInstanceId
+          packageJsonParams {
+            name
+            languages
           }
         }
       }`,
