@@ -115,7 +115,7 @@ export const saveFiles = async (
       terminal.sendText(commandToExecute);
     }
 
-    if(type !== 'edit' && path.extname(file) !== ".sh") {
+    if(type !== 'edit' && path.extname(file) !== ".sh" || type !== 'edit' && path.extname(file) !== ".json") {
       fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
         if (!err) {
           console.log(file + ' has been copied!');
