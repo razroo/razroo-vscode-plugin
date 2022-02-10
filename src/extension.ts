@@ -5,7 +5,7 @@ const AdmZip = require('adm-zip');
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { getAuth0Url, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
+import { getAuth0Url, onVSCodeClose, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
@@ -29,6 +29,10 @@ export async function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log("extensionMode");
   console.log(context);
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('getContext', () => context)
+  );
   
   // 1 is production mode
   const isProduction = context.extensionMode === 1;
@@ -199,4 +203,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export async function deactivate() {
+  const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
+  await onVSCodeClose(context);
+};
