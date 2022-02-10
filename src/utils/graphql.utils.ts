@@ -106,3 +106,25 @@ export const updatePrivateDirectoriesRequest = async ({
     return error;
   }
 };
+
+export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vsCodeInstanceId: string, isProduction: boolean) => {
+  return client(idToken, isProduction)
+    .hydrated()
+    .then(async client => {
+      return client.mutate({
+        mutation: gql(`
+          mutation RemoveVSCodeInstance {
+            removeVSCodeInstance(userId: "${userId}", vsCodeInstanceId: "${vsCodeInstanceId}") {
+              userId
+              vsCodeInstanceId
+              privateDirectories
+              packageJsonParams {
+                languages
+                name
+              }
+            }
+          }
+        `),
+      });
+    });
+};
