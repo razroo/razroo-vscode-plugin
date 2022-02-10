@@ -8,12 +8,14 @@ import { readdir } from 'fs/promises';
 import * as path from 'path';
 import * as jwt from 'jsonwebtoken';
 import { 
+  removeVsCodeInstanceMutation,
   updatePrivateDirectoriesRequest
 } from './graphql.utils.js';
 import {
   getFileS3,
 } from './request.utils.js';
 import { EditInput, morphCode } from '@razroo/razroo-devkit';
+import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -282,4 +284,24 @@ const existFolderInGitIgnoreFile = (
 ) => {
   //Check that exist a folder that match with a folder of the .gitignore
   return excludeFolders.some((dir) => privateDirectory.includes(dir));
+};
+
+export const onVSCodeClose = (context: vscode.ExtensionContext) => {
+  const isProduction = context.extensionMode === 1;
+  const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
+  const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
+  const idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
+  if (vsCodeInstanceId && userId && idToken && refreshToken) {
+    return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
+      .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
+      .finally(() => {
+          context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
+          context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
+          context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
+          context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
+      });
+  } else {
+    return;
+  }
 };
