@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "engines": {
     "vscode": "^1.57.0"
@@ -68,7 +68,7 @@
     "viewsWelcome": [
       {
         "view": "razroo-authentication",
-        "contents": "Click on the \"Authenticate\" button to connect your VS Code to Razroo.\n[Authenticate](command:extension.auth0Authentication)",
+        "contents": "Click on the \"GO!\" button to connect your VS Code Editor to Razroo.\n[Go!](command:extension.auth0Authentication)",
         "when": "!authenticate"
       },
       {
