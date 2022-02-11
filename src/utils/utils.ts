@@ -16,6 +16,9 @@ import {
 } from './request.utils.js';
 import { EditInput, morphCode } from '@razroo/razroo-devkit';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
+import parseGitignore from 'parse-gitignore';
+import ignore from 'ignore';
+import process from 'process';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -160,12 +163,10 @@ const getDirectoriesRecursive = (srcpath: string) => {
   ];
 };
 
-export const getDirectoriesWithoutPrivatePath = (
-  path: string,
-  pathName: string
-) => {
+export const getDirectoriesWithoutPrivatePath = (item: any) => {
+  const { path, name } = item;
   return getDirectoriesRecursive(path)?.map((folder) => {
-    return folder.slice(folder.search(pathName), folder.length);
+    return folder.slice(folder.search(name), folder.length);
   });
 };
 
@@ -226,26 +227,14 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   isProduction: boolean,
   userId: string
 ) => {
-  // obtain full path of the folders of the workspace
-  const workspaceFolders = getWorkspaceFolders();
-  // remove full path and obtain the private path for each folder
-  let privateDirectories: Array<string> = [];
-
-  const excludeFolders = readGitIgnoreFile();
-  workspaceFolders?.map((folder) => {
-    const directories = getDirectoriesWithoutPrivatePath(
-      folder.path,
-      folder.name
-    ).map(file => file.replace(/\\/g, "/"));
-    //Remove folders by .gitignore file and push in private directories array
-    privateDirectories.push(
-      directories?.filter(
-        (dir: string) => !existFolderInGitIgnoreFile(excludeFolders, dir)
-      )
-    );
-  });
+  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
+  if (process.platform === 'win32') {
+    dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
+  }
+  const gitignorePatterns = readGitIgnoreFile();
+  const gitignore = ignore().add(gitignorePatterns);
+  const privateDirectories: Array<string> = gitignore.filter(dirs as string[]);
   console.log("PRIV DIRECTORIES", privateDirectories)
-  //update vscode-authentication table with the privateDirectories
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
@@ -263,27 +252,8 @@ const getWorkspaceFolders = () => {
 };
 
 const readGitIgnoreFile = () => {
-  var excludeFolders: Array<string> = [];
-  try {
-    excludeFolders = fs
-      .readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'))
-      .toString()
-      .split('\n')
-      .filter((str) => str.length);
-    console.log('excludeFolders', excludeFolders);
-  } catch (error) {
-    console.log('Error open excludeFolders file', error);
-    excludeFolders = [];
-  }
-  return excludeFolders;
-};
-
-const existFolderInGitIgnoreFile = (
-  excludeFolders: Array<string>,
-  privateDirectory: string
-) => {
-  //Check that exist a folder that match with a folder of the .gitignore
-  return excludeFolders.some((dir) => privateDirectory.includes(dir));
+  const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'));
+  return parseGitignore(gitignoreContent);
 };
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
