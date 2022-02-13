@@ -8,6 +8,7 @@
   "engines": {
     "vscode": "^1.57.0"
   },
+  "icon": "media/razroo-icon.jpg",
   "main": "./dist/extension.js",
   "galleryBanner": {
     "color": "#1d2f42",
