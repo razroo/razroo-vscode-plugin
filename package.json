@@ -143,6 +143,7 @@
     "file-system": "^1.2.2",
     "follow-redirects": "^1.14.4",
     "formidable": "^1.2.6",
+    "globify-gitignore": "^0.2.1",
     "graphql": "14.7.0",
     "graphql-tag": "2.11.0",
     "ignore": "^5.2.0",

@@ -16,9 +16,10 @@ import {
 } from './request.utils.js';
 import { EditInput, morphCode } from '@razroo/razroo-devkit';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
-import parseGitignore from 'parse-gitignore';
-import ignore from 'ignore';
+// import parseGitignore from 'parse-gitignore';
+// import ignore from 'ignore';
 import process from 'process';
+// import { globifyGitIgnore } from "globify-gitignore";
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -153,7 +154,7 @@ const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
     .map((file) => path.join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('.git'));
+    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('.git') && !path.includes('node_modules'));
 };
 
 const getDirectoriesRecursive = (srcpath: string) => {
@@ -231,14 +232,14 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
-  const gitignorePatterns = readGitIgnoreFile();
-  const gitignore = ignore().add(gitignorePatterns);
-  const privateDirectories: Array<string> = gitignore.filter(dirs as string[]);
-  console.log("PRIV DIRECTORIES", privateDirectories)
+  // const gitignorePatterns = await readGitIgnoreFile();
+  // const gitignore = ignore().add(gitignorePatterns);
+  // const privateDirectories: Array<string> = gitignore.filter(dirs);
+  console.log("PRIV DIRECTORIES", dirs);
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
-    privateDirectories,
+    dirs,
     isProduction,
     userId
   });
@@ -251,10 +252,10 @@ const getWorkspaceFolders = () => {
   });
 };
 
-const readGitIgnoreFile = () => {
-  const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'));
-  return parseGitignore(gitignoreContent);
-};
+// const readGitIgnoreFile = () => {
+//   const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'), 'utf-8');
+//   return globifyGitIgnore(gitignoreContent);
+// };
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
   const isProduction = context.extensionMode === 1;
