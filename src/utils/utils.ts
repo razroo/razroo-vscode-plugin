@@ -239,7 +239,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
-    dirs,
+    privateDirectories: dirs,
     isProduction,
     userId
   });
