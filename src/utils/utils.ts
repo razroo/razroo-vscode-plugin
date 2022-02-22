@@ -6,7 +6,6 @@ const AdmZip = require('adm-zip');
 import * as fs from 'fs';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
-import * as jwt from 'jsonwebtoken';
 import { 
   removeVsCodeInstanceMutation,
   updatePrivateDirectoriesRequest
@@ -41,17 +40,9 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (vsCodeToken: string, isProduction: boolean) => {
-  const data = {
-    vsCodeToken,
-  };
-  console.log('data', data);
-  // Encode data with JWT to send to frontend in the URL
-  const dataEncode = jwt.sign(data, 'razroo-vsCodeExtension');
-  console.log('dataEncode', dataEncode);
+export const getAuth0Url = (isProduction: boolean) => {
   const host = isProduction === true ? AUTH0URL : 'http://localhost:4200';
-  const loginUrl = `${host}?vsCodeData=${dataEncode}`;
-  return loginUrl;
+  return `${host}/vscode-auth`;
 };
 
 export const saveFiles = async (

@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log('isProduction');
       console.log(isProduction);
 
-      const loginUrl = getAuth0Url(token, isProduction);
+      const loginUrl = getAuth0Url(isProduction);
 
       vscode.window.withProgress(
         {
