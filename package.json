@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "private": true,
   "engines": {
     "vscode": "^1.57.0"
@@ -40,7 +40,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.auth0Authentication"
+    "onStartupFinished"
   ],
   "contributes": {
     "commands": [
@@ -69,14 +69,23 @@
     "viewsWelcome": [
       {
         "view": "razroo-authentication",
-        "contents": "Click on the \"GO!\" button to connect your VS Code Editor to Razroo.\n[Go!](command:extension.auth0Authentication)",
-        "when": "!authenticate"
+        "contents": "Razroo Extension activating...",
+        "when": "!razroo-vscode-plugin:activated"
       },
       {
         "view": "razroo-authentication",
-        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Authenticated](command:extension.auth0Authentication)",
-        "when": "authenticate",
-        "enablement": "!authenticate"
+        "contents": "Click on the \"GO!\" button to connect your VS Code Editor to Razroo.\n[Go!](command:extension.auth0Authentication)",
+        "when": "razroo-vscode-plugin:activated && !razroo-vscode-plugin:isAuthenticated && !razroo-vscode-plugin:isAuthenticationInProgress"
+      },
+      {
+        "view": "razroo-authentication",
+        "contents": "VSCode Authentication in Progress...",
+        "when": "razroo-vscode-plugin:isAuthenticationInProgress"
+      },
+      {
+        "view": "razroo-authentication",
+        "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Logout](command:extension.logout)",
+        "when": "razroo-vscode-plugin:isAuthenticated"
       }
     ]
   },
