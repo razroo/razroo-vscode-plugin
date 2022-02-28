@@ -216,10 +216,13 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
   context.subscriptions.push(getGenerateCode);
+
+  vscode.commands.executeCommand('setContext', 'ext:activated', true);
 }
 
 // this method is called when your extension is deactivated
 export async function deactivate() {
+  vscode.commands.executeCommand('setContext', 'ext:activated', false);
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
   await onVSCodeClose(context);
 };
