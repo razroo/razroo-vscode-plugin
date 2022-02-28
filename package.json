@@ -69,7 +69,7 @@
     "viewsWelcome": [
       {
         "view": "razroo-authentication",
-        "contents": "Extension activating...",
+        "contents": "Razroo Extension activating...",
         "when": "!razroo-vscode-plugin:activated"
       },
       {
