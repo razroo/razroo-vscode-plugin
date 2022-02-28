@@ -50,6 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
     async () => {
+      vscode.commands.executeCommand('setContext', 'isAuthenticationInProgress', true);
       console.log('inside auth0Authentcation');
 
       let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
@@ -81,6 +82,10 @@ export async function activate(context: vscode.ExtensionContext) {
               .then(({ idToken, userId }) => updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId))
               .then(() => subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context }))
               .then(() => {
+                vscode.commands.executeCommand('setContext', 'isAuthenticated', true);
+                return;
+              })
+              .then(() => {
                 showInformationMessage('User successfully authenticated with Razroo.');
                 return;
               })
@@ -89,7 +94,8 @@ export async function activate(context: vscode.ExtensionContext) {
                 return;
               })
               .finally(() => {
-                progress.report({ increment: 100 })
+                progress.report({ increment: 100 });
+                vscode.commands.executeCommand('setContext', 'isAuthenticationInProgress', false);
                 dispose();
               });
           });
@@ -97,7 +103,17 @@ export async function activate(context: vscode.ExtensionContext) {
       );
     }
   );
+
+  const logout = vscode.commands.registerCommand(
+    'extension.logout',
+    () =>  { 
+      onVSCodeClose(context)?.finally(() => {
+        vscode.commands.executeCommand('setContext', 'isAuthenticated', false);
+      });
+    }
+  );
   context.subscriptions.push(auth0Authentication);
+  context.subscriptions.push(logout);
 
   const getGenerateCode = vscode.commands.registerCommand(
     'extension.getGenerateCode',
