@@ -50,7 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
     async () => {
-      vscode.commands.executeCommand('setContext', 'isAuthenticationInProgress', true);
+      vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
       console.log('inside auth0Authentcation');
 
       let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
@@ -82,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
               .then(({ idToken, userId }) => updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId))
               .then(() => subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context }))
               .then(() => {
-                vscode.commands.executeCommand('setContext', 'isAuthenticated', true);
+                vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
                 return;
               })
               .then(() => {
@@ -95,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext) {
               })
               .finally(() => {
                 progress.report({ increment: 100 });
-                vscode.commands.executeCommand('setContext', 'isAuthenticationInProgress', false);
+                vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', false);
                 dispose();
               });
           });
@@ -108,7 +108,7 @@ export async function activate(context: vscode.ExtensionContext) {
     'extension.logout',
     () =>  { 
       onVSCodeClose(context)?.finally(() => {
-        vscode.commands.executeCommand('setContext', 'isAuthenticated', false);
+        vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
       });
     }
   );
@@ -217,12 +217,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(getGenerateCode);
 
-  vscode.commands.executeCommand('setContext', 'ext:activated', true);
+  vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', true);
 }
 
 // this method is called when your extension is deactivated
 export async function deactivate() {
-  vscode.commands.executeCommand('setContext', 'ext:activated', false);
+  vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
   await onVSCodeClose(context);
 };
