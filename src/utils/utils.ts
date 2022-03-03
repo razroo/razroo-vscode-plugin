@@ -51,6 +51,7 @@ export const saveFiles = async (
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   const type = data.data.generateVsCodeDownloadCodeSub.template.type;
+  const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
   
   //Get files of S3
   const files = await getFileS3({ url });
@@ -81,12 +82,12 @@ export const saveFiles = async (
     tempFiles.push(f);
   }
   tempFiles.forEach(async(file: any) => {
-    if(type === 'edit' && path.extname(file) === ".json") {
+    if(type === 'edit' && updates) {
       // for now getting the first item in the array for testing purposes
-      const editJson = JSON.parse(fs.readFileSync(file).toString());
+      const updatesParsed = JSON.parse(updates);
 
 
-      editJson.updates.forEach((editInput: EditInput) => {
+      updatesParsed.forEach((editInput: EditInput) => {
         const newFile = path.join(folderName, path.basename(file));
         const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${editInput.fileType}`);
         const fileToBeAddedTo = fs.readFileSync(fileToBeAddedToPath, 'utf-8').toString();
@@ -112,7 +113,7 @@ export const saveFiles = async (
       terminal.sendText(commandToExecute);
     }
 
-    if(type !== 'edit' && path.extname(file) !== ".sh" || type !== 'edit' && path.extname(file) !== ".json") {
+    if(type !== 'edit' && path.extname(file) !== ".sh") {
       fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
         if (!err) {
           console.log(file + ' has been copied!');
