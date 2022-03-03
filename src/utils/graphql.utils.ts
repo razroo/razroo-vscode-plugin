@@ -19,7 +19,7 @@ let isProduction = context.extensionMode === 1;
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
-      const observable = client.subscribe({ query: gql(`
+      const generateVsCodeDownloadCodeSub$ = client.subscribe({ query: gql(`
         subscription MySubscription {
             generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
               vsCodeInstanceId
@@ -29,6 +29,7 @@ let isProduction = context.extensionMode === 1;
               template {
                 id
                 type
+                updates
               }
             }
           }
@@ -41,7 +42,7 @@ let isProduction = context.extensionMode === 1;
         await saveFiles(data, context);
       };
 
-      observable.subscribe({
+      generateVsCodeDownloadCodeSub$.subscribe({
         next: realtimeResults,
         complete: console.log,
         error: console.log,
