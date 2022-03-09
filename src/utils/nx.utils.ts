@@ -13,6 +13,6 @@ export async function readNxJson(workspacePath: string) {
 
     const defaultProject = nxJson.defaultProject;
     return {
-      defaultProject  
+      defaultProject: defaultProject
     };
 }
