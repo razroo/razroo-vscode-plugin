@@ -7,6 +7,7 @@ import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-devkit';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { readNxJson } from './nx.utils.js';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = ({
   vsCodeInstanceId,
@@ -55,10 +56,12 @@ export async function getPackageJson(workspacePath: string) {
   const packageJson = await readPackageJson(packageJsonFilePath);
   const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
   const transformedProjectDependencies = await determineLanguagesUsed(projectDependenciesMap);
+  const nx = await readNxJson(workspacePath);
 
   const newlyTransformedJson = {
     name: packageJson ? packageJson.name : '',
-    languages: transformedProjectDependencies
+    languages: transformedProjectDependencies,
+    nx: nx
   };
   return JSON.stringify(newlyTransformedJson);
 }
@@ -83,6 +86,9 @@ export const updatePrivateDirectoriesRequest = async ({
           packageJsonParams {
             name
             languages
+            nx {
+              defaultProject
+            }
           }
         }
       }`,
