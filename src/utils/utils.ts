@@ -227,7 +227,15 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   // const gitignorePatterns = await readGitIgnoreFile();
   // const gitignore = ignore().add(gitignorePatterns);
   // const privateDirectories: Array<string> = gitignore.filter(dirs);
+  // BEGIN. TODO FIX THIS HACK FOR NOW GETS JOB DONE
+  // 1. Delete first directory which is the root folder
+  dirs.shift();
+  // 2. Remove the root directory from file path
+  dirs = dirs.map(dir => {
+    return dir.split('/').slice(1).join('/');
+  });
   console.log("PRIV DIRECTORIES", dirs);
+  // END. TODO FIX THIS HACK FOR NOW GETS JOB DONE
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
