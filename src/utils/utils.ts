@@ -229,7 +229,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   // const privateDirectories: Array<string> = gitignore.filter(dirs);
   // BEGIN. TODO FIX THIS HACK FOR NOW GETS JOB DONE
   // 1. Delete first directory which is the root folder
-  delete dirs[0];
+  dirs.shift();
   // 2. Remove the root directory from file path
   dirs = dirs.map(dir => {
     return dir.split('/').slice(1).join('/');
