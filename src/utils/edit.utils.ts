@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EditInput, morphCode } from '@razroo/razroo-devkit';
+import { EditInput, morphCode, replaceTagParameters } from '@razroo/razroo-devkit';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -29,8 +29,9 @@ export function editFiles(updates: string, file, parameters) {
       const updatedEditInput = {...editInput, fileToBeAddedTo};
       
       const convertedCode = morphCode(updatedEditInput);
+      const replaceTagParametersCode = replaceTagParameters(parametersParsed, convertedCode);
 
-      fs.writeFile(fileToBeAddedToPath, convertedCode, async(_) => {
+      fs.writeFile(fileToBeAddedToPath, replaceTagParametersCode, async(_) => {
         console.log(`${fileToBeAddedToPath} has been edited`);
       });
     });
