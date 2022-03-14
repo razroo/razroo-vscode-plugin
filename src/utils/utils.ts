@@ -13,11 +13,12 @@ import {
 import {
   getFileS3,
 } from './request.utils.js';
-import { EditInput, morphCode } from '@razroo/razroo-devkit';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 // import parseGitignore from 'parse-gitignore';
 // import ignore from 'ignore';
 import process from 'process';
+import { editFiles } from './edit.utils.js';
+import { getWorkspaceFolders } from './directory.utils.js';
 // import { globifyGitIgnore } from "globify-gitignore";
 
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -50,6 +51,8 @@ export const saveFiles = async (
   context: vscode.ExtensionContext
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
+  // parameters will always be a string <-- architected specifically this way
+  const parameters = data.data.generateVsCodeDownloadCodeSub?.parameters;
   const type = data.data.generateVsCodeDownloadCodeSub.template.type;
   const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
   
@@ -83,26 +86,7 @@ export const saveFiles = async (
   }
   tempFiles.forEach(async(file: any) => {
     if(type === 'edit' && updates) {
-      // for now getting the first item in the array for testing purposes
-      const updatesParsed = JSON.parse(updates);
-
-
-      updatesParsed.forEach((editInput: EditInput) => {
-        const newFile = path.join(folderName, path.basename(file));
-        const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${editInput.fileType}`);
-        const fileToBeAddedTo = fs.readFileSync(fileToBeAddedToPath, 'utf-8').toString();
-        
-        // the fileToBeAddedTo needs to be manually added in.
-        const updatedEditInput = {...editInput, fileToBeAddedTo};
-        
-        const convertedCode = morphCode(updatedEditInput);
-  
-        fs.writeFile(fileToBeAddedToPath, convertedCode, async(_) => {
-          console.log(`${fileToBeAddedToPath} has been edited`);
-        });
-      });
-      
-      showInformationMessage('Files have been edited. Lets goooo!!!');
+      editFiles(updates, file, parameters);
     }
 
     if(path.extname(file) === ".sh") {
@@ -242,13 +226,6 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
     privateDirectories: dirs,
     isProduction,
     userId
-  });
-};
-    
-const getWorkspaceFolders = () => {
-  console.log("VSCODE WORKSPACE FOLDERS: ", vscode.workspace?.workspaceFolders);
-  return vscode.workspace?.workspaceFolders?.map((folder) => {
-    return { name: folder.name, path: folder?.uri?.fsPath };
   });
 };
 
