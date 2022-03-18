@@ -70,6 +70,14 @@ export const saveFiles = async (
     console.log("FOLDER NAME: ", folderName);
   }
 
+  //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
+  if(type === 'edit' && updates) {
+    // const fileToEditStringified = fs.readFileSync(file).toString();
+    editFiles(updates, parameters);
+
+    return;
+  }
+
   // Extract files from zip
   var zip = new AdmZip(files);
 
@@ -85,9 +93,6 @@ export const saveFiles = async (
     tempFiles.push(f);
   }
   tempFiles.forEach(async(file: any) => {
-    if(type === 'edit' && updates) {
-      editFiles(updates, file, parameters);
-    }
 
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();

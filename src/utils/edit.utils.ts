@@ -13,28 +13,31 @@ function getWorkspaceFolders() {
   });
 };
 
-export function editFiles(updates: string, file, parameters) {
+export function editFiles(updates: string, parameters) {
     const workspaceFolders = getWorkspaceFolders();
     const getCurrentWorkspaceFolderPath = workspaceFolders ? workspaceFolders[0].path : '';
     const updatesParsed = JSON.parse(updates);
     const parametersParsed = JSON.parse(parameters);
 
     updatesParsed.forEach((editInput: EditInput) => {
-      // TODO Change the parameter for newPath over to path
-      const newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.newPath, path.basename(file));
-      const fileToBeAddedToPath = newFile.replace(/\.[^.]+$/, `.${editInput.fileType}`);
-      const fileToBeAddedTo = fs.readFileSync(fileToBeAddedToPath, 'utf-8').toString();
-      
-      // the fileToBeAddedTo needs to be manually added in.
-      const updatedEditInput = {...editInput, fileToBeAddedTo};
-      
-      const convertedCode = morphCode(updatedEditInput);
-      const replaceTagParametersCode = replaceTagParameters(parametersParsed, convertedCode);
+      const transformedFileName = replaceTagParameters(parametersParsed, editInput.fileName);
+      const newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.newPath, transformedFileName);
+      const fileToBeAddedTo = fs.readFileSync(newFile, 'utf-8').toString();
 
-      fs.writeFile(fileToBeAddedToPath, replaceTagParametersCode, async(_) => {
-        console.log(`${fileToBeAddedToPath} has been edited`);
-      });
+      writeEditedFile(editInput, fileToBeAddedTo, newFile, parametersParsed);
     });
     
     showInformationMessage('Files have been edited. Lets goooo!!!');
+}
+
+function writeEditedFile(editInput: EditInput, fileToBeAddedTo: string, newFile: string, parameters: any) {
+  // the fileToBeAddedTo needs to be manually added in.
+  const updatedEditInput = {...editInput, fileToBeAddedTo};
+        
+  const convertedCode = morphCode(updatedEditInput);
+  const replaceTagParametersCode = replaceTagParameters(parameters, convertedCode);
+
+  fs.writeFile(newFile, replaceTagParametersCode, async(_) => {
+    console.log(`${newFile} has been edited`);
+  });
 }
