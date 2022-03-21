@@ -21,7 +21,15 @@ export function editFiles(updates: string, parameters) {
 
     updatesParsed.forEach((editInput: EditInput) => {
       const transformedFileName = replaceTagParameters(parametersParsed, editInput.fileName);
-      const newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.newPath, transformedFileName);
+      let newFile;
+      if(editInput.filePath) {
+        const filePathTransformed = replaceTagParameters(parametersParsed, editInput.filePath);
+        newFile = path.join(getCurrentWorkspaceFolderPath, filePathTransformed, transformedFileName);
+      }
+      else {
+        newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.newPath, transformedFileName);
+      }
+
       const fileToBeAddedTo = fs.readFileSync(newFile, 'utf-8').toString();
 
       writeEditedFile(editInput, fileToBeAddedTo, newFile, parametersParsed);
