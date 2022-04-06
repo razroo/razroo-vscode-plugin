@@ -1,4 +1,4 @@
-export const AUTH0URL = "https://zeta.razroo.com";
+export const AUTH0URL = "https://razroo.com";
 export const DEVAUTHURL = "http://localhost:4200";
 export const SOCKET_HOST = 'http://localhost:3000';
 
