@@ -10,6 +10,7 @@ export const MEMENTO_RAZROO_ID_VS_CODE_TOKEN = 'RAZROO_VS_CODE_TOKEN';
 export const MEMENTO_RAZROO_USER_ID = 'RAZROO_USER_ID';
 
 export const COMMAND_AUTH0_AUTH = 'extension.auth0Authentication';
+export const COMMAND_CANCEL_AUTH = 'extension.cancelAuthentication';
 
 export const AUTH0_CLIENT_ID = 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ';
 export const AUTH0_DOMAIN = 'dev-18od1d2m.us.auth0.com';
