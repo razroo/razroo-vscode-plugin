@@ -84,6 +84,11 @@
       },
       {
         "view": "razroo-authentication",
+        "contents": "Click on the \"Cancel!\" button to cancel authentication.\n[Cancel!](command:extension.cancelAuthentication)",
+        "when": "razroo-vscode-plugin:isAuthenticationInProgress"
+      },
+      {
+        "view": "razroo-authentication",
         "contents": "You're all set! Push production code to VS Code from the Razroo web application.\n[Logout](command:extension.logout)",
         "when": "razroo-vscode-plugin:isAuthenticated"
       }
