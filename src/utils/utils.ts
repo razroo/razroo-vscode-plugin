@@ -92,7 +92,7 @@ export const saveFiles = async (
   for await (const f of getFiles(path.join(folderName,'razroo_files_temp'))) {
     tempFiles.push(f);
   }
-  tempFiles.forEach(async(file: any) => {
+  await Promise.all(tempFiles.map(async(file: any) => {
 
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
@@ -103,15 +103,11 @@ export const saveFiles = async (
     }
 
     if(type !== 'edit' && path.extname(file) !== ".sh") {
-      fs.copyFile(file, path.join(folderName, path.basename(file)), (err) => {
-        if (!err) {
-          console.log(file + ' has been copied!');
-        } else {
-          console.log('error file', err);
-        }
-      });
+      await fs.promises.copyFile(file, path.join(folderName, path.basename(file)))
+      .then( () => console.log(file + ' has been copied!'))
+      .catch(err => console.log('error file', err));
     }
-  });
+  }));
   //If the folder is not the default folder then it is deleted, otherwise it is not
   if (folderName !== path.join(folderName,'razroo_files_temp')) {
     fs.rmdirSync(path.join(folderName,'razroo_files_temp'), { recursive: true });
