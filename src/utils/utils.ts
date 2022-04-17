@@ -15,11 +15,11 @@ import {
 } from './request.utils.js';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 // import parseGitignore from 'parse-gitignore';
-// import ignore from 'ignore';
+import ignore from 'ignore';
 import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { getWorkspaceFolders } from './directory.utils.js';
-// import { globifyGitIgnore } from "globify-gitignore";
+import { globifyGitIgnore } from "globify-gitignore";
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -213,9 +213,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
-  // const gitignorePatterns = await readGitIgnoreFile();
-  // const gitignore = ignore().add(gitignorePatterns);
-  // const privateDirectories: Array<string> = gitignore.filter(dirs);
+  const gitignorePatterns = await readGitIgnoreFile();
   // BEGIN. TODO FIX THIS HACK FOR NOW GETS JOB DONE
   // 1. Delete first directory which is the root folder
   dirs.shift();
@@ -223,21 +221,25 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   dirs = dirs.map(dir => {
     return dir.split('/').slice(1).join('/');
   });
+  const gitignore = ignore().add(gitignorePatterns);
+  const privateDirectories: Array<string> = gitignore.filter(dirs);
   console.log("PRIV DIRECTORIES", dirs);
   // END. TODO FIX THIS HACK FOR NOW GETS JOB DONE
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
-    privateDirectories: dirs,
+    privateDirectories,
     isProduction,
     userId
   });
 };
 
-// const readGitIgnoreFile = () => {
-//   const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'), 'utf-8');
-//   return globifyGitIgnore(gitignoreContent);
-// };
+const readGitIgnoreFile = () => {
+  const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'), 'utf-8');
+  return globifyGitIgnore(gitignoreContent)
+  //This hack is needed because the "globifyGitIgnore v0.2.1" returns inverted patterns.
+  .then(gitIgnorePatterns => gitIgnorePatterns.map(pattern => pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern));
+};
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
   const isProduction = context.extensionMode === 1;
