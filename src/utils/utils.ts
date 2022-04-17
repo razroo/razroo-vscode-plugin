@@ -203,6 +203,29 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   return fullPath;
 };
 
+const filterIgnoredDirs = async (dirs: Array<string>) => {
+  const gitignorePatterns = (await Promise.all(dirs.map(readGitIgnoreFile)))
+  .filter(gitignoreFile => gitignoreFile.gitignorePatterns.length)
+  .map(gitignoreFile => {
+    gitignoreFile.gitignorePatterns = gitignoreFile.gitignorePatterns
+    .map(pattern => {
+      if(gitignoreFile.path) {
+        const newPattern = pattern.split('/');
+        newPattern.splice(1, 0, gitignoreFile.path);
+        return newPattern.join('/');
+      }
+      return pattern;
+    });
+    return gitignoreFile.gitignorePatterns;
+  }).flat();
+
+  // Delete first directory which is the root folder
+  dirs = dirs.slice(1);
+  const gitignore = ignore().add(gitignorePatterns);
+  const privateDirs = gitignore.filter(dirs);
+  return privateDirs;
+};
+
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string,
@@ -213,18 +236,12 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
-  const gitignorePatterns = await readGitIgnoreFile();
-  // BEGIN. TODO FIX THIS HACK FOR NOW GETS JOB DONE
-  // 1. Delete first directory which is the root folder
-  dirs.shift();
-  // 2. Remove the root directory from file path
+  // Remove the root directory from file path
   dirs = dirs.map(dir => {
     return dir.split('/').slice(1).join('/');
   });
-  const gitignore = ignore().add(gitignorePatterns);
-  const privateDirectories: Array<string> = gitignore.filter(dirs);
+  const privateDirectories = await filterIgnoredDirs(dirs);
   console.log("PRIV DIRECTORIES", dirs);
-  // END. TODO FIX THIS HACK FOR NOW GETS JOB DONE
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
@@ -234,11 +251,25 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   });
 };
 
-const readGitIgnoreFile = () => {
-  const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'), 'utf-8');
-  return globifyGitIgnore(gitignoreContent)
-  //This hack is needed because the "globifyGitIgnore v0.2.1" returns inverted patterns.
-  .then(gitIgnorePatterns => gitIgnorePatterns.map(pattern => pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern));
+const readGitIgnoreFile = async (dir = '') => {
+  const gitignorePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any + '/' + dir, '.gitignore');
+  try {
+    const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
+    return {
+      path: dir,
+      gitignorePatterns: await globifyGitIgnore(gitignoreContent)
+      //This hack is needed because the "globifyGitIgnore v0.2.1" returns inverted patterns.
+      .then(gitIgnorePatterns => gitIgnorePatterns.map(pattern => pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern)),
+    };
+  } catch (error) {
+    if ((error as Error)?.message.startsWith('ENOENT: no such file or directory')) {
+      return {
+        path: dir,
+        gitignorePatterns: []
+      };
+    }
+    throw error;
+  }
 };
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
