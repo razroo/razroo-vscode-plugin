@@ -15,11 +15,9 @@ import {
 } from './request.utils.js';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 // import parseGitignore from 'parse-gitignore';
-import ignore from 'ignore';
 import process from 'process';
 import { editFiles } from './edit.utils.js';
-import { getWorkspaceFolders } from './directory.utils.js';
-import { globifyGitIgnore } from "globify-gitignore";
+import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -203,45 +201,16 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   return fullPath;
 };
 
-const filterIgnoredDirs = async (dirs: Array<string>) => {
-  const gitignorePatterns = (await Promise.all(dirs.map(readGitIgnoreFile)))
-  .filter(gitignoreFile => gitignoreFile.gitignorePatterns.length)
-  .map(gitignoreFile => {
-    gitignoreFile.gitignorePatterns = gitignoreFile.gitignorePatterns
-    .map(pattern => {
-      if(gitignoreFile.path) {
-        const newPattern = pattern.split('/');
-        newPattern.splice(1, 0, gitignoreFile.path);
-        return newPattern.join('/');
-      }
-      return pattern;
-    });
-    return gitignoreFile.gitignorePatterns;
-  }).flat();
-
-  // Delete first directory which is the root folder
-  dirs = dirs.slice(1);
-  const gitignore = ignore().add(gitignorePatterns);
-  const privateDirs = gitignore.filter(dirs);
-  return privateDirs;
-};
-
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
   idToken: string,
   isProduction: boolean,
   userId: string
 ) => {
-  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
-  if (process.platform === 'win32') {
-    dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
-  }
-  // Remove the root directory from file path
-  dirs = dirs.map(dir => {
-    return dir.split('/').slice(1).join('/');
-  });
-  const privateDirectories = await filterIgnoredDirs(dirs);
-  console.log("PRIV DIRECTORIES", dirs);
+  const privateDirectories = await getPrivateDirs();
+
+  console.log("PRIV DIRECTORIES", privateDirectories);
+  
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
@@ -251,25 +220,16 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   });
 };
 
-const readGitIgnoreFile = async (dir = '') => {
-  const gitignorePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any + '/' + dir, '.gitignore');
-  try {
-    const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
-    return {
-      path: dir,
-      gitignorePatterns: await globifyGitIgnore(gitignoreContent)
-      //This hack is needed because the "globifyGitIgnore v0.2.1" returns inverted patterns.
-      .then(gitIgnorePatterns => gitIgnorePatterns.map(pattern => pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern)),
-    };
-  } catch (error) {
-    if ((error as Error)?.message.startsWith('ENOENT: no such file or directory')) {
-      return {
-        path: dir,
-        gitignorePatterns: []
-      };
-    }
-    throw error;
+const getPrivateDirs = async () => {
+  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
+  if (process.platform === 'win32') {
+    dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
+  // Remove the root directory from file path
+  dirs = dirs.map(dir => {
+    return dir.split('/').slice(1).join('/');
+  });
+  return filterIgnoredDirs(dirs);
 };
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
