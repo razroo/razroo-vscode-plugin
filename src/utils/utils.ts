@@ -15,11 +15,9 @@ import {
 } from './request.utils.js';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 // import parseGitignore from 'parse-gitignore';
-// import ignore from 'ignore';
 import process from 'process';
 import { editFiles } from './edit.utils.js';
-import { getWorkspaceFolders } from './directory.utils.js';
-// import { globifyGitIgnore } from "globify-gitignore";
+import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -205,35 +203,30 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   isProduction: boolean,
   userId: string
 ) => {
-  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
-  if (process.platform === 'win32') {
-    dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
-  }
-  // const gitignorePatterns = await readGitIgnoreFile();
-  // const gitignore = ignore().add(gitignorePatterns);
-  // const privateDirectories: Array<string> = gitignore.filter(dirs);
-  // BEGIN. TODO FIX THIS HACK FOR NOW GETS JOB DONE
-  // 1. Delete first directory which is the root folder
-  dirs.shift();
-  // 2. Remove the root directory from file path
-  dirs = dirs.map(dir => {
-    return dir.split('/').slice(1).join('/');
-  });
-  console.log("PRIV DIRECTORIES", dirs);
-  // END. TODO FIX THIS HACK FOR NOW GETS JOB DONE
+  const privateDirectories = await getPrivateDirs();
+
+  console.log("PRIV DIRECTORIES", privateDirectories);
+  
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
-    privateDirectories: dirs,
+    privateDirectories,
     isProduction,
     userId
   });
 };
 
-// const readGitIgnoreFile = () => {
-//   const gitignoreContent = fs.readFileSync(path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any, '.gitignore'), 'utf-8');
-//   return globifyGitIgnore(gitignoreContent);
-// };
+const getPrivateDirs = async () => {
+  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
+  if (process.platform === 'win32') {
+    dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
+  }
+  // Remove the root directory from file path
+  dirs = dirs.map(dir => {
+    return dir.split('/').slice(1).join('/');
+  });
+  return filterIgnoredDirs(dirs);
+};
 
 export const onVSCodeClose = (context: vscode.ExtensionContext) => {
   const isProduction = context.extensionMode === 1;
