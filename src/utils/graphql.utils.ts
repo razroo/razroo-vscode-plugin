@@ -1,4 +1,6 @@
 import gql from 'graphql-tag';
+import parseGitConfig from 'parse-git-config';
+import getBranch  from 'git-branch';
 import { MEMENTO_RAZROO_ID_TOKEN } from '../constants.js';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
 import client from '../graphql/subscription.js';
@@ -51,6 +53,16 @@ let isProduction = context.extensionMode === 1;
     });
 };
 
+export async function getVersionControlParams(workspacePath: string) {
+  const gitOrigin = await parseGitConfig({cwd: workspacePath, path: '.git/config'}).then(gitConfig =>  gitConfig?.['remote "origin"'].url);
+  const gitBranch = await getBranch(workspacePath);
+
+  return {
+    gitOrigin,
+    gitBranch,
+  };
+}
+
 export async function getPackageJson(workspacePath: string) {
   const packageJsonFilePath = path.join(workspacePath, 'package.json');
   const packageJson = await readPackageJson(packageJsonFilePath);
@@ -76,11 +88,12 @@ export const updatePrivateDirectoriesRequest = async ({
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 
   const packageJsonParams = await getPackageJson(workspacePath as any);
+  const versionControlsParams = await getVersionControlParams(workspacePath as string);
 
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON) {
-        updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams) {
+    query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: AWSJSON) {
+        updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams) {
           privateDirectories
           vsCodeInstanceId
           packageJsonParams {
@@ -90,6 +103,10 @@ export const updatePrivateDirectoriesRequest = async ({
               defaultProject
             }
           }
+          versionControlsParams {
+            gitOrigin
+            gitBranch
+          }
         }
       }`,
     variables: {
@@ -97,6 +114,7 @@ export const updatePrivateDirectoriesRequest = async ({
       vsCodeInstanceId: vsCodeToken,
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
+      versionControlsParams,
     }  
   };
   try {
