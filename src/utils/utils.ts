@@ -61,16 +61,14 @@ export const saveFiles = async (
   console.log("USER FOLDER SELECTED: ", userFolderSelected);
   // Set in folderName the default path or the selected path of the user to insert the download files
   let folderName = path.join(context.extensionPath, 'razroo_files_temp');
-  if (userFolderSelected?.length) {
-    const folderSelectedInWorkspace =
-      findFolderUserSelectedInWorkspace(userFolderSelected);
-    folderName = `${folderSelectedInWorkspace}`;
-    console.log("FOLDER NAME: ", folderName);
-  }
+  
+  const folderSelectedInWorkspace =
+    findFolderUserSelectedInWorkspace(userFolderSelected);
+  folderName = `${folderSelectedInWorkspace}`;
+  console.log("FOLDER NAME: ", folderName);
 
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
-  if(type === 'edit' && updates) {
-    // const fileToEditStringified = fs.readFileSync(file).toString();
+  if(type === 'Edit' && updates) {
     editFiles(updates, parameters);
 
     return;
