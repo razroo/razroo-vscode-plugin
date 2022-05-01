@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "private": true,
   "engines": {
     "vscode": "^1.57.0"
@@ -140,7 +140,7 @@
     "@angular-devkit/schematics": "^13.1.2",
     "@aws-sdk/signature-v4-crt": "^3.45.0",
     "@babel/plugin-transform-runtime": "^7.16.8",
-    "@razroo/razroo-devkit": "^1.2.0",
+    "@razroo/razroo-devkit": "^1.2.1",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
     "apollo-cache-inmemory": "^1.6.6",
