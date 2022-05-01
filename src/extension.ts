@@ -5,7 +5,7 @@ const AdmZip = require('adm-zip');
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { getAuth0Url, onVSCodeClose, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
+import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
@@ -35,6 +35,8 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );
+
+  await tryToAuth(context);
   
   // 1 is production mode
   const isProduction = context.extensionMode === 1;

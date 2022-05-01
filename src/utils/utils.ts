@@ -8,6 +8,7 @@ import { readdir } from 'fs/promises';
 import * as path from 'path';
 import { 
   removeVsCodeInstanceMutation,
+  subscribeToGenerateVsCodeDownloadCodeSub,
   updatePrivateDirectoriesRequest
 } from './graphql.utils.js';
 import {
@@ -243,5 +244,20 @@ export const onVSCodeClose = (context: vscode.ExtensionContext) => {
       });
   } else {
     return;
+  }
+};
+
+export const tryToAuth = async (context: vscode.ExtensionContext) => {
+  const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN) as string;
+  const refreshToken = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
+  const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
+  if (idToken && refreshToken && userId && token) {
+    const isProduction = context.extensionMode === 1;
+
+    await updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId);
+    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
+    vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
+    showInformationMessage('User successfully authenticated with Razroo.');  
   }
 };
