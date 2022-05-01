@@ -32,6 +32,11 @@ export async function activate(context: vscode.ExtensionContext) {
   console.log("extensionMode");
   console.log(context);
 
+  // These lines are needed to add arguments to the executable terminal.
+  // TODO change to add these arguments to other arguments to not effect user's terminal settings.
+  vscode.workspace.getConfiguration().update('terminal.integrated.shellArgs.linux', ["-i"]);
+  vscode.workspace.getConfiguration().update('terminal.integrated.shellArgs.windows', ["-NoProfile"]);
+
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );

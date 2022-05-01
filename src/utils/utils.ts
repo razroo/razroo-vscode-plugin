@@ -93,9 +93,9 @@ export const saveFiles = async (
     if(path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
-      const terminal = vscode.window.createTerminal(`Razroo Terminal`);
-      terminal.show();
-      terminal.sendText(commandToExecute);
+      const execution = new vscode.ShellExecution(commandToExecute);
+      const task = new vscode.Task({type: "shell"}, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
+      vscode.tasks.executeTask(task);
     }
 
     if(type !== 'edit' && path.extname(file) !== ".sh") {
