@@ -10,12 +10,12 @@ import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from 
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readNxJson } from './nx.utils.js';
+import { AuthenticationClient } from 'auth0';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
   context,
 }: any) => {
-
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
@@ -155,8 +155,7 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
     });
 };
 
-var AuthenticationClient = require('auth0').AuthenticationClient;
 export const auth0Client = new AuthenticationClient({
-  domain: 'dev-18od1d2m.us.auth0.com',
+  domain: 'id.razroo.com',
   clientId: 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ'
 });

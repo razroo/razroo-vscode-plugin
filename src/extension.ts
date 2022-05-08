@@ -42,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   await tryToAuth(context);
-  
+
   // 1 is production mode
   const isProduction = context.extensionMode === 1;
   let disposable = vscode.commands.registerCommand(
@@ -72,7 +72,7 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log('inside auth0Authentcation');
 
       let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-      if (!token) { 
+      if (!token) {
         token = uuidv4();
         context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
       }
@@ -88,13 +88,13 @@ export async function activate(context: vscode.ExtensionContext) {
           title: 'Authentication in Razroo',
         },
         async (progress) => {
-          new Promise( async (res, rej) => {
+          new Promise(async (res, rej) => {
             let isInProgress = true;
             authEventEmitter.on('cancel', () => {
               isInProgress = false;
               rej('Authentication canceled');
             });
-            let disposeServer = () => {};
+            let disposeServer = () => { };
             try {
               isInProgress && await vscode.commands.executeCommand('vscode.open', Uri.parse(loginUrl));
               const { createServerPromise, dispose } = createDisposableAuthServer();
@@ -106,9 +106,9 @@ export async function activate(context: vscode.ExtensionContext) {
               isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId);
               isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
               isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-              isInProgress && showInformationMessage('User successfully authenticated with Razroo.');  
+              isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
             } catch (error) {
-              showErrorMessage('Authentication error, please try again.');            
+              showErrorMessage('Authentication error, please try again.');
             } finally {
               cancelAuthProgress(progress);
               disposeServer();
@@ -133,7 +133,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const logout = vscode.commands.registerCommand(
     'extension.logout',
-    () =>  { 
+    () => {
       onVSCodeClose(context)?.finally(() => {
         vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
       });
@@ -207,16 +207,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
               let options = defaultUri
                 ? {
-                    canSelectFiles: false,
-                    canSelectFolders: true,
-                    canSelectMany: false,
-                    defaultUri,
-                  }
+                  canSelectFiles: false,
+                  canSelectFolders: true,
+                  canSelectMany: false,
+                  defaultUri,
+                }
                 : {
-                    canSelectFiles: false,
-                    canSelectFolders: true,
-                    canSelectMany: false,
-                  };
+                  canSelectFiles: false,
+                  canSelectFolders: true,
+                  canSelectMany: false,
+                };
 
               showOpenDialog(options).then(
                 (value: vscode.Uri[] | undefined) => {
