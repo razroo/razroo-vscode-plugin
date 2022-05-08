@@ -290,10 +290,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext) => {
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       showInformationMessage('User successfully authenticated with Razroo.');
     }
-
-
-
-
   } else {
     vscode.commands.executeCommand(COMMAND_AUTH0_AUTH)
   }
