@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import getBranch  from 'git-branch';
+import getBranch from 'git-branch';
 import { MEMENTO_RAZROO_ID_TOKEN } from '../constants.js';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
 import client from '../graphql/subscription.js';
@@ -10,19 +10,20 @@ import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from 
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readNxJson } from './nx.utils.js';
+import { AuthenticationClient } from 'auth0';
 
-export const subscribeToGenerateVsCodeDownloadCodeSub = ({
+export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
   context,
 }: any) => {
-
-let isProduction = context.extensionMode === 1;
+  let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
-      const generateVsCodeDownloadCodeSub$ = client.subscribe({ query: gql(`
+      const generateVsCodeDownloadCodeSub$ = client.subscribe({
+        query: gql(`
         subscription MySubscription {
             generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
               vsCodeInstanceId
@@ -54,7 +55,7 @@ let isProduction = context.extensionMode === 1;
 };
 
 export async function getVersionControlParams(workspacePath: string) {
-  const gitOrigin = await parseGitConfig({cwd: workspacePath, path: '.git/config'}).then(gitConfig =>  gitConfig?.['remote "origin"'].url);
+  const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"'].url);
   const gitBranch = await getBranch(workspacePath);
 
   return {
@@ -115,7 +116,7 @@ export const updatePrivateDirectoriesRequest = async ({
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
       versionControlsParams: versionControlsParams,
-    }  
+    }
   };
   try {
     const response = await axios.post(url, body, {
@@ -153,3 +154,8 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
       });
     });
 };
+
+export const auth0Client = new AuthenticationClient({
+  domain: 'id.razroo.com',
+  clientId: 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ'
+});
