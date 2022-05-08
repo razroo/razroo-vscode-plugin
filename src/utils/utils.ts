@@ -1,5 +1,7 @@
 import {
   AUTH0URL,
+  COMMAND_AUTH0_AUTH,
+  MEMENTO_RAZROO_ACCESS_TOKEN
 } from '../constants.js';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
@@ -9,7 +11,8 @@ import * as path from 'path';
 import { 
   removeVsCodeInstanceMutation,
   subscribeToGenerateVsCodeDownloadCodeSub,
-  updatePrivateDirectoriesRequest
+  updatePrivateDirectoriesRequest,
+  auth0Client
 } from './graphql.utils.js';
 import {
   getFileS3,
@@ -19,7 +22,8 @@ import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZRO
 import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
-
+import jwt_decode from "jwt-decode";
+ 
 const showInformationMessage = vscode.window.showInformationMessage;
 
 async function* getFiles(dir: string) {
@@ -248,18 +252,36 @@ export const onVSCodeClose = (context: vscode.ExtensionContext) => {
     return;
   }
 };
+const refreshAuth0Token = async (context, refreshToken) => {
+  await auth0Client.refreshToken({refresh_token: refreshToken}, function (err, userData){
+    if(err){
+      console.log("err: ", err)
+    }
+    context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
+    context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
+    console.log("old id token: ", context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN));
+    context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, userData.id_token);
+    console.log("new id token: ", context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN));
+  })
+}
 
 export const tryToAuth = async (context: vscode.ExtensionContext) => {
-  const idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN) as string;
-  const refreshToken = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
+  let idToken: string | undefined  = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   if (idToken && refreshToken && userId && token) {
+    let decodedIdToken:any = jwt_decode(idToken);  
+    if(((decodedIdToken.exp as number) *1000) - Date.now() <= 0){
+      await refreshAuth0Token(context, refreshToken)
+    }
     const isProduction = context.extensionMode === 1;
-
-    await updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId);
+    console.log("after new id token")
+    await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, isProduction, userId);
     await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
     showInformationMessage('User successfully authenticated with Razroo.');  
+  } else {
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH)
   }
 };

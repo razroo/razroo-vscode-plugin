@@ -153,3 +153,9 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
       });
     });
 };
+
+var AuthenticationClient = require('auth0').AuthenticationClient;
+export const auth0Client = new AuthenticationClient({
+  domain: 'dev-18od1d2m.us.auth0.com',
+  clientId: 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ'
+});
