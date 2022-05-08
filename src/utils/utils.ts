@@ -22,7 +22,7 @@ import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZRO
 import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
-// import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
