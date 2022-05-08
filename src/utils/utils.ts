@@ -8,7 +8,7 @@ const AdmZip = require('adm-zip');
 import * as fs from 'fs';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
-import { 
+import {
   removeVsCodeInstanceMutation,
   subscribeToGenerateVsCodeDownloadCodeSub,
   updatePrivateDirectoriesRequest,
@@ -23,7 +23,7 @@ import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import jwt_decode from "jwt-decode";
- 
+
 const showInformationMessage = vscode.window.showInformationMessage;
 
 async function* getFiles(dir: string) {
@@ -58,7 +58,7 @@ export const saveFiles = async (
   const parameters = data.data.generateVsCodeDownloadCodeSub?.parameters;
   const type = data.data.generateVsCodeDownloadCodeSub.template.type;
   const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
-  
+
   //Get files of S3
   const files = await getFileS3({ url });
   const userFolderSelected =
@@ -66,7 +66,7 @@ export const saveFiles = async (
   console.log("USER FOLDER SELECTED: ", userFolderSelected);
   // Set in folderName the default path or the selected path of the user to insert the download files
   let folderName = path.join(context.extensionPath, 'razroo_files_temp');
-  
+
   if (userFolderSelected?.length) {
     const folderSelectedInWorkspace =
       findFolderUserSelectedInWorkspace(userFolderSelected);
@@ -75,7 +75,7 @@ export const saveFiles = async (
   }
 
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
-  if(type === 'Edit' && updates) {
+  if (type === 'Edit' && updates) {
     editFiles(updates, parameters);
 
     return;
@@ -85,37 +85,37 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
 
   try {
-    zip.extractAllTo(path.join(folderName,'razroo_files_temp'), true);
+    zip.extractAllTo(path.join(folderName, 'razroo_files_temp'), true);
   } catch (error) {
     console.log('error extractAllTo', error);
   }
 
   // Remove levels of folders of the zip file
   const tempFiles: string[] = [];
-  for await (const f of getFiles(path.join(folderName,'razroo_files_temp'))) {
+  for await (const f of getFiles(path.join(folderName, 'razroo_files_temp'))) {
     tempFiles.push(f);
   }
-  await Promise.all(tempFiles.map(async(file: any) => {
+  await Promise.all(tempFiles.map(async (file: any) => {
 
-    if(path.extname(file) === ".sh") {
+    if (path.extname(file) === ".sh") {
       const commandToExecute = fs.readFileSync(file).toString();
 
       const execution = new vscode.ShellExecution(commandToExecute);
-      const task = new vscode.Task({type: "shell"}, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
+      const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
       vscode.tasks.executeTask(task);
     }
 
-    if(type !== 'edit' && path.extname(file) !== ".sh") {
+    if (type !== 'edit' && path.extname(file) !== ".sh") {
       await fs.promises.copyFile(file, path.join(folderName, path.basename(file)))
-      .then( () => console.log(file + ' has been copied!'))
-      .catch(err => console.log('error file', err));
+        .then(() => console.log(file + ' has been copied!'))
+        .catch(err => console.log('error file', err));
     }
   }));
   //If the folder is not the default folder then it is deleted, otherwise it is not
-  if (folderName !== path.join(folderName,'razroo_files_temp')) {
-    fs.rmdirSync(path.join(folderName,'razroo_files_temp'), { recursive: true });
+  if (folderName !== path.join(folderName, 'razroo_files_temp')) {
+    fs.rmdirSync(path.join(folderName, 'razroo_files_temp'), { recursive: true });
   } else {
-    fs.rmdirSync(path.join(folderName,'razroo_files_temp', 'newPath'), {
+    fs.rmdirSync(path.join(folderName, 'razroo_files_temp', 'newPath'), {
       recursive: true,
     });
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
@@ -152,7 +152,7 @@ export const getDirectoriesWithoutPrivatePath = (item: any) => {
 };
 
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
-  if(process.platform === "win32"){
+  if (process.platform === "win32") {
     //If windows, correct path for windows file system
     folderSelected = folderSelected.replace(/\//g, "\\");
   }
@@ -193,7 +193,7 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
       break;
     }
   }
-  if(fullPath.length < 1){
+  if (fullPath.length < 1) {
     // if after loop the selected path was not found in current directories, then create new folders for the files:
     let newFolderPath = path.join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''))
     fs.mkdirSync(newFolderPath, { recursive: true })
@@ -211,7 +211,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   const privateDirectories = await getPrivateDirs();
 
   console.log("PRIV DIRECTORIES", privateDirectories);
-  
+
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
     idToken,
@@ -243,44 +243,44 @@ export const onVSCodeClose = (context: vscode.ExtensionContext) => {
     return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
-          context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
-          context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
-          context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
-          context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
+        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
+        context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
+        context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
+        context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
       });
   } else {
     return;
   }
 };
 const refreshAuth0Token = async (context, refreshToken) => {
-  await auth0Client.refreshToken({refresh_token: refreshToken}, function (err, userData){
-    if(err){
-      console.log("err: ", err)
+  return await auth0Client.refreshToken({ refresh_token: refreshToken }, function (err, userData) {
+    if (err) {
+      console.log("err: ", err);
     }
     context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
     context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
     console.log("old id token: ", context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN));
     context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, userData.id_token);
     console.log("new id token: ", context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN));
-  })
-}
+  });
+};
 
 export const tryToAuth = async (context: vscode.ExtensionContext) => {
-  let idToken: string | undefined  = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  let idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
   const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   if (idToken && refreshToken && userId && token) {
-    let decodedIdToken:any = jwt_decode(idToken);  
-    if(((decodedIdToken.exp as number) *1000) - Date.now() <= 0){
-      await refreshAuth0Token(context, refreshToken)
+    let decodedIdToken: any = jwt_decode(idToken);
+    if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
+      await refreshAuth0Token(context, refreshToken);
     }
     const isProduction = context.extensionMode === 1;
-    console.log("after new id token")
+    console.log("after new id token");
     await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, isProduction, userId);
     await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-    showInformationMessage('User successfully authenticated with Razroo.');  
+    showInformationMessage('User successfully authenticated with Razroo.');
   } else {
     vscode.commands.executeCommand(COMMAND_AUTH0_AUTH)
   }
