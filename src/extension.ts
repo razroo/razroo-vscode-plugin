@@ -27,15 +27,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log("extensionMode");
-  console.log(context);
-
-  // These lines are needed to add arguments to the executable terminal.
-  // TODO change to add these arguments to other arguments to not effect user's terminal settings.
-  vscode.workspace.getConfiguration().update('terminal.integrated.shellArgs.linux', ["-i"]);
-  vscode.workspace.getConfiguration().update('terminal.integrated.shellArgs.windows', ["-NoProfile"]);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
