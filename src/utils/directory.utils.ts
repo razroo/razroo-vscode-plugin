@@ -11,6 +11,11 @@ export function getWorkspaceFolders() {
   });
 };
 
+// will be true if no folders in the vscode instance
+export function isEmptyWorkspace(): boolean {
+  return vscode.workspace.workspaceFolders ? false : true;
+}
+
 const readGitIgnoreFile = async (dir = '') => {
   const gitignorePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any + '/' + dir, '.gitignore');
   try {
