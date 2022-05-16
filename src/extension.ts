@@ -19,6 +19,7 @@ import { createDisposableAuthServer } from './auth/local.js';
 import { Uri } from 'vscode';
 import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils.js';
 import { EventEmitter } from 'stream';
+import { isEmptyWorkspace } from './utils/directory.utils.js';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -32,7 +33,9 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('getContext', () => context)
   );
 
-  await tryToAuth(context);
+  if(!isEmptyWorkspace()) {
+    await tryToAuth(context);
+  }
 
   // 1 is production mode
   const isProduction = context.extensionMode === 1;
