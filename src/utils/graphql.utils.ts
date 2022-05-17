@@ -4,13 +4,14 @@ import getBranch from 'git-branch';
 import { MEMENTO_RAZROO_ID_TOKEN } from '../constants.js';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
 import client from '../graphql/subscription.js';
-import { saveFiles } from './utils.js';
+import { saveFiles, tryToAuth } from './utils.js';
 import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-devkit';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readNxJson } from './nx.utils.js';
 import { AuthenticationClient } from 'auth0';
+import { isTokenExpired } from './date.utils.js';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
@@ -46,13 +47,32 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
         await saveFiles(data, context);
       };
 
+      const error = async function error(data: any) {
+        console.log('realtime data: ', data);
+        //Save the files in a new folder
+        generateVsCodeDownloadCodeSubError(data, context);
+      };
+
       generateVsCodeDownloadCodeSub$.subscribe({
         next: realtimeResults,
         complete: console.log,
-        error: console.log,
+        error: error,
       });
     });
 };
+
+function generateVsCodeDownloadCodeSubError(data: any, context) {
+  console.log('generateVsCodeDownloadCodeSubError:', data);
+  let idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  
+  if(isTokenExpired(idToken as string)) {
+    vscode.window.showInformationMessage(
+      'Authentication Token Expired. Re-logging you in now.'
+    );
+
+    tryToAuth(context);
+  }
+}
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"'].url);
@@ -127,7 +147,7 @@ export const updatePrivateDirectoriesRequest = async ({
       },
     });
     return response?.data;
-  } catch (error) {
+  } catch (error) {    
     console.log('error updatePrivateDirectoriesRequest', error);
     return error;
   }

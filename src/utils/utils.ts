@@ -22,7 +22,7 @@ import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZRO
 import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
-import jwt_decode from "jwt-decode";
+import { isTokenExpired } from './date.utils.js';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -279,10 +279,10 @@ export const tryToAuth = async (context: vscode.ExtensionContext) => {
   const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   if (idToken && refreshToken && userId && token) {
 
-    let decodedIdToken: any = jwt_decode(idToken);
-    if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
+    if(isTokenExpired(idToken)) {
       await refreshAuth0Token(context, refreshToken, userId, token);
     }
+
     else {
       const isProduction = context.extensionMode === 1;
       await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, isProduction, userId);
