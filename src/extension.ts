@@ -88,11 +88,11 @@ export async function activate(context: vscode.ExtensionContext) {
               isInProgress = false;
               rej('Authentication canceled');
             });
-            let disposeServer = () => { };
+            let disposeServer = (cancelAuthProgress, res, progress) => { };
             try {
               isInProgress && await vscode.commands.executeCommand('vscode.open', Uri.parse(loginUrl));
-              const { createServerPromise, dispose } = createDisposableAuthServer();
-              disposeServer = dispose;
+              const { createServerPromise, disposeAndCancelAuth } = createDisposableAuthServer();
+              disposeServer = disposeAndCancelAuth;
               const { idToken = '', refreshToken = '', userId = '' } = isInProgress ? await createServerPromise : {};
               isInProgress && context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, idToken);
               isInProgress && context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, refreshToken);
@@ -104,9 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
             } catch (error) {
               showErrorMessage('Authentication error, please try again.');
             } finally {
-              cancelAuthProgress(progress);
-              disposeServer();
-              res(null);
+              disposeServer(cancelAuthProgress, res, progress);
             }
           }).catch(err => {
             showInformationMessage(err);

@@ -46,7 +46,15 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
         dispose: () => {
             if (server) {
                 server.close(() => {
-                    console.log('Server closed');
+                  console.log('Server closed');
+                });
+            }
+        },
+        disposeAndCancelAuth: (cancelAuthProgressCallback, resCallback, progress) => {
+            if (server) {
+                server.close(() => {
+                  cancelAuthProgressCallback(progress);
+                  resCallback(null);
                 });
             }
         },
