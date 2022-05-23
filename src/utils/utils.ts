@@ -240,6 +240,7 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgre
   const idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
   const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   if (vsCodeInstanceId && userId && idToken && refreshToken) {
+    console.log('this is called as inside inside inside');
     return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
@@ -247,8 +248,14 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgre
         context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
         context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
         context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
+        if(progress) {
+          cancelAuthProgress(progress);
+        }    
       });
   } else {
+    if(progress) {
+      cancelAuthProgress(progress);
+    }
     return;
   }
 };

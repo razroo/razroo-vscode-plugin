@@ -84,6 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
             let isInProgress = true;
             authEventEmitter.on('cancel', () => {
               isInProgress = false;
+              vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', true);
               rej('Authentication canceled');
             });
             let disposeServer = (cancelAuthProgress, res, progress) => { };
@@ -100,12 +101,12 @@ export async function activate(context: vscode.ExtensionContext) {
             } catch (error) {
               showErrorMessage('Authentication error, please try again.');
             } finally {
+              vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
               disposeServer(cancelAuthProgress, res, progress);
             }
-          }).catch(err => {
-            showInformationMessage(err);
-            cancelAuthProgress(progress);
-            onVSCodeClose(context);
+          }).catch(async(err) => {
+            await onVSCodeClose(context, cancelAuthProgress, progress);
+            await showInformationMessage(err);
           });
         }
       );
