@@ -233,13 +233,14 @@ const getPrivateDirs = async () => {
   return filterIgnoredDirs(dirs);
 };
 
-export const onVSCodeClose = (context: vscode.ExtensionContext) => {
+export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgress?, progress?) => {
   const isProduction = context.extensionMode === 1;
   const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
   const idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
   const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   if (vsCodeInstanceId && userId && idToken && refreshToken) {
+    console.log('this is called as inside inside inside');
     return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
@@ -247,8 +248,14 @@ export const onVSCodeClose = (context: vscode.ExtensionContext) => {
         context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
         context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
         context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
+        if(progress) {
+          cancelAuthProgress(progress);
+        }    
       });
   } else {
+    if(progress) {
+      cancelAuthProgress(progress);
+    }
     return;
   }
 };
@@ -291,6 +298,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext) => {
       showInformationMessage('User successfully authenticated with Razroo.');
     }
   } else {
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH)
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
   }
 };
