@@ -9,10 +9,7 @@ import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCode
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  MEMENTO_RAZROO_ID_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-  MEMENTO_RAZROO_REFRESH_TOKEN,
-  MEMENTO_RAZROO_USER_ID,
   COMMAND_CANCEL_AUTH,
 } from './constants.js';
 import { createDisposableAuthServer } from './auth/local.js';
@@ -20,6 +17,7 @@ import { Uri } from 'vscode';
 import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils.js';
 import { EventEmitter } from 'stream';
 import { isEmptyWorkspace } from './utils/directory.utils.js';
+import { setWorkspaceState } from './utils/state.utils.js';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -94,9 +92,7 @@ export async function activate(context: vscode.ExtensionContext) {
               const { createServerPromise, disposeAndCancelAuth } = createDisposableAuthServer();
               disposeServer = disposeAndCancelAuth;
               const { idToken = '', refreshToken = '', userId = '' } = isInProgress ? await createServerPromise : {};
-              isInProgress && context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, idToken);
-              isInProgress && context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, refreshToken);
-              isInProgress && context.workspaceState.update(MEMENTO_RAZROO_USER_ID, userId);
+              setWorkspaceState(context, idToken, refreshToken, userId, isInProgress);
               isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId);
               isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
               isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);

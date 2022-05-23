@@ -233,7 +233,7 @@ const getPrivateDirs = async () => {
   return filterIgnoredDirs(dirs);
 };
 
-export const onVSCodeClose = (context: vscode.ExtensionContext) => {
+export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgress?, progress?) => {
   const isProduction = context.extensionMode === 1;
   const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
@@ -291,6 +291,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext) => {
       showInformationMessage('User successfully authenticated with Razroo.');
     }
   } else {
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH)
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
   }
 };
