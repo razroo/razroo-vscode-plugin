@@ -262,7 +262,9 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgre
 };
 
 async function refreshAuth0Token(context, refreshToken, userId, token) {
-  return await auth0Client.refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
+  let isProduction = context.extensionMode === 1;
+
+  return auth0Client(isProduction).refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
     if (err) {
       console.log("err: ", err);
       return err;
