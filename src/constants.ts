@@ -1,5 +1,5 @@
-export const AUTH0URL = "https://razroo.com";
-export const DEVAUTHURL = "http://localhost:4200";
+export const RAZROO_URL = "https://razroo.com";
+export const RAZROO_DEV_URL = "http://localhost:4200";
 export const SOCKET_HOST = 'http://localhost:3000';
 
 export const MEMENTO_RAZROO_REFRESH_TOKEN = 'RAZROO_REFRESH_TOKEN';
@@ -12,5 +12,10 @@ export const MEMENTO_RAZROO_USER_ID = 'RAZROO_USER_ID';
 export const COMMAND_AUTH0_AUTH = 'extension.auth0Authentication';
 export const COMMAND_CANCEL_AUTH = 'extension.cancelAuthentication';
 
+export const AUTH0_URL = "id.razroo.com";
 export const AUTH0_CLIENT_ID = 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ';
 export const AUTH0_DOMAIN = 'dev-18od1d2m.us.auth0.com';
+
+export const DEV_AUTH0_URL = "dev.id.razroo.com";
+export const AUTH0_DEV_CLIENT_ID = 'Ar7y21NCpC8KhP9bHN1iBVTctXRYgNTY';
+export const AUTH0_DEV_DOMAIN = 'razroo-dev.us.auth0.com';

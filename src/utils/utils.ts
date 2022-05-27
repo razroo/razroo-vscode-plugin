@@ -1,5 +1,6 @@
 import {
-  AUTH0URL,
+  RAZROO_DEV_URL,
+  RAZROO_URL,
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN
 } from '../constants.js';
@@ -45,7 +46,7 @@ export const validateEmail = (email: string) => {
 };
 
 export const getAuth0Url = (isProduction: boolean) => {
-  const host = isProduction === true ? AUTH0URL : 'http://localhost:4200';
+  const host = isProduction === true ? RAZROO_URL : RAZROO_DEV_URL;
   return `${host}/vscode-auth`;
 };
 
