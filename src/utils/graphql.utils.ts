@@ -1,3 +1,4 @@
+import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID } from './../constants';
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
@@ -175,7 +176,9 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
     });
 };
 
-export const auth0Client = new AuthenticationClient({
-  domain: 'id.razroo.com',
-  clientId: 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ'
-});
+export const auth0Client = (isProduction: boolean) => {
+  return new AuthenticationClient({
+    domain: isProduction ? AUTH0_URL : DEV_AUTH0_URL,
+    clientId: isProduction ? AUTH0_CLIENT_ID : AUTH0_DEV_CLIENT_ID
+  });
+};
