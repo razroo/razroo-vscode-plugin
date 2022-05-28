@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 
-const AUTH_TIMEOUT_MS = 3_000_00;
+const AUTH_TIMEOUT_MS = 30000;
 
 export interface CreateDisposableAuthServerPromiseResult {
     idToken: string;
