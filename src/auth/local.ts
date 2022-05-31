@@ -23,7 +23,8 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             app.post('/callback', (req, res) => {
                 if (!done) {
                     const { idToken, refreshToken, userId, error } = req.body;
-                    if (!error) {
+                    // Have it error out if idtoken, refreshtoken, and userId do not exists
+                    if (!error && idToken && refreshToken && userId) {
                         resolve({ idToken, refreshToken, userId });
                     } else {
                         reject(error);
