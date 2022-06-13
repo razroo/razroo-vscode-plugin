@@ -31,6 +31,8 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
               downloadUrl
               parameters
               customInsertPath
+              runUnitTests
+              runIntegrationTests
               template {
                 id
                 type
