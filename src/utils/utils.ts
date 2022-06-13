@@ -26,6 +26,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
 import { unitTestGeneratedFiles } from './test.utils.js';
 import { template } from '@angular-devkit/schematics';
+import { join, resolve } from 'path';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -71,8 +72,10 @@ export const saveFiles = async (
   let folderName = path.join(context.extensionPath, 'razroo_files_temp');
 
   if (userFolderSelected?.length) {
-    const folderSelectedInWorkspace =
-      findFolderUserSelectedInWorkspace(userFolderSelected);
+    const rootDirectory = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
+    const folderSelectedInWorkspace = join(rootDirectory, userFolderSelected);
+      // TODO confirm this is working as expected
+      // findFolderUserSelectedInWorkspace(userFolderSelected);
     folderName = `${folderSelectedInWorkspace}`;
     console.log("FOLDER NAME: ", folderName);
   }
