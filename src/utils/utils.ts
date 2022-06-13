@@ -24,6 +24,8 @@ import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
+import { unitTestGeneratedFiles } from './test.utils.js';
+import { template } from '@angular-devkit/schematics';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -124,7 +126,12 @@ export const saveFiles = async (
       name: 'razroo_files',
     });
   }
+
   showInformationMessage('Extracted files in the workspace.');
+
+  if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
+    await unitTestGeneratedFiles(tempFiles, folderName);
+  }
 };
 
 const flatten = (lists: any) => {
