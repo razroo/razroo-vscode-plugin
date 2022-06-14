@@ -7,7 +7,7 @@ export async function unitTestGeneratedFiles (tempFiles: string[], folderName: s
     await Promise.all(tempFiles.map(async (file: any) => {
       if (file.includes(".spec")) {
         const unitTestFilePath = path.join(folderName, path.basename(file));
-        const execution = new vscode.ShellExecution(`npm run test -- --test-file ${unitTestFilePath}`);
+        const execution = new vscode.ShellExecution(`npm run test -- --test-file ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
