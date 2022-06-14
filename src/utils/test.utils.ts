@@ -20,10 +20,10 @@ async function executeBuildTask(task: vscode.Task, fileName) {
     const execution = await vscode.tasks.executeTask(task);
 
     return new Promise<void>(resolve => {
-        let disposable = vscode.tasks.onDidEndTask(e => {
+        let disposable = vscode.tasks.onDidEndTask(async (e) => {
             if (e.execution === execution) {
                 showInformationMessage(`${fileName} has run successfully.`);
-                cleanWorkspace();
+                await cleanWorkspace();
                 // disposable.dispose();
                 resolve();
             }
@@ -31,7 +31,7 @@ async function executeBuildTask(task: vscode.Task, fileName) {
     });
 }
 
-function cleanWorkspace() {
+async function cleanWorkspace() {
     const execution = new vscode.ShellExecution(`git clean -d -f`);
     const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
     vscode.tasks.executeTask(task);
