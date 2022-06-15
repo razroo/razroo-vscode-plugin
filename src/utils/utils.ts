@@ -24,7 +24,7 @@ import process from 'process';
 import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
-import { unitTestGeneratedFiles } from './test.utils.js';
+import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
 import { template } from '@angular-devkit/schematics';
 import { join, resolve } from 'path';
 
@@ -134,6 +134,10 @@ export const saveFiles = async (
 
   if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
     await unitTestGeneratedFiles(tempFiles, folderName);
+  }
+
+  if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
+    await integrationTestGeneratedFiles(tempFiles, folderName);
   }
 };
 
