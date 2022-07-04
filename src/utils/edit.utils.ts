@@ -27,7 +27,7 @@ export function editFiles(updates: string, parameters) {
         newFile = path.join(getCurrentWorkspaceFolderPath, filePathTransformed, transformedFileName);
       }
       else {
-        newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.newPath, transformedFileName);
+        newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.defaultFilePath, transformedFileName);
       }
 
       const fileToBeAddedTo = fs.readFileSync(newFile, 'utf-8').toString();

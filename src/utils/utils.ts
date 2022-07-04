@@ -121,7 +121,7 @@ export const saveFiles = async (
   if (folderName !== path.join(folderName, 'razroo_files_temp')) {
     fs.rmdirSync(path.join(folderName, 'razroo_files_temp'), { recursive: true });
   } else {
-    fs.rmdirSync(path.join(folderName, 'razroo_files_temp', 'newPath'), {
+    fs.rmdirSync(path.join(folderName, 'razroo_files_temp', 'defaultFilePath'), {
       recursive: true,
     });
     vscode.workspace.updateWorkspaceFolders(0, undefined, {
