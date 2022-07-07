@@ -25,22 +25,9 @@ import { editFiles } from './edit.utils.js';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
-import { template } from '@angular-devkit/schematics';
-import { join, resolve } from 'path';
+import { join } from 'path';
 
 const showInformationMessage = vscode.window.showInformationMessage;
-
-async function* getFiles(dir: string) {
-  const directories = await readdir(dir, { withFileTypes: true });
-  for (const directory of directories) {
-    const res = path.resolve(dir, directory.name);
-    if (directory.isDirectory()) {
-      yield* getFiles(res);
-    } else {
-      yield res;
-    }
-  }
-}
 
 export const validateEmail = (email: string) => {
   const res =
@@ -62,83 +49,52 @@ export const saveFiles = async (
   const parameters = data.data.generateVsCodeDownloadCodeSub?.parameters;
   const type = data.data.generateVsCodeDownloadCodeSub.template.type;
   const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
+  const filesToGenerate = data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate ? JSON.parse(data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate) : {};
 
   //Get files of S3
   const files = await getFileS3({ url });
-  const userFolderSelected =
-    data?.data?.generateVsCodeDownloadCodeSub?.customInsertPath;
-  console.log("USER FOLDER SELECTED: ", userFolderSelected);
-  // Set in folderName the default path or the selected path of the user to insert the download files
-  let folderName = path.join(context.extensionPath, 'razroo_files_temp');
-
-  if (userFolderSelected?.length) {
-    const rootDirectory = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
-    const folderSelectedInWorkspace = join(rootDirectory, userFolderSelected);
-      // TODO confirm this is working as expected
-      // findFolderUserSelectedInWorkspace(userFolderSelected);
-    folderName = `${folderSelectedInWorkspace}`;
-    console.log("FOLDER NAME: ", folderName);
-  }
+  const rootDirectory = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.path : '';
+  const folderSelectedInWorkspace = join(rootDirectory);
+  const folderRoot = `${folderSelectedInWorkspace}`;
 
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
   if (type === 'Edit' && updates) {
     editFiles(updates, parameters);
-
     return;
   }
 
   // Extract files from zip
   var zip = new AdmZip(files);
-
-  try {
-    zip.extractAllTo(path.join(folderName, 'razroo_files_temp'), true);
-  } catch (error) {
-    console.log('error extractAllTo', error);
-  }
-
-  // Remove levels of folders of the zip file
-  const tempFiles: string[] = [];
-  for await (const f of getFiles(path.join(folderName, 'razroo_files_temp'))) {
-    tempFiles.push(f);
-  }
-  await Promise.all(tempFiles.map(async (file: any) => {
-
-    if (path.extname(file) === ".sh") {
-      const commandToExecute = fs.readFileSync(file).toString();
+  const zipEntries = zip.getEntries();
+  zipEntries.forEach(function(zipEntry: any) {
+    const fileName = zipEntry.name;
+    if (path.extname(fileName) === ".sh") {
+      const commandToExecute = zipEntry.toString();
 
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
       vscode.tasks.executeTask(task);
     }
 
-    if (type !== 'edit' && path.extname(file) !== ".sh") {
-      await fs.promises.copyFile(file, path.join(folderName, path.basename(file)))
-        .then(() => console.log(file + ' has been copied!'))
-        .catch(err => console.log('error file', err));
+    if (type !== 'edit' && path.extname(fileName) !== ".sh") {
+      try {
+        zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
+      } catch (error) {
+        console.log('extractEntryTo', error);
+      }
     }
-  }));
-  //If the folder is not the default folder then it is deleted, otherwise it is not
-  if (folderName !== path.join(folderName, 'razroo_files_temp')) {
-    fs.rmdirSync(path.join(folderName, 'razroo_files_temp'), { recursive: true });
-  } else {
-    fs.rmdirSync(path.join(folderName, 'razroo_files_temp', 'defaultFilePath'), {
-      recursive: true,
-    });
-    vscode.workspace.updateWorkspaceFolders(0, undefined, {
-      uri: vscode.Uri.parse(`${folderName}`),
-      name: 'razroo_files',
-    });
-  }
+
+    if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
+      unitTestGeneratedFiles(zipEntry.entryName, folderRoot);
+    }
+  
+    if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
+      integrationTestGeneratedFiles(zipEntry.entryName, folderRoot);
+    }
+  });
 
   showInformationMessage('Extracted files in the workspace.');
-
-  if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
-    await unitTestGeneratedFiles(tempFiles, folderName);
-  }
-
-  if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
-    await integrationTestGeneratedFiles(tempFiles, folderName);
-  }
+  
 };
 
 const flatten = (lists: any) => {
