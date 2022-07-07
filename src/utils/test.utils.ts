@@ -3,30 +3,26 @@ import * as path from 'path';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
-export async function unitTestGeneratedFiles(tempFiles: string[], folderName: string){
-    await Promise.all(tempFiles.map(async (file: any) => {
-      if (file.includes(".spec")) {
-        const unitTestFilePath = path.join(folderName, path.basename(file));
+export async function unitTestGeneratedFiles(entryName: string, folderName: string){
+    if (entryName.includes(".spec")) {
+        const unitTestFilePath = path.join(folderName, path.basename(entryName));
         const execution = new vscode.ShellExecution(`npm run test -- --test-file ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
-        await executeBuildTask(task, path.basename(file));
-      }
-    }));
+        await executeBuildTask(task, path.basename(entryName));
+    }
 }
 
-export async function integrationTestGeneratedFiles(tempFiles: string[], folderName: string){
-    await Promise.all(tempFiles.map(async (file: any) => {
-      if (file.includes(".spec")) {
-        const unitTestFilePath = path.join(folderName, path.basename(file));
+export async function integrationTestGeneratedFiles(entryName: string, folderName: string){    
+    if (entryName.includes(".spec")) {
+        const unitTestFilePath = path.join(folderName, path.basename(entryName));
         const execution = new vscode.ShellExecution(`npm run e2e`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
-        await executeBuildTask(task, path.basename(file));
-      }
-    }));
+        await executeBuildTask(task, path.basename(entryName));
+    }
 }
 
 async function executeBuildTask(task: vscode.Task, fileName) {

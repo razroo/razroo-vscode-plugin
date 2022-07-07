@@ -37,6 +37,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
                 id
                 type
                 updates
+                filesToGenerate
               }
             }
           }
