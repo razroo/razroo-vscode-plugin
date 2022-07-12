@@ -69,7 +69,7 @@ export const saveFiles = async (
   zipEntries.forEach(function(zipEntry: any) {
     const fileName = zipEntry.name;
     if (path.extname(fileName) === ".sh") {
-      const commandToExecute = zipEntry.toString();
+      const commandToExecute = zipEntry.getData().toString("utf8");
 
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
