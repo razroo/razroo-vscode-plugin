@@ -34,6 +34,9 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
               runUnitTests
               runIntegrationTests
               template {
+                orgId
+                pathId
+                recipeId
                 id
                 type
                 updates
@@ -171,6 +174,56 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
                 languages
                 name
               }
+            }
+          }
+        `),
+      });
+    });
+};
+export const saveTestOutputMutation = (idToken: string, isProduction: boolean, testType: string,
+  jsonObject: string,
+  orgId: string,
+  pathId: string,
+  recipeId: string,
+  stepId: string) => {
+  return client(idToken, isProduction)
+    .hydrated()
+    .then(async client => {
+      return client.mutate({
+        mutation: gql(`
+          mutation saveTestOutput {
+            saveTestOutput(
+              testType: ${testType}, 
+              jsonObject: ${jsonObject}, 
+              orgId: "${orgId}", 
+              pathId: "${pathId}", 
+              recipeId: "${recipeId}", 
+              stepId: "${stepId}") {
+                author
+                baseCommunityPath
+                codePath
+                count
+                description
+                filesToGenerate
+                id
+                instructionalContent
+                integrationTestsFailed
+                integrationTestsPassed
+                isPublished
+                lastUpdated
+                next
+                orgId
+                parameters
+                pathId
+                prev
+                recipeId
+                relevantQuestions
+                timestamp
+                title
+                type
+                unitTestsFailed
+                unitTestsPassed
+                updates
             }
           }
         `),
