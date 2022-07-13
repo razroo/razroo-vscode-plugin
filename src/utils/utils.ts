@@ -85,11 +85,13 @@ export const saveFiles = async (
     }
 
     if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
-      unitTestGeneratedFiles(zipEntry.entryName, folderRoot);
+      let template = data.data.generateVsCodeDownloadCodeSub.template;
+      unitTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   
     if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
-      integrationTestGeneratedFiles(zipEntry.entryName, folderRoot);
+      let template = data.data.generateVsCodeDownloadCodeSub.template;
+      integrationTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   });
 
