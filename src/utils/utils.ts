@@ -66,7 +66,7 @@ export const saveFiles = async (
   // Extract files from zip
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
-  zipEntries.forEach(function(zipEntry: any) {
+  for await (const zipEntry of zipEntries) {
     const fileName = zipEntry.name;
     if (path.extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
@@ -78,7 +78,7 @@ export const saveFiles = async (
 
     if (type !== 'edit' && path.extname(fileName) !== ".sh") {
       try {
-        zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
+        await zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
       } catch (error) {
         console.log('extractEntryTo', error);
       }
@@ -86,14 +86,14 @@ export const saveFiles = async (
 
     if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      unitTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
+      await unitTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   
     if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
       integrationTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
-  });
+  }
 
   showInformationMessage('Extracted files in the workspace.');
   
