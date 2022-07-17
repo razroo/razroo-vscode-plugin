@@ -7,8 +7,8 @@ const showInformationMessage = vscode.window.showInformationMessage;
 
 export async function unitTestGeneratedFiles(entryName: string, folderName: string, template: any, idToken, isProduction){
     if (entryName.includes(".spec")) {
-        const unitTestFilePath = path.join(folderName, path.basename(entryName));
-        const execution = new vscode.ShellExecution(`npm run test -- --test-file ${unitTestFilePath} --skip-nx-cache --json --outputFile=razroo-unit-test-output.json`);
+        const unitTestFilePath = path.join(folderName, entryName);
+        const execution = new vscode.ShellExecution(`npm run test -- ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
@@ -18,7 +18,7 @@ export async function unitTestGeneratedFiles(entryName: string, folderName: stri
 
 export async function integrationTestGeneratedFiles(entryName: string, folderName: string, template:any,  idToken: string, isProduction: boolean){    
     if (entryName.includes(".spec")) {
-        const unitTestFilePath = path.join(folderName, path.basename(entryName));
+        const unitTestFilePath = path.join(folderName, entryName);
         const execution = new vscode.ShellExecution(`npm run e2e`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
