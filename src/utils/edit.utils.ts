@@ -13,26 +13,25 @@ function getWorkspaceFolders() {
   });
 };
 
-export function editFiles(updates: string, parameters) {
+export function editFiles(updates: string, parameters: any) {
     const workspaceFolders = getWorkspaceFolders();
     const getCurrentWorkspaceFolderPath = workspaceFolders ? workspaceFolders[0].path : '';
     const updatesParsed = JSON.parse(updates);
-    const parametersParsed = JSON.parse(parameters);
 
     updatesParsed.forEach((editInput: EditInput) => {
-      const transformedFileName = replaceTagParameters(parametersParsed, editInput.fileName);
+      const transformedFileName = replaceTagParameters(parameters, editInput.fileName);
       let newFile;
       if(editInput.filePath) {
-        const filePathTransformed = replaceTagParameters(parametersParsed, editInput.filePath);
+        const filePathTransformed = replaceTagParameters(parameters, editInput.filePath);
         newFile = path.join(getCurrentWorkspaceFolderPath, filePathTransformed, transformedFileName);
       }
       else {
-        newFile = path.join(getCurrentWorkspaceFolderPath, parametersParsed.defaultFilePath, transformedFileName);
+        newFile = path.join(getCurrentWorkspaceFolderPath, parameters.defaultFilePath, transformedFileName);
       }
 
       const fileToBeAddedTo = fs.readFileSync(newFile, 'utf-8').toString();
 
-      writeEditedFile(editInput, fileToBeAddedTo, newFile, parametersParsed);
+      writeEditedFile(editInput, fileToBeAddedTo, newFile, parameters);
     });
     
     showInformationMessage('Files have been edited. Lets goooo!!!');
