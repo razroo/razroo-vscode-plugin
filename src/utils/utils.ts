@@ -74,11 +74,13 @@ export const saveFiles = async (
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
       vscode.tasks.executeTask(task);
+      showInformationMessage('Command run in terminal');
     }
 
     if (type !== 'edit' && path.extname(fileName) !== ".sh") {
       try {
         await zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
+        showInformationMessage('Files generated');
       } catch (error) {
         console.log('extractEntryTo', error);
       }
@@ -94,8 +96,6 @@ export const saveFiles = async (
       integrationTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   }
-
-  showInformationMessage('Extracted files in the workspace.');
   
 };
 
