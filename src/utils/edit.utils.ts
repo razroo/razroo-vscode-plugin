@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { EditInput, morphCode, replaceTagParameters } from '@razroo/razroo-devkit';
 import * as path from 'path';
 import * as fs from 'fs';
+import { replaceCurlyBrace } from './replace.utils.js';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -17,21 +18,17 @@ export function editFiles(updates: string, parameters: any) {
     const workspaceFolders = getWorkspaceFolders();
     const getCurrentWorkspaceFolderPath = workspaceFolders ? workspaceFolders[0].path : '';
     const updatesParsed = JSON.parse(updates);
+    const parametersParsed = JSON.parse(parameters);
 
     updatesParsed.forEach((editInput: EditInput) => {
-      const transformedFileName = replaceTagParameters(parameters, editInput.fileName);
-      let newFile;
-      if(editInput.filePath) {
-        const filePathTransformed = replaceTagParameters(parameters, editInput.filePath);
-        newFile = path.join(getCurrentWorkspaceFolderPath, filePathTransformed, transformedFileName);
-      }
-      else {
-        newFile = path.join(getCurrentWorkspaceFolderPath, parameters.defaultFilePath, transformedFileName);
-      }
+      const transformedFileName = replaceCurlyBrace(parametersParsed, editInput.fileName);
+      const filePathTransformed = replaceCurlyBrace(parametersParsed, editInput.filePath as string);
+
+      const newFile = path.join(getCurrentWorkspaceFolderPath, filePathTransformed, transformedFileName);
 
       const fileToBeAddedTo = fs.readFileSync(newFile, 'utf-8').toString();
 
-      writeEditedFile(editInput, fileToBeAddedTo, newFile, parameters);
+      writeEditedFile(editInput, fileToBeAddedTo, newFile, parametersParsed);
     });
     
     showInformationMessage('Files have been edited. Lets goooo!!!');
