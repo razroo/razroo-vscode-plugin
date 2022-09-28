@@ -8,7 +8,7 @@ const esModules = ['parse5', 'vfile', 'vfile-location', 'to-vfile', 'hastscript'
 'hast-util-to-parse5', 'hast-to-hyperscript', 'zwitch', 'html-void-elements',
 'hast-util-to-html', 'hast-util-is-element', 'hast-util-whitespace', 'stringify-entities',
 'character-entities-legacy', 'character-entities-html4', 'ccount', '@razroo/razroo-devkit',
-'unist-util-visit-parents'];
+'unist-util-visit-parents', '@razroo/razroo-codemod'];
 
 const esModulesAliases = {
   'parse5': 'parse5',
@@ -43,6 +43,7 @@ const esModulesAliases = {
   'character-entities-html4': 'character-entities-html4', 
   'ccount': 'ccount', 
   '@razroo/razroo-devkit': '@razroo/razroo-devkit',
+  '@razroo/razroo-codemod': '@razroo/razroo-codemod',
   'unist-util-visit-parents': 'unist-util-visit-parents'
 };
 
