@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { updatePrivateDirectoriesInVSCodeAuthentication } from '../../utils/utils';
+import { updatePrivateDirectoriesInVSCodeAuthentication } from '../../utils/utils.js';
 import { beforeEach } from 'mocha';
 import { expect} from 'chai';
 import MockAdapter from 'axios-mock-adapter';
-import { mockAxios, getMockIdToken, getVsCodeAuthenticationMock } from './utils/utils';
-import { URL_GRAPHQL } from '../../graphql/awsConstants';
+import { mockAxios, getMockIdToken, getVsCodeAuthenticationMock } from './utils/utils.js';
+import { URL_GRAPHQL } from '../../graphql/awsConstants.js';
 
 const mock = new MockAdapter(mockAxios);
 const idToken = getMockIdToken();

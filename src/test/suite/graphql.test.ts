@@ -6,6 +6,12 @@ import { expect } from "chai";
 import { beforeEach } from "mocha";
 import { getFileS3 } from "../../utils/request.utils";
 
+import * as assert from 'assert';
+
+// You can import and use all API from the 'vscode' module
+// as well as import your extension to test it
+import * as vscode from 'vscode';
+
 const mock = new MockAdapter(mockAxios);
 const vsCodeAuthenticationObject = getVsCodeAuthenticationMock();
 const idToken = getMockIdToken();
