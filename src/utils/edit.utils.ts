@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import { EditInput, morphCode, replaceTagParameters } from '@razroo/razroo-devkit';
+import { EditInput, morphCode, replaceTagParameters, replaceCurlyBrace } from '@razroo/razroo-codemod';
 import * as path from 'path';
 import * as fs from 'fs';
-import { replaceCurlyBrace } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
