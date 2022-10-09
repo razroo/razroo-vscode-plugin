@@ -26,6 +26,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
 import { join } from 'path';
+import { effects, getVersionAndNameString } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -47,7 +48,9 @@ export const saveFiles = async (
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   // parameters will always be a string <-- architected specifically this way
   const parameters = data.data.generateVsCodeDownloadCodeSub?.parameters;
+  const templateParameters = data.data.generateVsCodeDownloadCodeSub?.template.parameters;
   const type = data.data.generateVsCodeDownloadCodeSub.template.type;
+  const template = data.data.generateVsCodeDownloadCodeSub.template;
   const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
   const filesToGenerate = data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate ? JSON.parse(data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate) : {};
 
@@ -70,7 +73,6 @@ export const saveFiles = async (
     const fileName = zipEntry.name;
     if (path.extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
-
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
       vscode.tasks.executeTask(task);
@@ -80,6 +82,12 @@ export const saveFiles = async (
     if (type !== 'edit' && path.extname(fileName) !== ".sh") {
       try {
         await zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
+        const fullPathOfFile = path.join(folderRoot, zipEntry.entryName);
+        const programmingLanguageName = getVersionAndNameString(template.pathId).name;
+        const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
+        console.debug('templateParameters');
+        console.debug(templateParameters);
+        effects(fullPathOfFile, 'component', programmingLanguage);
         showInformationMessage('Files generated');
       } catch (error) {
         console.log('extractEntryTo', error);
