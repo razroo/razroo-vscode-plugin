@@ -26,7 +26,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
 import { join } from 'path';
-import { effects, getVersionAndNameString } from '@razroo/razroo-codemod';
+import { determineType, effects, getVersionAndNameString } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -85,9 +85,9 @@ export const saveFiles = async (
         const fullPathOfFile = path.join(folderRoot, zipEntry.entryName);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
-        console.debug('templateParameters');
-        console.debug(templateParameters);
-        effects(fullPathOfFile, 'component', programmingLanguage);
+        // TODO update detemineType logic to be iron clad - even if complete paths
+        const genCodeType = determineType(parameters, templateParameters, zipEntry.entryName, zipEntry.name);
+        effects(fullPathOfFile, genCodeType, programmingLanguage);
         showInformationMessage('Files generated');
       } catch (error) {
         console.log('extractEntryTo', error);
