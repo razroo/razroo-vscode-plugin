@@ -41,6 +41,15 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
                 type
                 updates
                 filesToGenerate
+                baseCommunityPath
+                parameters {
+                  defaultValue
+                  description
+                  inputType
+                  name
+                  paramType
+                  type
+                }
               }
             }
           }
