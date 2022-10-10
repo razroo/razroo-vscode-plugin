@@ -7,7 +7,7 @@ import {
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
-import { readdir } from 'fs/promises';
+import * as fse from 'fs-extra';
 import * as path from 'path';
 import {
   removeVsCodeInstanceMutation,
@@ -86,11 +86,10 @@ export const saveFiles = async (
       try {
         const fileData = zipEntry.getData().toString("utf8");
         const fullPathOfFile = path.join(folderRoot, fileNameandPath);
-        fs.writeFileSync(fullPathOfFile, fileData);
+        fse.outputFile(fullPathOfFile, fileData);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
-        // TODO update detemineType logic to be iron clad - even if complete paths
-        const genCodeType = determineType(parameters, templateParameters, fileNameandPath, fileName);
+        const genCodeType = determineType(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, genCodeType, programmingLanguage);
         showInformationMessage('Files generated');
       } catch (error) {
