@@ -26,7 +26,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
 import { isTokenExpired } from './date.utils.js';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
 import { join } from 'path';
-import { determineType, effects, getVersionAndNameString } from '@razroo/razroo-codemod';
+import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -70,7 +70,10 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
   for await (const zipEntry of zipEntries) {
-    const fileName = zipEntry.name;
+    const parametersParsed = JSON.parse(parameters);
+    const fileNameandPath = replaceCurlyBrace(parametersParsed, zipEntry.entryName);
+    const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
+
     if (path.extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
       const execution = new vscode.ShellExecution(commandToExecute);
@@ -81,12 +84,12 @@ export const saveFiles = async (
 
     if (type !== 'edit' && path.extname(fileName) !== ".sh") {
       try {
-        await zip.extractEntryTo(zipEntry.entryName, folderRoot, true, false);
-        const fullPathOfFile = path.join(folderRoot, zipEntry.entryName);
+        await zip.extractEntryTo(zipEntry.entryName, path.join(folderRoot, fileNameandPath), false, false);
+        const fullPathOfFile = path.join(folderRoot, fileNameandPath);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
         // TODO update detemineType logic to be iron clad - even if complete paths
-        const genCodeType = determineType(parameters, templateParameters, zipEntry.entryName, zipEntry.name);
+        const genCodeType = determineType(parameters, templateParameters, fileNameandPath, fileName);
         effects(fullPathOfFile, genCodeType, programmingLanguage);
         showInformationMessage('Files generated');
       } catch (error) {
@@ -96,12 +99,12 @@ export const saveFiles = async (
 
     if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      await unitTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
+      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   
     if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      integrationTestGeneratedFiles(zipEntry.entryName, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
+      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
     }
   }
   
