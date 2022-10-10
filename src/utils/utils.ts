@@ -84,8 +84,9 @@ export const saveFiles = async (
 
     if (type !== 'edit' && path.extname(fileName) !== ".sh") {
       try {
-        await zip.extractEntryTo(zipEntry.entryName, path.join(folderRoot, fileNameandPath), false, false);
+        const fileData = zipEntry.getData().toString("utf8");
         const fullPathOfFile = path.join(folderRoot, fileNameandPath);
+        fs.writeFileSync(fullPathOfFile, fileData);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
         // TODO update detemineType logic to be iron clad - even if complete paths
