@@ -6,7 +6,7 @@
   "version": "1.4.6",
   "private": true,
   "engines": {
-		"vscode": "^1.32.0"
+		"vscode": "^1.57.0"
 	},
   "icon": "media/razroo-icon.jpg",
   "main": "./dist/extension",
