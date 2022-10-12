@@ -90,7 +90,7 @@ export const saveFiles = async (
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
         const genCodeType = determineType(zipEntry.entryName, templateParameters);
-        effects(fullPathOfFile, genCodeType, programmingLanguage);
+        effects(fullPathOfFile, genCodeType, programmingLanguage, parameters);
         showInformationMessage('Files generated');
       } catch (error) {
         console.log('extractEntryTo', error);
