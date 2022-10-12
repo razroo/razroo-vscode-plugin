@@ -1,23 +1,23 @@
-import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants.js';
+import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import { v4 as uuidv4 } from 'uuid';
 const AdmZip = require('adm-zip');
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils.js';
+import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
   MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   COMMAND_CANCEL_AUTH,
-} from './constants.js';
-import { createDisposableAuthServer } from './auth/local.js';
+} from './constants';
+import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
-import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils.js';
+import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
-import { isEmptyWorkspace } from './utils/directory.utils.js';
-import { setWorkspaceState } from './utils/state.utils.js';
+import { isEmptyWorkspace } from './utils/directory.utils';
+import { setWorkspaceState } from './utils/state.utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
