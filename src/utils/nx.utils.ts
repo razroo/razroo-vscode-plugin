@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { readPackageJson } from '@razroo/razroo-devkit';
+import { readPackageJson } from '@razroo/razroo-codemod';
 
 export async function readNxJson(workspacePath: string) {
     const nxJsonFilePath = path.join(workspacePath, 'nx.json');

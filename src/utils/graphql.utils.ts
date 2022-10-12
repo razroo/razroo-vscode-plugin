@@ -6,7 +6,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
 import client from '../graphql/subscription.js';
 import { saveFiles, tryToAuth } from './utils.js';
 import axios from 'axios';
-import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-devkit';
+import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-codemod';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { readNxJson } from './nx.utils.js';
