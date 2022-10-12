@@ -18,12 +18,12 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
+import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
-import { editFiles } from './edit.utils.js';
+import { editFiles } from './edit.utils';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
-import { isTokenExpired } from './date.utils.js';
+import { isTokenExpired } from './date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join } from 'path';
 import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
