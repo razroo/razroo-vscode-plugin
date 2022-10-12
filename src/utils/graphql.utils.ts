@@ -2,16 +2,16 @@ import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
 import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN } from '../constants.js';
-import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants.js';
-import client from '../graphql/subscription.js';
-import { saveFiles, tryToAuth } from './utils.js';
+import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
+import client from '../graphql/subscription';
+import { saveFiles, tryToAuth } from './utils';
 import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-codemod';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { readNxJson } from './nx.utils.js';
+import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
-import { isTokenExpired } from './date.utils.js';
+import { isTokenExpired } from './date.utils';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,

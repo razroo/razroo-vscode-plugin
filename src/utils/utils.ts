@@ -3,7 +3,7 @@ import {
   RAZROO_URL,
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN
-} from '../constants.js';
+} from '../constants';
 import * as vscode from 'vscode';
 const AdmZip = require('adm-zip');
 import * as fs from 'fs';
@@ -14,17 +14,17 @@ import {
   subscribeToGenerateVsCodeDownloadCodeSub,
   updatePrivateDirectoriesRequest,
   auth0Client
-} from './graphql.utils.js';
+} from './graphql.utils';
 import {
   getFileS3,
-} from './request.utils.js';
+} from './request.utils';
 import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants.js';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils.js';
-import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils.js';
+import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date.utils.js';
-import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils.js';
+import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join } from 'path';
 import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
 

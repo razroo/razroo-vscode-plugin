@@ -4,7 +4,7 @@ import { beforeEach } from 'mocha';
 import { expect} from 'chai';
 import MockAdapter from 'axios-mock-adapter';
 import { mockAxios, getMockIdToken, getVsCodeAuthenticationMock } from './utils/utils.js';
-import { URL_GRAPHQL } from '../../graphql/awsConstants.js';
+import { URL_GRAPHQL } from '../../graphql/awsConstants';
 
 const mock = new MockAdapter(mockAxios);
 const idToken = getMockIdToken();
