@@ -1,8 +1,0 @@
-{
-    "terminal.integrated.shellArgs.linux": [
-        "-i"
-    ],
-    "terminal.integrated.shellArgs.windows": [
-        "-NoProfile"
-    ]
-}
