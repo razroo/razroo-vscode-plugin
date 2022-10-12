@@ -8,7 +8,7 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
 // Require exports file with endpoint and auth info
-import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants.js';
+import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants';
 
 // Require AppSync module
 import { AWSAppSyncClient, AUTH_TYPE } from 'aws-appsync';

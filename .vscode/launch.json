@@ -14,20 +14,6 @@
                 "${workspaceFolder}/dist/**/*.js"
             ],
             "preLaunchTask": "npm: webpack"
-        },
-        {
-            "name": "Extension Tests",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionDevelopmentPath=${workspaceFolder}",
-            ],
-            "outFiles": [
-                "${workspaceFolder}/dist/test/**/*.js"
-            ],
-            "preLaunchTask": "npm: test-compile"
         }
     ]
 }
