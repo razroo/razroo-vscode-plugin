@@ -8,11 +8,12 @@
 'use strict';
 
 const path = require('path');
+const ResolveTypescriptPlugin = require('resolve-typescript-plugin');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
-    target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-
+    target: 'webworker', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+    mode: 'none',
     entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
     output: { // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
         path: path.resolve(__dirname, 'dist'),
@@ -20,15 +21,41 @@ const config = {
         libraryTarget: "commonjs2",
         devtoolModuleFilenameTemplate: "../[resource-path]",
     },
+    externalsPresets: { node: true },
     devtool: 'source-map',
     externals: {
         vscode: "commonjs vscode" // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
     },
     resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-        extensions: ['.ts', '.js']
+        symlinks: false,
+        // fallback: { "crypto": require.resolve("crypto-browserify") },
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.cjs', '.mjs'],
+        plugins: [
+            new ResolveTypescriptPlugin({
+              includeNodeModules: false
+            }),
+        ],
     },
     module: {
-        rules: [{
+        rules: [
+            {
+                test: /\.node/,
+                use: [
+                  {
+                    loader: 'url-loader'
+                  }
+                ]
+            },
+            {
+                test: /\.m?js/,
+                exclude: [
+                  /node_modules\/(?!graphql).*/
+                ],
+                resolve: {
+                    fullySpecified: false
+                }
+            },
+            {
             test: /\.ts$/,
             exclude: /node_modules/,
             use: [{

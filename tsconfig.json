@@ -6,7 +6,13 @@
 		"outDir": "out",
 		"sourceMap": true,
 		"strict": true,
+		"importHelpers": true, /* Import emit helpers from 'tslib'. */
+		"strictNullChecks": false, /* Enable strict null checks. */
+		"types": ["node", "jest"], /* Type declaration files to be included in compilation. */
 		"moduleResolution": "node",
+		"experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
+    	"emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
+		"skipLibCheck": true /* Skip type checking of declaration files. */,
 		"noImplicitAny": false, /* Raise error on expressions and declarations with an implied 'any' type. */
 		"esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
 		"rootDir": "src"
