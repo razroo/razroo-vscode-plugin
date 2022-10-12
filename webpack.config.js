@@ -29,7 +29,7 @@ const config = {
     resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
         symlinks: false,
         // fallback: { "crypto": require.resolve("crypto-browserify") },
-        extensions: ['.js', '.jsx', '.ts', '.tsx', '.cjs', '.mjs'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.cjs', '.mjs', '.wasm', '.json'],
         plugins: [
             new ResolveTypescriptPlugin({
               includeNodeModules: false
@@ -47,10 +47,7 @@ const config = {
                 ]
             },
             {
-                test: /\.m?js/,
-                exclude: [
-                  /node_modules\/(?!graphql).*/
-                ],
+                test: /\.m?jsx?$/,
                 resolve: {
                     fullySpecified: false
                 }

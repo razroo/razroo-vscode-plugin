@@ -166,6 +166,7 @@
     "fs-extra": "^10.1.0",
     "git-branch": "^2.0.1",
     "globify-gitignore": "^0.2.1",
+    "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
     "ignore": "^5.2.0",
     "isomorphic-fetch": "^3.0.0",
