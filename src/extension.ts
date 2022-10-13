@@ -1,6 +1,6 @@
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import { v4 as uuidv4 } from 'uuid';
-const AdmZip = require('adm-zip');
+import AdmZip from 'adm-zip';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
@@ -22,7 +22,7 @@ import { setWorkspaceState } from './utils/state.utils';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-  console.log('this is called up top');
+  console.debug('activate has been called');
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;

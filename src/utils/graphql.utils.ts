@@ -8,7 +8,7 @@ import { saveFiles, tryToAuth } from './utils';
 import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-codemod';
 import * as vscode from 'vscode';
-import * as path from 'path';
+import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date.utils';
@@ -19,6 +19,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
+  console.debug('this here is called');
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
@@ -100,7 +101,7 @@ export async function getVersionControlParams(workspacePath: string) {
 }
 
 export async function getPackageJson(workspacePath: string) {
-  const packageJsonFilePath = path.join(workspacePath, 'package.json');
+  const packageJsonFilePath = join(workspacePath, 'package.json');
   const packageJson = await readPackageJson(packageJsonFilePath);
   const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
   const transformedProjectDependencies = await determineLanguagesUsed(projectDependenciesMap);
