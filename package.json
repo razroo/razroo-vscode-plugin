@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "private": true,
   "engines": {
     "vscode": "^1.57.0"
@@ -176,7 +176,6 @@
     "parse-git-config": "^3.0.0",
     "parse-gitignore": "^2.0.0",
     "prettier": "^2.5.1",
-    "redux": "4.2.0",
     "request": "^2.88.2",
     "resolve": "^1.21.0",
     "subscriptions-transport-ws": "^0.11.0",
