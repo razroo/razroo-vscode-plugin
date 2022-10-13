@@ -179,8 +179,8 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   }
   if (fullPath.length < 1) {
     // if after loop the selected path was not found in current directories, then create new folders for the files:
-    let newFolderPath = path.join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''))
-    fs.mkdirSync(newFolderPath, { recursive: true })
+    let newFolderPath = path.join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''));
+    fs.mkdirSync(newFolderPath, { recursive: true });
     fullPath = newFolderPath;
   }
   return fullPath;

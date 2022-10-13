@@ -19,6 +19,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
+  console.debug('this here is called');
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
