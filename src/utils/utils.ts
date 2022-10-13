@@ -5,10 +5,9 @@ import {
   MEMENTO_RAZROO_ACCESS_TOKEN
 } from '../constants';
 import * as vscode from 'vscode';
-const AdmZip = require('adm-zip');
+import AdmZip from 'adm-zip';
 import * as fs from 'fs';
 import * as fse from 'fs-extra';
-import * as path from 'path';
 import {
   removeVsCodeInstanceMutation,
   subscribeToGenerateVsCodeDownloadCodeSub,
@@ -25,7 +24,7 @@ import { editFiles } from './edit.utils';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
-import { join } from 'path';
+import { join, extname} from 'path';
 import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -74,7 +73,7 @@ export const saveFiles = async (
     const fileNameandPath = replaceCurlyBrace(parametersParsed, zipEntry.entryName);
     const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
 
-    if (path.extname(fileName) === ".sh") {
+    if (extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
@@ -82,10 +81,10 @@ export const saveFiles = async (
       showInformationMessage('Command run in terminal');
     }
 
-    if (type !== 'edit' && path.extname(fileName) !== ".sh") {
+    if (type !== 'edit' && extname(fileName) !== ".sh") {
       try {
         const fileData = zipEntry.getData().toString("utf8");
-        const fullPathOfFile = path.join(folderRoot, fileNameandPath);
+        const fullPathOfFile = join(folderRoot, fileNameandPath);
         fse.outputFile(fullPathOfFile, fileData);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
@@ -117,7 +116,7 @@ const flatten = (lists: any) => {
 const getDirectories = (srcpath: string) => {
   return fs
     .readdirSync(srcpath)
-    .map((file) => path.join(srcpath, file))
+    .map((file) => join(srcpath, file))
     .filter((path) => fs.statSync(path).isDirectory() && !path.includes('.git') && !path.includes('node_modules'));
 };
 
@@ -179,7 +178,7 @@ const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   }
   if (fullPath.length < 1) {
     // if after loop the selected path was not found in current directories, then create new folders for the files:
-    let newFolderPath = path.join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''));
+    let newFolderPath = join((workspaceFolders?.[0].path as string), folderSelected.replace((workspaceFolders?.[0].name as string), ''));
     fs.mkdirSync(newFolderPath, { recursive: true });
     fullPath = newFolderPath;
   }
