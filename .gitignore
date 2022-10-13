@@ -5,5 +5,4 @@ node_modules
 out
 *.vsix
 dist
-package-lock.json
 yarn.lock
