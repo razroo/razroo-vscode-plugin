@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EditInput, morphCode, replaceTagParameters, replaceCurlyBrace } from '@razroo/razroo-codemod';
+import { EditInput, morphCode, replaceTagParameters, replaceCurlyBrace, replaceCodeModEditsTemplateVariables } from '@razroo/razroo-codemod';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -35,6 +35,7 @@ export function editFiles(updates: string, parameters: any) {
 
 function writeEditedFile(editInput: EditInput, fileToBeAddedTo: string, newFile: string, parameters: any) {
   // the fileToBeAddedTo needs to be manually added in.
+  editInput.edits = replaceCodeModEditsTemplateVariables(editInput.edits, parameters);
   const updatedEditInput = {...editInput, fileToBeAddedTo};
         
   const convertedCode = morphCode(updatedEditInput);
