@@ -22,7 +22,7 @@ import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZRO
 import process from 'process';
 import { editFiles } from './edit.utils';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
-import { isTokenExpired } from './date.utils';
+import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join, extname} from 'path';
 import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
