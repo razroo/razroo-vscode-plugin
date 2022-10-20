@@ -17,4 +17,7 @@ jobs:
           sudo apt install -y jq
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
           npm install
+      - name: Test
+        run: |
+          npm install 
           npm test
