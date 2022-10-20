@@ -1,6 +1,5 @@
 import { getAuth0Url } from './utils/authentication/authentication';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
-import { v4 as uuidv4 } from 'uuid';
 import AdmZip from 'adm-zip';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
@@ -10,7 +9,6 @@ import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthenticatio
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   COMMAND_CANCEL_AUTH,
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
