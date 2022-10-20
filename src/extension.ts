@@ -1,3 +1,4 @@
+import { getAuth0Url } from './utils/authentication/authentication';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import { v4 as uuidv4 } from 'uuid';
 import AdmZip from 'adm-zip';
@@ -5,7 +6,7 @@ import AdmZip from 'adm-zip';
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
+import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
