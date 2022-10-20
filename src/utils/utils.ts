@@ -187,7 +187,6 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   userId: string
 ) => {
   const privateDirectories = await getPrivateDirs();
-
   console.log("PRIV DIRECTORIES", privateDirectories);
 
   return updatePrivateDirectoriesRequest({
