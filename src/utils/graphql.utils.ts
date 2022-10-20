@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
-import { isTokenExpired } from './date.utils';
+import { isTokenExpired } from './date/date.utils';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
