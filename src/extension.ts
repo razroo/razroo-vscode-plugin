@@ -1,15 +1,14 @@
+import { getAuth0Url } from './utils/authentication/authentication';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
-import { v4 as uuidv4 } from 'uuid';
 import AdmZip from 'adm-zip';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { getAuth0Url, onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
+import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
   COMMAND_CANCEL_AUTH,
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
@@ -62,12 +61,7 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_AUTH0_AUTH,
     async () => {
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
-      console.log('inside auth0Authentcation');
-
       const token = getOrCreateAndUpdateIdToken(context);
-      console.log('isProduction');
-      console.log(isProduction);
-
       const loginUrl = getAuth0Url(isProduction);
 
       vscode.window.withProgress(

@@ -35,11 +35,6 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
-export const getAuth0Url = (isProduction: boolean) => {
-  const host = isProduction === true ? RAZROO_URL : RAZROO_DEV_URL;
-  return `${host}/vscode-auth`;
-};
-
 export const saveFiles = async (
   data: any,
   context: vscode.ExtensionContext
