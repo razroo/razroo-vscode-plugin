@@ -90,7 +90,7 @@ export async function activate(context: vscode.ExtensionContext) {
               isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
               isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
             } catch (error) {
-              showErrorMessage('Authentication error, please try again.');
+              showErrorMessage(error as any);
             } finally {
               vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
               disposeServer(cancelAuthProgress, res, progress);
