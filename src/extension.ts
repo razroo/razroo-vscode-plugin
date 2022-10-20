@@ -18,6 +18,7 @@ import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils'
 import { EventEmitter } from 'stream';
 import { isEmptyWorkspace } from './utils/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
+import { getOrCreateAndUpdateIdToken } from 'utils/token/token';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -63,11 +64,7 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
       console.log('inside auth0Authentcation');
 
-      let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-      if (!token) {
-        token = uuidv4();
-        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
-      }
+      const token = getOrCreateAndUpdateIdToken(context);
       console.log('isProduction');
       console.log(isProduction);
 
