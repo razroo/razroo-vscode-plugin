@@ -6,17 +6,17 @@ on:
   workflow_dispatch:
 jobs:
   DevOpsPRUnitTests:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 12
-      - name: Install dependencies
-        run: npm install
-      - name: Run headless test
-        uses: GabrielBB/xvfb-action@v1.0
-        with:
-          run: npm test
+          node-version: 16
+      - name: Build Private Dependencies and Test
+        run: |
+          sudo apt install -y jq
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
+          npm install
+          npm test
