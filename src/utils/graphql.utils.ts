@@ -91,7 +91,7 @@ function generateVsCodeDownloadCodeSubError(data: any, context) {
 }
 
 export async function getVersionControlParams(workspacePath: string) {
-  const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"'].url);
+  const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
   const gitBranch = await getBranch(workspacePath);
 
   return {
