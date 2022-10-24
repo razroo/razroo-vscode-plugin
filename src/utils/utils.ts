@@ -21,7 +21,7 @@ import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZRO
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
-import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
+import { filterIgnoredDirs, getWorkspaceFolders } from './directory/directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join, extname} from 'path';

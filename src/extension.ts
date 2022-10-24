@@ -15,7 +15,7 @@ import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
 import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
-import { isEmptyWorkspace } from './utils/directory.utils';
+import { isEmptyWorkspace } from './utils/directory/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
 import { getOrCreateAndUpdateIdToken } from 'utils/token/token';
 
