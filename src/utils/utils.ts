@@ -25,7 +25,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join, extname} from 'path';
-import { determineType, effects, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
+import { determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -104,31 +104,6 @@ export const saveFiles = async (
   
 };
 
-const flatten = (lists: any) => {
-  return lists.reduce((a, b) => a.concat(b), []);
-};
-
-const getDirectories = (srcpath: string) => {
-  return fs
-    .readdirSync(srcpath)
-    .map((file) => join(srcpath, file))
-    .filter((path) => fs.statSync(path).isDirectory() && !path.includes('.git') && !path.includes('node_modules'));
-};
-
-const getDirectoriesRecursive = (srcpath: string) => {
-  return [
-    srcpath,
-    ...flatten(getDirectories(srcpath).map(getDirectoriesRecursive)),
-  ];
-};
-
-export const getDirectoriesWithoutPrivatePath = (item: any) => {
-  const { path, name } = item;
-  return getDirectoriesRecursive(path)?.map((folder) => {
-    return folder.slice(folder.search(name), folder.length);
-  });
-};
-
 const findFolderUserSelectedInWorkspace = (folderSelected: string) => {
   if (process.platform === "win32") {
     //If windows, correct path for windows file system
@@ -199,7 +174,9 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 };
 
 const getPrivateDirs = async () => {
-  let dirs = getWorkspaceFolders()?.map(getDirectoriesWithoutPrivatePath)?.flat() || [];
+  const workspaceFolders = getWorkspaceFolders();
+  // uses short code for map
+  let dirs = workspaceFolders?.map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
