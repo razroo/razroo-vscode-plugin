@@ -48,6 +48,10 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
                   description
                   inputType
                   name
+                  optionalTypes {
+                    name
+                    selected
+                  }
                   paramType
                   type
                 }
