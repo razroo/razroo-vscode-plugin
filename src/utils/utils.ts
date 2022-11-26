@@ -83,7 +83,6 @@ export const saveFiles = async (
         fse.outputFile(fullPathOfFile, fileData);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
-        const genCodeType = determineType(zipEntry.entryName, templateParameters);
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, filePathParameter, programmingLanguage, parameters);
         showInformationMessage('Files generated');
