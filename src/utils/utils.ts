@@ -80,7 +80,7 @@ export const saveFiles = async (
       try {
         const fileData = zipEntry.getData().toString("utf8");
         const fullPathOfFile = join(folderRoot, fileNameandPath);
-        fse.outputFile(fullPathOfFile, fileData);
+        await fse.outputFile(fullPathOfFile, fileData);
         const programmingLanguageName = getVersionAndNameString(template.pathId).name;
         const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
