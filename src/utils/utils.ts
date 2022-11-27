@@ -81,10 +81,10 @@ export const saveFiles = async (
         const fileData = zipEntry.getData().toString("utf8");
         const fullPathOfFile = join(folderRoot, fileNameandPath);
         await fse.outputFile(fullPathOfFile, fileData);
-        const programmingLanguageName = getVersionAndNameString(template.pathId).name;
-        const programmingLanguage = template.baseCommunityPath ? template.baseCommunityPath : programmingLanguageName; 
+        const pathId = template.baseCommunityPath ? template.baseCommunityPath : template.pathId; 
+        const coreProgrammingLanguage = getVersionAndNameString(pathId).name;
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
-        effects(fullPathOfFile, filePathParameter, programmingLanguage, parameters);
+        effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
         showInformationMessage('Files generated');
       } catch (error) {
         console.log('extractEntryTo', error);

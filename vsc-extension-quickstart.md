@@ -43,6 +43,15 @@ This is how I am currently getting things to work as expected.
 ## Debugging 
 What i've found to be helpful to get the outputs i need: https://stackoverflow.com/questions/34085330/how-to-write-to-log-from-vscode-extension/58139566#58139566
 
+## How To Publish 
+1. Uptick the version e.g. 1.7.1 to 1.7.2
+2. Run the publish command
+```
+npm run publish
+```
+
+That is all that is required
+
 ## Go further
 
 - Reduce the extension size and improve the startup time by [bundling your extension](https://code.visualstudio.com/api/working-with-extensions/bundling-extension).
