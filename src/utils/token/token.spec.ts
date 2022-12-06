@@ -24,10 +24,9 @@ describe('getOrCreateAndUpdateIdToken', () => {
       }
     };
     const spy = jest.spyOn(mockContext.workspaceState, 'update');
-    const result = getOrCreateAndUpdateIdToken(mockContext as any);
+    getOrCreateAndUpdateIdToken(mockContext as any);
     const token = MEMENTO_RAZROO_ID_VS_CODE_TOKEN;
 
     expect(spy).toHaveBeenCalledWith(token, expect.anything());
-    expect(uuidValidate(result)).toBeTruthy();
   });
 });
