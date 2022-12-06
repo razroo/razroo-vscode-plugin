@@ -127,10 +127,17 @@ export const updatePrivateDirectoriesRequest = async ({
   userId
 }: any) => {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-
-  const packageJsonParams = await getPackageJson(workspacePath as any);
-  const versionControlsParams = await getVersionControlParams(workspacePath as string);
-
+  let packageJsonParams: any = '';
+  let versionControlsParams = {
+    gitBranch: '',
+    gitOrigin: ''
+  };
+  if(privateDirectories.length){
+    packageJsonParams = await getPackageJson(workspacePath as any);
+    versionControlsParams = await getVersionControlParams(workspacePath as string);
+  } else {
+    packageJsonParams = `{"name":"${vscode.workspace.name}","languages":[],"nx":{}}`;
+  }
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
     query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: VersionControlsParamsInput) {
