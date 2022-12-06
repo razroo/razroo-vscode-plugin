@@ -61,7 +61,7 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_AUTH0_AUTH,
     async () => {
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
-      const token = getOrCreateAndUpdateIdToken(context);
+      const token = await getOrCreateAndUpdateIdToken(context);
       const loginUrl = getAuth0Url(isProduction);
 
       vscode.window.withProgress(
