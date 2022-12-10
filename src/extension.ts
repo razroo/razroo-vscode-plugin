@@ -107,7 +107,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const cancelAuthentication = vscode.commands.registerCommand(
     COMMAND_CANCEL_AUTH,
     async () => {
-      console.log('cancel auth0Authentication');
       authEventEmitter.emit('cancel');
     });
 
