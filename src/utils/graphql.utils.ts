@@ -234,7 +234,6 @@ export const saveTestOutputMutation = (idToken: string, isProduction: boolean, t
                 lastUpdated
                 next
                 orgId
-                parameters
                 pathId
                 prev
                 recipeId
