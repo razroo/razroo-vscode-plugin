@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
-import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN } from '../constants';
+import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
-import { saveFiles, tryToAuth } from './utils';
+import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import axios from 'axios';
 import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razroo-codemod';
 import * as vscode from 'vscode';
@@ -12,14 +12,14 @@ import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
+import { getOrCreateAndUpdateIdToken } from './token/token';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
-  context,
+  context
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
-  console.debug('this here is called');
   client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
@@ -62,13 +62,12 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       });
 
       const realtimeResults = async function realtimeResults(data: any) {
-        console.log('realtime data: ', data);
         //Save the files in a new folder
         await saveFiles(data, context);
+        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction);
       };
 
       const error = async function error(data: any) {
-        console.log('realtime data: ', data);
         //Save the files in a new folder
         generateVsCodeDownloadCodeSubError(data, context);
       };
@@ -81,8 +80,14 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
     });
 };
 
+async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
+  const token = await getOrCreateAndUpdateIdToken(context);
+  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
+  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId);
+}
+
 function generateVsCodeDownloadCodeSubError(data: any, context) {
-  console.log('generateVsCodeDownloadCodeSubError:', data);
   let idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
   
   if(isTokenExpired(idToken as string)) {
