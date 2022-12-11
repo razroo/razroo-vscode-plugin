@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
-import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID } from '../constants';
+import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
@@ -84,7 +84,8 @@ async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction:
   const token = await getOrCreateAndUpdateIdToken(context);
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId);
+  const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
+  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
 
 function generateVsCodeDownloadCodeSubError(data: any, context) {
@@ -129,7 +130,8 @@ export const updatePrivateDirectoriesRequest = async ({
   idToken,
   privateDirectories,
   isProduction,
-  userId
+  userId,
+  orgId
 }: any) => {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   let packageJsonParams: any = '';
@@ -145,9 +147,11 @@ export const updatePrivateDirectoriesRequest = async ({
   }
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: `mutation updateVSCodeAuthentication($userId: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: VersionControlsParamsInput) {
-        updateVSCodeAuthentication(userId: $userId, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams) {
+    query: `mutation updateVSCodeAuthentication($userId: String!, $orgId: String!, $projectName: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: VersionControlsParamsInput) {
+        updateVSCodeAuthentication(userId: $userId, orgId: $orgId, projectName: $projectName, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams) {
           privateDirectories
+          orgId
+          projectName
           vsCodeInstanceId
           packageJsonParams {
             name
@@ -164,6 +168,8 @@ export const updatePrivateDirectoriesRequest = async ({
       }`,
     variables: {
       userId: userId,
+      orgId: orgId,
+      projectName: JSON.parse(packageJsonParams)?.name,
       vsCodeInstanceId: vsCodeToken,
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
