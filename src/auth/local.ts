@@ -7,6 +7,7 @@ export interface CreateDisposableAuthServerPromiseResult {
     idToken: string;
     refreshToken: string;
     userId: string;
+    orgId: string;
 }
 
 export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) => {
@@ -22,10 +23,10 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             app.use(express.json());
             app.post('/callback', (req, res) => {
                 if (!done) {
-                    const { idToken, refreshToken, userId, error } = req.body;
-                    // Have it error out if idtoken, refreshtoken, and userId do not exists
-                    if (!error && idToken && refreshToken && userId) {
-                        resolve({ idToken, refreshToken, userId });
+                    const { idToken, refreshToken, userId, orgId, error } = req.body;
+                    // Have it error out if idtoken, refreshtoken, userId and orgId do not exists
+                    if (!error && idToken && refreshToken && userId && orgId) {
+                        resolve({ idToken, refreshToken, userId, orgId });
                     } else {
                         reject(error);
                     }
