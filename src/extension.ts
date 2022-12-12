@@ -30,11 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );
-
-  if(!isEmptyWorkspace()) {
-    await tryToAuth(context);
-  }
-
+  await tryToAuth(context);
   // 1 is production mode
   const isProduction = context.extensionMode === 1;
   let disposable = vscode.commands.registerCommand(
