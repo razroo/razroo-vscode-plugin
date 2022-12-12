@@ -1,6 +1,4 @@
 import {
-  RAZROO_DEV_URL,
-  RAZROO_URL,
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN
 } from '../constants';
