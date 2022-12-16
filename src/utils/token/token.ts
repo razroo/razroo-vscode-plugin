@@ -9,6 +9,7 @@ export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionConte
     let token: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
     if (!token) {
       if(isEmptyWorkspace()) {
+        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, EMPTY);
         return EMPTY;
       }
       const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
