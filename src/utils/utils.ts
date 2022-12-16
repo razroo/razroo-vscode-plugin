@@ -70,7 +70,7 @@ export const saveFiles = async (
       const commandToExecute = zipEntry.getData().toString("utf8");
       const execution = new vscode.ShellExecution(commandToExecute);
       const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-      vscode.tasks.executeTask(task);
+      await vscode.tasks.executeTask(task);
       showInformationMessage('Command run in terminal');
     }
 
