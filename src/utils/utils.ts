@@ -24,7 +24,7 @@ import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join, extname} from 'path';
 import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
-import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor } from './command/command';
+import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -69,13 +69,7 @@ export const saveFiles = async (
 
     if (extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
-      const execution = new vscode.ShellExecution(commandToExecute);
-      const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-      await vscode.tasks.executeTask(task);
-      if(containsInfrastructureCommandPath(commandToExecute)) {
-        openWorkspaceInNewCodeEditor(parametersParsed.infastructureCommandPath, parametersParsed.fileName);
-      }
-      showInformationMessage('Command run in terminal');
+      await runRazrooCommand(commandToExecute, parametersParsed);
     }
 
     if (type !== 'edit' && extname(fileName) !== ".sh") {
