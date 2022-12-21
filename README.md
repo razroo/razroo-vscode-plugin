@@ -1,5 +1,5 @@
 <br>
-<b>Note: Click on the "Go!" button in the Razroo VSCode Plugin sidebar to get started.</b>
+<b>Note: Click on the "Go!" button in the Razroo Extension to get started.</b>
 <br>
 <br>
 <p align="center">
