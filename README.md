@@ -1,4 +1,6 @@
 <br>
+<b>Note: Click on the "Go!" button in the Razroo VSCode Plugin sidebar to get started.</b>
+<br>
 
 <p align="center">
   <img alt="Razroo Logo" src="https://assets.razroo.com/Razroo_6_18e473f9be.png" width="536"/>
