@@ -168,7 +168,6 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
 
     await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
     await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.id_token);
     const isProduction = context.extensionMode === 1;
     await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId);
     await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
@@ -179,7 +178,7 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
 };
 
 export const tryToAuth = async (context: vscode.ExtensionContext) => {
-  let accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
