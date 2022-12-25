@@ -79,9 +79,9 @@ export async function activate(context: vscode.ExtensionContext) {
               isInProgress && await vscode.commands.executeCommand('vscode.open', Uri.parse(loginUrl));
               const { createServerPromise, disposeAndCancelAuth } = createDisposableAuthServer();
               disposeServer = disposeAndCancelAuth;
-              const { idToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
-              setWorkspaceState(context, idToken, refreshToken, userId, orgId, isInProgress);
-              isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(token!, idToken, isProduction, userId, orgId);
+              const { accessToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
+              setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
+              isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(token!, accessToken, isProduction, userId, orgId);
               isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
               isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
               isInProgress && showInformationMessage('User successfully authenticated with Razroo.');

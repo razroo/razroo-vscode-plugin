@@ -89,9 +89,9 @@ async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction:
 }
 
 function generateVsCodeDownloadCodeSubError(data: any, context) {
-  let idToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
-  if(isTokenExpired(idToken as string)) {
+  if(isTokenExpired(accessToken as string)) {
     vscode.window.showInformationMessage(
       'Authentication Token Expired. Re-logging you in now.'
     );
@@ -127,7 +127,7 @@ export async function getPackageJson(workspacePath: string) {
 
 export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
-  idToken,
+  accessToken,
   privateDirectories,
   isProduction,
   userId,
@@ -181,7 +181,7 @@ export const updatePrivateDirectoriesRequest = async ({
       headers: {
         'Content-Type': 'application/json',
         Accept: 'charset=utf-8',
-        Authorization: `${idToken}`,
+        Authorization: `${accessToken}`,
       },
     });
     return response?.data;
@@ -191,8 +191,8 @@ export const updatePrivateDirectoriesRequest = async ({
   }
 };
 
-export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vsCodeInstanceId: string, isProduction: boolean) => {
-  return client(idToken, isProduction)
+export const removeVsCodeInstanceMutation = (accessToken: string, userId: string, vsCodeInstanceId: string, isProduction: boolean) => {
+  return client(accessToken, isProduction)
     .hydrated()
     .then(async client => {
       return client.mutate({
@@ -212,13 +212,13 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
       });
     });
 };
-export const saveTestOutputMutation = (idToken: string, isProduction: boolean, testType: string,
+export const saveTestOutputMutation = (accessToken: string, isProduction: boolean, testType: string,
   jsonObject: string,
   orgId: string,
   pathId: string,
   recipeId: string,
   stepId: string) => {
-  return client(idToken, isProduction)
+  return client(accessToken, isProduction)
     .hydrated()
     .then(async client => {
       return client.mutate({

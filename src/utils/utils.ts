@@ -98,7 +98,7 @@ export const saveFiles = async (
 
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
-  idToken: string,
+  accessToken: string,
   isProduction: boolean,
   userId: string,
   orgId: string
@@ -108,7 +108,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
-    idToken,
+    accessToken,
     privateDirectories,
     isProduction,
     userId,
@@ -134,11 +134,11 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgre
   const isProduction = context.extensionMode === 1;
   const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  const idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const accessToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
-  if (vsCodeInstanceId && userId && idToken && refreshToken) {
+  if (vsCodeInstanceId && userId && accessToken && refreshToken) {
     console.log('this is called as inside inside inside');
-    return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
+    return removeVsCodeInstanceMutation(accessToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
         context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
@@ -179,14 +179,14 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
 };
 
 export const tryToAuth = async (context: vscode.ExtensionContext) => {
-  let idToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  let accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  if (idToken && refreshToken && userId && orgId && token) {
+  if (accessToken && refreshToken && userId && orgId && token) {
 
-    if(isTokenExpired(idToken)) {
+    if(isTokenExpired(accessToken)) {
       await refreshAuth0Token(context, refreshToken, userId, orgId, token);
     }
 

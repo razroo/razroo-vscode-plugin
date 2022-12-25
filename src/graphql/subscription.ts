@@ -16,13 +16,13 @@ import { AWSAppSyncClient, AUTH_TYPE } from 'aws-appsync';
 const type = AUTH_TYPE.OPENID_CONNECT;
 
 // Set up Apollo client
-function client(idToken: string, isProduction: boolean) {
+function client(accessToken: string, isProduction: boolean) {
   return new AWSAppSyncClient({
     url: isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL,
     region: REGION,
     auth: {
       type,
-      jwtToken: idToken,
+      jwtToken: accessToken,
     },
     disableOffline: true
   });

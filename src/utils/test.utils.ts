@@ -5,29 +5,29 @@ import {saveTestOutputMutation} from './graphql.utils';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
-export async function unitTestGeneratedFiles(entryName: string, folderName: string, template: any, idToken, isProduction){
+export async function unitTestGeneratedFiles(entryName: string, folderName: string, template: any, accessToken, isProduction){
     if (entryName.includes(".spec")) {
         const unitTestFilePath = path.join(folderName, entryName);
         const execution = new vscode.ShellExecution(`npm run test -- ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
-        await executeBuildTask(task, path.basename(entryName), 'UnitTests', template, idToken, isProduction);
+        await executeBuildTask(task, path.basename(entryName), 'UnitTests', template, accessToken, isProduction);
     }
 }
 
-export async function integrationTestGeneratedFiles(entryName: string, folderName: string, template:any,  idToken: string, isProduction: boolean){    
+export async function integrationTestGeneratedFiles(entryName: string, folderName: string, template:any,  accessToken: string, isProduction: boolean){    
     if (entryName.includes(".spec")) {
         const unitTestFilePath = path.join(folderName, entryName);
         const execution = new vscode.ShellExecution(`npm run e2e`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
-        await executeBuildTask(task, path.basename(entryName), 'IntegrationTests', template, idToken, isProduction);
+        await executeBuildTask(task, path.basename(entryName), 'IntegrationTests', template, accessToken, isProduction);
     }
 }
 
-async function executeBuildTask(task: vscode.Task, fileName, testType, template, idToken, isProduction) {
+async function executeBuildTask(task: vscode.Task, fileName, testType, template, accessToken, isProduction) {
     const execution = await vscode.tasks.executeTask(task);
 
     return new Promise<void>(resolve => {
@@ -39,7 +39,7 @@ async function executeBuildTask(task: vscode.Task, fileName, testType, template,
                 testOutputContent = JSON.stringify(testOutputContent);
                 await cleanWorkspace();
                 //send mutation with results
-                saveTestOutputMutation(idToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
+                saveTestOutputMutation(accessToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
                     console.log('data from mutation: ', data?.data?.saveTestOutput)
                 })
                 // disposable.dispose();
