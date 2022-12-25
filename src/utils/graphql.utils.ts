@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
-import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
@@ -20,7 +20,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
-  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
+  client(`${context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -82,14 +82,14 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
   const token = await getOrCreateAndUpdateIdToken(context);
-  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
 
 function generateVsCodeDownloadCodeSubError(data: any, context) {
-  let idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  let idToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(idToken as string)) {
     vscode.window.showInformationMessage(
