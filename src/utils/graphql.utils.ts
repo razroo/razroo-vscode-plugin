@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
-import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
@@ -20,7 +20,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
-  client(`${context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)}`, isProduction)
+  client(`${context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)}`, isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -82,16 +82,16 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
   const token = await getOrCreateAndUpdateIdToken(context);
-  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
 
 function generateVsCodeDownloadCodeSubError(data: any, context) {
-  let idToken = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
-  if(isTokenExpired(idToken as string)) {
+  if(isTokenExpired(accessToken as string)) {
     vscode.window.showInformationMessage(
       'Authentication Token Expired. Re-logging you in now.'
     );
@@ -127,7 +127,7 @@ export async function getPackageJson(workspacePath: string) {
 
 export const updatePrivateDirectoriesRequest = async ({
   vsCodeToken,
-  idToken,
+  accessToken,
   privateDirectories,
   isProduction,
   userId,
@@ -181,7 +181,7 @@ export const updatePrivateDirectoriesRequest = async ({
       headers: {
         'Content-Type': 'application/json',
         Accept: 'charset=utf-8',
-        Authorization: `${idToken}`,
+        Authorization: `${accessToken}`,
       },
     });
     return response?.data;
@@ -191,8 +191,8 @@ export const updatePrivateDirectoriesRequest = async ({
   }
 };
 
-export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vsCodeInstanceId: string, isProduction: boolean) => {
-  return client(idToken, isProduction)
+export const removeVsCodeInstanceMutation = (accessToken: string, userId: string, vsCodeInstanceId: string, isProduction: boolean) => {
+  return client(accessToken, isProduction)
     .hydrated()
     .then(async client => {
       return client.mutate({
@@ -212,13 +212,13 @@ export const removeVsCodeInstanceMutation = (idToken: string, userId: string, vs
       });
     });
 };
-export const saveTestOutputMutation = (idToken: string, isProduction: boolean, testType: string,
+export const saveTestOutputMutation = (accessToken: string, isProduction: boolean, testType: string,
   jsonObject: string,
   orgId: string,
   pathId: string,
   recipeId: string,
   stepId: string) => {
-  return client(idToken, isProduction)
+  return client(accessToken, isProduction)
     .hydrated()
     .then(async client => {
       return client.mutate({

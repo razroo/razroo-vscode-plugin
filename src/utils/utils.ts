@@ -1,7 +1,3 @@
-import {
-  COMMAND_AUTH0_AUTH,
-  MEMENTO_RAZROO_ACCESS_TOKEN
-} from '../constants';
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
 import * as fs from 'fs';
@@ -15,7 +11,7 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { MEMENTO_RAZROO_ID_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
@@ -89,12 +85,12 @@ export const saveFiles = async (
 
     if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
+      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, context.extensionMode === 1);
     }
   
     if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, context.extensionMode === 1);
+      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, context.extensionMode === 1);
     }
   }
   
@@ -102,7 +98,7 @@ export const saveFiles = async (
 
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   vsCodeToken: string,
-  idToken: string,
+  accessToken: string,
   isProduction: boolean,
   userId: string,
   orgId: string
@@ -112,7 +108,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 
   return updatePrivateDirectoriesRequest({
     vsCodeToken,
-    idToken,
+    accessToken,
     privateDirectories,
     isProduction,
     userId,
@@ -138,16 +134,16 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, cancelAuthProgre
   const isProduction = context.extensionMode === 1;
   const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  const idToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const accessToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
-  if (vsCodeInstanceId && userId && idToken && refreshToken) {
+  if (vsCodeInstanceId && userId && accessToken && refreshToken) {
     console.log('this is called as inside inside inside');
-    return removeVsCodeInstanceMutation(idToken, userId, vsCodeInstanceId, isProduction)
+    return removeVsCodeInstanceMutation(accessToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
         context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
         context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
-        context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, null);
+        context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, null);
         context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
         if(progress) {
           cancelAuthProgress(progress);
@@ -172,7 +168,6 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
 
     await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
     await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await context.workspaceState.update(MEMENTO_RAZROO_ID_TOKEN, userData.id_token);
     const isProduction = context.extensionMode === 1;
     await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId);
     await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
@@ -183,20 +178,20 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
 };
 
 export const tryToAuth = async (context: vscode.ExtensionContext) => {
-  let idToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN);
+  const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  if (idToken && refreshToken && userId && orgId && token) {
+  if (accessToken && refreshToken && userId && orgId && token) {
 
-    if(isTokenExpired(idToken)) {
+    if(isTokenExpired(accessToken)) {
       await refreshAuth0Token(context, refreshToken, userId, orgId, token);
     }
 
     else {
       const isProduction = context.extensionMode === 1;
-      await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ID_TOKEN)!, isProduction, userId, orgId);
+      await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId);
       await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       showInformationMessage('User successfully authenticated with Razroo.');
