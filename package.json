@@ -47,6 +47,35 @@
       {
         "command": "extension.auth0Authentication",
         "title": "Razroo Auth0 Authentication"
+      },
+      {
+        "command": "extension.angularComponent",
+        "title": "Angular Component Scaffold"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "extension.scaffold",
+          "group": "myextension.myGroup",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "submenu": "scaffold.submenu",
+          "group": "myextension.myGroup"
+        }
+      ],
+      "scaffold.submenu":[
+        {
+          "command": "extension.angularComponent",
+          "group": "myextension.myGroup"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "scaffold.submenu",
+        "label": "Razroo Scaffold..."
       }
     ],
     "viewsContainers": {
