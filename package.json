@@ -75,7 +75,7 @@
     "submenus": [
       {
         "id": "scaffold.submenu",
-        "label": "Razroo Scaffold..."
+        "label": "Razroo Scaffold"
       }
     ],
     "viewsContainers": {
