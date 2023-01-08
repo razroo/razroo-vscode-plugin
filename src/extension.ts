@@ -10,6 +10,7 @@ import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
   COMMAND_CANCEL_AUTH,
+  GENERATE_ANGULAR_COMPONENT,
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
@@ -52,6 +53,15 @@ export async function activate(context: vscode.ExtensionContext) {
     progress.report({ increment: 100 });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', false);
   };
+
+  const generateAngularComponent = vscode.commands.registerCommand(
+    GENERATE_ANGULAR_COMPONENT,
+    async () => {
+      console.log('generate angular component');
+    }
+  );
+
+  context.subscriptions.push(generateAngularComponent);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,

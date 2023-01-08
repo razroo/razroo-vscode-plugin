@@ -20,3 +20,5 @@ export const DEV_AUTH0_URL = "dev.id.razroo.com";
 export const AUTH0_DEV_CLIENT_ID = 'Ar7y21NCpC8KhP9bHN1iBVTctXRYgNTY';
 export const AUTH0_DEV_DOMAIN = 'razroo-dev.us.auth0.com';
 export const EMPTY = 'EMPTY';
+
+export const GENERATE_ANGULAR_COMPONENT = 'generate.angular.component';
