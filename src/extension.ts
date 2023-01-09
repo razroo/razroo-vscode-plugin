@@ -1,3 +1,4 @@
+import { getPathScaffolds } from './graphql/scaffold/scaffold.service';
 import { getAuth0Url } from './utils/authentication/authentication';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import AdmZip from 'adm-zip';
@@ -59,7 +60,13 @@ export async function activate(context: vscode.ExtensionContext) {
     GENERATE_ANGULAR_COMPONENT,
     async ({path}) => {
       const orgId = COMMUNITY;
-      const pathId = 'angular-15.0.0';
+      const pathId = 'angular-14.1.0';
+
+      getPathScaffolds(orgId, pathId, context, isProduction).then(data => {
+        console.log('getPathScaffolds data');
+        console.log(data);
+      });
+      
     }
   );
 
