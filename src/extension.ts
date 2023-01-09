@@ -11,6 +11,7 @@ import {
   MEMENTO_RAZROO_ACCESS_TOKEN,
   COMMAND_CANCEL_AUTH,
   GENERATE_ANGULAR_COMPONENT,
+  COMMUNITY,
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
@@ -57,8 +58,8 @@ export async function activate(context: vscode.ExtensionContext) {
   const generateAngularComponent = vscode.commands.registerCommand(
     GENERATE_ANGULAR_COMPONENT,
     async ({path}) => {
-      console.log('generate angular component');
-      console.log(path);
+      const orgId = COMMUNITY;
+      const pathId = 'angular-15.0.0';
     }
   );
 
