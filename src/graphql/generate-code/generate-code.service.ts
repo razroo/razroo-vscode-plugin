@@ -1,11 +1,14 @@
+import { MEMENTO_RAZROO_ACCESS_TOKEN } from './../../constants';
 import { GenerateCodeParameters } from './../../interfaces/generate-code.interface';
 import { GenerateVsCodeDownloadCode } from "./generate-code.queries";
+import * as vscode from 'vscode';
 import axios from 'axios';
 
-export const generateCode = async ({
-    generateVsCodeDownloadCodeParameters: GenerateCodeParameters
-  }: any) => {
-    
+export const generateCode = async (
+    generateVsCodeDownloadCodeParameters: GenerateCodeParameters,
+    context: vscode.ExtensionContext
+) => {
+    const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
     const body = {
       query: GenerateVsCodeDownloadCode,
       variables: {
