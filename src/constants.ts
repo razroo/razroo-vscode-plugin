@@ -21,4 +21,6 @@ export const AUTH0_DEV_CLIENT_ID = 'Ar7y21NCpC8KhP9bHN1iBVTctXRYgNTY';
 export const AUTH0_DEV_DOMAIN = 'razroo-dev.us.auth0.com';
 export const EMPTY = 'EMPTY';
 
+export const COMMUNITY = 'community';
+
 export const GENERATE_ANGULAR_COMPONENT = 'generate.angular.component';
