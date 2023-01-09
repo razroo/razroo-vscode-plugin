@@ -1,9 +1,8 @@
 import { MEMENTO_RAZROO_ACCESS_TOKEN } from './../../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
-import { GenerateCodeParameters } from './../../interfaces/generate-code.interface';
-import { GenerateVsCodeDownloadCode } from "./generate-code.queries";
 import * as vscode from 'vscode';
 import axios from 'axios';
+import { GetPathScaffolds } from './scaffold.queries';
 
 export const getPathScaffolds = async (
     pathOrgId: string,
@@ -14,7 +13,7 @@ export const getPathScaffolds = async (
     const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
-      query: GenerateVsCodeDownloadCode,
+      query: GetPathScaffolds,
       variables: {
         pathOrgId,
         pathId
