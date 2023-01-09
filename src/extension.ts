@@ -56,8 +56,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const generateAngularComponent = vscode.commands.registerCommand(
     GENERATE_ANGULAR_COMPONENT,
-    async () => {
+    async ({path}) => {
       console.log('generate angular component');
+      console.log(path);
     }
   );
 
