@@ -1,6 +1,4 @@
-import gql from 'graphql-tag';
-
-export const GenerateVsCodeDownloadCode = gql`
+export const GenerateVsCodeDownloadCode = `
   query generateVsCodeDownloadCode($generateVsCodeDownloadCodeParameters: GenerateCodeDownloadInput) {
     generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters: $generateVsCodeDownloadCodeParameters) {
       downloadUrl
