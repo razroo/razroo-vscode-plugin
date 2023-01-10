@@ -1,3 +1,4 @@
+import { generateVsCodeDownloadCode } from './graphql/generate-code/generate-code.service';
 import { getPathScaffolds } from './graphql/scaffold/scaffold.service';
 import { getAuth0Url } from './utils/authentication/authentication';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
@@ -13,6 +14,9 @@ import {
   COMMAND_CANCEL_AUTH,
   GENERATE_ANGULAR_COMPONENT,
   COMMUNITY,
+  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
+  MEMENTO_RAZROO_USER_ID,
+  MEMENTO_RAZROO_ORG_ID,
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
@@ -67,13 +71,27 @@ export async function activate(context: vscode.ExtensionContext) {
         const nameFilePath = getNameFilePathFromFullPath(path);
         const name = getNameFromFullPath(path);
         const firstScaffold = scaffoldData[0];
-        const recipeId = firstScaffold.recipeId;
-        const id = firstScaffold.id;
         const parameters = {
           nameFilePath: nameFilePath,
           name: name,
           projectName: 'razroo-angular-starter'
         };
+        const generateVsCodeDownloadCodeParameters = {
+          projectName: 'razroo-angular-starter',
+          parameters: JSON.stringify(parameters),
+          pathOrgId: orgId,
+          pathId: pathId,
+          recipeId: firstScaffold.recipeId,
+          stepId: firstScaffold.id,
+          vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
+          userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
+          userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
+        };
+
+        generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
+          console.log('data');
+          console.log(data);
+        });
       });
       
     }

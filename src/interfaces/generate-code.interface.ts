@@ -1,5 +1,4 @@
 export interface GenerateCodeParameters {
-    customInsertPath?: string;
     parameters?: string;
     userOrgId: string;
     userId: string;

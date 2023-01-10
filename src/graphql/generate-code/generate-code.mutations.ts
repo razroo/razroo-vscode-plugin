@@ -1,5 +1,5 @@
 export const GenerateVsCodeDownloadCode = `
-  query generateVsCodeDownloadCode($generateVsCodeDownloadCodeParameters: GenerateCodeDownloadInput) {
+  mutation generateVsCodeDownloadCode($generateVsCodeDownloadCodeParameters: GenerateCodeDownloadInput) {
     generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters: $generateVsCodeDownloadCodeParameters) {
       downloadUrl
       template {
