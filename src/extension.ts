@@ -61,10 +61,20 @@ export async function activate(context: vscode.ExtensionContext) {
     async ({path}) => {
       const orgId = COMMUNITY;
       const pathId = 'angular-14.1.0';
+      console.log('path');
+      console.log(path);
 
-      getPathScaffolds(orgId, pathId, context, isProduction).then(data => {
-        console.log('getPathScaffolds data');
-        console.log(data);
+      getPathScaffolds(orgId, pathId, context, isProduction).then(scaffoldData => {
+        const firstScaffold = scaffoldData[0];
+        const recipeId = firstScaffold.recipeId;
+        const id = firstScaffold.id;
+        const nameFilePath = path;
+        const name = path.split('/').pop();
+        const projectName = 'razroo-angular-starter';
+        console.log('recipeId');
+        console.log(recipeId);
+        console.log('id');
+        console.log(id);
       });
       
     }
