@@ -1,7 +1,7 @@
 import { MEMENTO_RAZROO_ACCESS_TOKEN } from './../../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
 import { GenerateCodeParameters } from './../../interfaces/generate-code.interface';
-import { GenerateVsCodeDownloadCode } from "./generate-code.queries";
+import { GenerateVsCodeDownloadCode } from "./generate-code.mutations";
 import * as vscode from 'vscode';
 import axios from 'axios';
 

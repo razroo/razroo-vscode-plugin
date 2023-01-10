@@ -27,7 +27,7 @@ export const getPathScaffolds = async (
           Authorization: `${accessToken}`,
         },
       });
-      return response?.data;
+      return response?.data?.data?.getPathScaffolds;
     } catch (error) {    
       console.log('error generateVsCodeDownloadCode', error);
       return error;

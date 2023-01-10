@@ -20,18 +20,17 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   let isProduction = context.extensionMode === 1;
   //Subscribe with appsync client
-  client(`${context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)}`, isProduction)
+  client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
       const generateVsCodeDownloadCodeSub$ = client.subscribe({
         query: gql(`
-        subscription MySubscription {
+        subscription GenerateVsCodeDownloadCodeSub {
             generateVsCodeDownloadCodeSub(vsCodeInstanceId: "${vsCodeInstanceId}") {
               vsCodeInstanceId
               downloadUrl
               parameters
-              customInsertPath
               runUnitTests
               runIntegrationTests
               template {
@@ -69,7 +68,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        generateVsCodeDownloadCodeSubError(data, context);
+        await generateVsCodeDownloadCodeSubError(data, context);
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
@@ -77,8 +76,18 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
         complete: console.log,
         error: error,
       });
+    }).catch(async function (error) {
+      // This function will be called if the client function returns a rejected Promise.
+      console.error(error);
+
+      await fallback(context);
     });
 };
+
+async function fallback(content) {
+  console.log('content');
+  console.log(content);
+}
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
   const token = await getOrCreateAndUpdateIdToken(context);
@@ -88,7 +97,7 @@ async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction:
   await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
 
-function generateVsCodeDownloadCodeSubError(data: any, context) {
+async function generateVsCodeDownloadCodeSubError(data: any, context) {
   let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(accessToken as string)) {
@@ -98,6 +107,7 @@ function generateVsCodeDownloadCodeSubError(data: any, context) {
 
     tryToAuth(context);
   }
+  return data;
 }
 
 export async function getVersionControlParams(workspacePath: string) {
