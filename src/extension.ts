@@ -74,12 +74,6 @@ export async function activate(context: vscode.ExtensionContext) {
           name: name,
           projectName: 'razroo-angular-starter'
         };
-        console.log('parameters');
-        console.log(parameters);
-        console.log('recipeId');
-        console.log(recipeId);
-        console.log('id');
-        console.log(id);
       });
       
     }
