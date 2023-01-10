@@ -6,7 +6,29 @@ export const GenerateVsCodeDownloadCode = `
         id
         title
         type
+        recipeId
+        pathId
+        orgId
+        updates
+        filesToGenerate
+        parameters {
+          defaultValue
+          description
+          inputType
+          name
+          paramType
+          type
+          optionalTypes {
+            name
+            selected
+          }
+        }
+        baseCommunityPath
       }
+      runUnitTests
+      runIntegrationTests
+      vsCodeInstanceId
+      parameters
     }
   }
 `;
