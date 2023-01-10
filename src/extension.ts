@@ -21,6 +21,7 @@ import { EventEmitter } from 'stream';
 import { isEmptyWorkspace } from './utils/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
 import { getOrCreateAndUpdateIdToken } from 'utils/token/token';
+import { getNameFilePathFromFullPath, getNameFromFullPath } from 'common-utils/scaffold/scaffold.utils';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -61,16 +62,20 @@ export async function activate(context: vscode.ExtensionContext) {
     async ({path}) => {
       const orgId = COMMUNITY;
       const pathId = 'angular-14.1.0';
-      console.log('path');
-      console.log(path);
 
       getPathScaffolds(orgId, pathId, context, isProduction).then(scaffoldData => {
+        const nameFilePath = getNameFilePathFromFullPath(path);
+        const name = getNameFromFullPath(path);
         const firstScaffold = scaffoldData[0];
         const recipeId = firstScaffold.recipeId;
         const id = firstScaffold.id;
-        const nameFilePath = path;
-        const name = path.split('/').pop();
-        const projectName = 'razroo-angular-starter';
+        const parameters = {
+          nameFilePath: nameFilePath,
+          name: name,
+          projectName: 'razroo-angular-starter'
+        };
+        console.log('parameters');
+        console.log(parameters);
         console.log('recipeId');
         console.log(recipeId);
         console.log('id');
