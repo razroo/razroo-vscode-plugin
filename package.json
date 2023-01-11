@@ -50,7 +50,7 @@
       },
       {
         "command": "generate.angular.component",
-        "title": "Angular Component Scaffold"
+        "title": "Angular Component"
       }
     ],
     "menus": {
