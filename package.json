@@ -51,6 +51,26 @@
       {
         "command": "generate.angular.component",
         "title": "Angular Component"
+      },
+      {
+        "command": "generate.angular.service",
+        "title": "Angular Service"
+      },
+      {
+        "command": "generate.angular.pipe",
+        "title": "Angular Pipe"
+      },
+      {
+        "command": "generate.angular.directive",
+        "title": "Angular Directive"
+      },
+      {
+        "command": "generate.angular.guard",
+        "title": "Angular Guard"
+      },
+      {
+        "command": "generate.angular.typescriptInterface",
+        "title": "Typescript Interface"
       }
     ],
     "menus": {
@@ -63,6 +83,31 @@
       "scaffold.submenu": [
         {
           "command": "generate.angular.component",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.service",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.pipe",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.guard",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.directive",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.typescriptInterface",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         }
