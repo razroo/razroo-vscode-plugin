@@ -24,3 +24,8 @@ export const EMPTY = 'EMPTY';
 export const COMMUNITY = 'community';
 
 export const GENERATE_ANGULAR_COMPONENT = 'generate.angular.component';
+export const GENERATE_ANGULAR_SERVICE = 'generate.angular.service';
+export const GENERATE_ANGULAR_GUARD = 'generate.angular.guard';
+export const GENERATE_ANGULAR_TYPESCRIPT_INTERFACE = 'generate.angular.typescriptInterface';
+export const GENERATE_ANGULAR_PIPE = 'generate.angular.pipe';
+export const GENERATE_ANGULAR_DIRECTIVE = 'generate.angular.directive';
