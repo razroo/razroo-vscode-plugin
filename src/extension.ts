@@ -25,7 +25,7 @@ import {
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
-import { subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
+import { getPackageJson, subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
 import { isEmptyWorkspace } from './utils/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
@@ -39,6 +39,8 @@ export async function activate(context: vscode.ExtensionContext) {
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
+  const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  const packageJsonParams = await getPackageJson(workspacePath as any);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
@@ -68,32 +70,32 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const generateAngularComponent = vscode.commands.registerCommand(
     GENERATE_ANGULAR_COMPONENT,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'component')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'component', packageJsonParams)
   );
   context.subscriptions.push(generateAngularComponent);
   const generateAngularService = vscode.commands.registerCommand(
     GENERATE_ANGULAR_SERVICE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-service')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-service', packageJsonParams)
   );
   context.subscriptions.push(generateAngularService);
   const generateAngularPipe = vscode.commands.registerCommand(
     GENERATE_ANGULAR_PIPE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-pipe')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-pipe', packageJsonParams)
   );
   context.subscriptions.push(generateAngularPipe);
   const generateAngularGuard = vscode.commands.registerCommand(
     GENERATE_ANGULAR_GUARD,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-guard')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-guard', packageJsonParams)
   );
   context.subscriptions.push(generateAngularGuard);
   const generateAngularDirective = vscode.commands.registerCommand(
     GENERATE_ANGULAR_DIRECTIVE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-directive')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-directive', packageJsonParams)
   );
   context.subscriptions.push(generateAngularDirective);
   const generateAngularTypescriptInterface = vscode.commands.registerCommand(
     GENERATE_ANGULAR_TYPESCRIPT_INTERFACE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'typescript-interface')
+    async ({path}) => createAngularScaffold(path, context, isProduction, 'typescript-interface', packageJsonParams)
   );
   context.subscriptions.push(generateAngularTypescriptInterface);
 
@@ -274,7 +276,7 @@ export async function deactivate() {
   await onVSCodeClose(context);
 };
 
-function createAngularScaffold(path, context, isProduction, scaffoldId){
+function createAngularScaffold(path, context, isProduction, scaffoldId, packageJsonParams){
   const orgId = COMMUNITY;
   const pathId = 'angular-15.0.0';
   getPathScaffolds(orgId, pathId, context, isProduction).then(scaffoldData => {
@@ -284,10 +286,10 @@ function createAngularScaffold(path, context, isProduction, scaffoldId){
     const parameters = {
       nameFilePath: nameFilePath,
       name: name,
-      projectName: 'razroo-angular-starter'
+      projectName: packageJsonParams.name
     };
     const generateVsCodeDownloadCodeParameters = {
-      projectName: 'razroo-angular-starter',
+      projectName: packageJsonParams.name,
       parameters: JSON.stringify(parameters),
       pathOrgId: orgId,
       pathId: pathId,
