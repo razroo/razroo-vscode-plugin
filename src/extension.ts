@@ -279,30 +279,30 @@ export async function deactivate() {
 function createAngularScaffold(path, context, isProduction, scaffoldId, packageJsonParams){
   const orgId = COMMUNITY;
   const pathId = 'angular-15.0.0';
-  getPathScaffolds(orgId, pathId, context, isProduction).then(scaffoldData => {
-    const nameFilePath = getNameFilePathFromFullPath(path);
-    const name = getNameFromFullPath(path);
-    const scaffold = scaffoldData.find(item => item.id === scaffoldId);
-    const parameters = {
-      nameFilePath: nameFilePath,
-      name: name,
-      projectName: packageJsonParams.name
-    };
-    const generateVsCodeDownloadCodeParameters = {
-      projectName: packageJsonParams.name,
-      parameters: JSON.stringify(parameters),
-      pathOrgId: orgId,
-      pathId: pathId,
-      recipeId: scaffold.recipeId,
-      stepId: scaffold.id,
-      vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
-      userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
-      userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
-    };
+  const recipeId = 'angular-core';
+  const nameFilePath = getNameFilePathFromFullPath(path);
+  const name = getNameFromFullPath(path);
+  
+  const parameters = {
+    nameFilePath: nameFilePath,
+    name: name,
+    projectName: packageJsonParams.name
+  };
 
-    generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-      console.log('data');
-      console.log(data);
-    });
+  const generateVsCodeDownloadCodeParameters = {
+    projectName: packageJsonParams.name,
+    parameters: JSON.stringify(parameters),
+    pathOrgId: orgId,
+    pathId: pathId,
+    recipeId: recipeId,
+    stepId: scaffoldId,
+    vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
+    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
+    userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
+  };
+
+  generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
+    console.log('data');
+    console.log(data);
   });
 }
