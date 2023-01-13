@@ -282,15 +282,16 @@ function createAngularScaffold(path, context, isProduction, scaffoldId, packageJ
   const recipeId = 'angular-core';
   const nameFilePath = getNameFilePathFromFullPath(path);
   const name = getNameFromFullPath(path);
+  const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
   
   const parameters = {
     nameFilePath: nameFilePath,
     name: name,
-    projectName: packageJsonParams.name
+    projectName: parsedPackageJsonParams.name
   };
 
   const generateVsCodeDownloadCodeParameters = {
-    projectName: packageJsonParams.name,
+    projectName: parsedPackageJsonParams.name,
     parameters: JSON.stringify(parameters),
     pathOrgId: orgId,
     pathId: pathId,
