@@ -1,5 +1,10 @@
 import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
+import path from "path";
+import dotenv from "dotenv";
+// Parsing the env file.
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 // 1. getPaths - TODO modify this so 
 // 2. loop throguh each path
 // 3. get scaffolds of each path
