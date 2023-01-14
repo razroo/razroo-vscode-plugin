@@ -6,4 +6,5 @@ out
 *.vsix
 dist
 yarn.lock
+.env
 package-lock.json
