@@ -1,3 +1,4 @@
+import { getPathScaffolds } from './../src/graphql/scaffold/scaffold.service';
 import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
@@ -15,6 +16,11 @@ const accessToken = process.env.accessToken as string;
 const production = true;
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
-  console.log('paths');
-  console.log(paths);
+  const angularPath = paths[0];
+  console.log('angularPath');
+  console.log(angularPath);
+  getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
+    console.log('scaffolds');
+    console.log(scaffolds);
+  });
 });
