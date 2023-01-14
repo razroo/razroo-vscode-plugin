@@ -7,10 +7,9 @@ import { GetPathScaffolds } from './scaffold.queries';
 export const getPathScaffolds = async (
     pathOrgId: string,
     pathId: string,
-    context: vscode.ExtensionContext,
+    accessToken: string,
     isProduction: boolean
 ) => {
-    const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
       query: GetPathScaffolds,
