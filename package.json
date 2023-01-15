@@ -244,6 +244,7 @@
     "ignore": "^5.2.0",
     "isomorphic-fetch": "^3.0.0",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "merge-options": "^3.0.4",
     "mime": "^3.0.0",
     "mocha": "^10.0.0",
