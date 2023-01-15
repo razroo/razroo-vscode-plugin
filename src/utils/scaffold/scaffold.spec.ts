@@ -1,4 +1,4 @@
-import { createScaffoldSubmenu } from "./scaffold";
+import { createScaffoldCommand, createScaffoldSubmenu } from "./scaffold";
 
 describe('createScaffoldSubmenu', () => {
   it('should create a scaffold submenu', () => {
@@ -13,4 +13,18 @@ describe('createScaffoldSubmenu', () => {
 
     expect(result).toEqual(expected);
   });  
+});
+
+describe('createScaffoldCommand', () => {
+  it('should create a scaffold command', () => {
+    const pathId = 'angular-15.0.0';
+    const scaffoldId = 'component';
+    const result = createScaffoldCommand(pathId, scaffoldId);
+    const expected = {
+      "command": `generate.${pathId}.${scaffoldId}`,
+      "title": "Angular Component"
+    };
+
+    expect(result).toEqual(expected);
+   });
 });
