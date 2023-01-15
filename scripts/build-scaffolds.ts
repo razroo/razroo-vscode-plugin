@@ -4,7 +4,7 @@ import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
 import dotenv from "dotenv";
 import { createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -19,12 +19,9 @@ const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
 
-
 getPaths(COMMUNITY, accessToken, production).then(paths => {
   const scaffoldSubmenu = [] as any;
   const angularPath = paths[0];
-  console.log('angularPath');
-  console.log(angularPath);
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
     scaffolds.forEach(scaffold => {
       const createScaffoldSubmenuItem = createScaffoldSubmenu(scaffold.pathId, scaffold.id);
@@ -33,8 +30,8 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
 
     const edits = [
       {
-        nodeType: 'addJsonKeyValue',
-        valueToModify: 'scaffold.submenu',
+        nodeType: 'editJson',
+        valueToModify: '/contributes/menus/scaffold.submenu',
         codeBlock: scaffoldSubmenu
       }
     ];
@@ -45,8 +42,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     };
 
     const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
-    console.log('packageJsonFilePostEdits');
-    console.log(packageJsonFilePostEdits);
+    writeFileSync('package.json', packageJsonFilePostEdits);
   });
 
   
