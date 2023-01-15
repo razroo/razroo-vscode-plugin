@@ -1,3 +1,6 @@
+import { getVersionAndNameString } from "@razroo/razroo-codemod";
+import {startCase} from "lodash";
+
 export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
   return {
     "command": `generate.${pathId}.${scaffoldId}`,
@@ -7,8 +10,10 @@ export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
 }
 
 export function createScaffoldCommand(pathId: string, scaffoldId: string) {
-    return {        
-      "command": `generate.${pathId}.${scaffoldId}`,
-      "title": "Angular Component"
-    }; 
-  }
+  const { name } = getVersionAndNameString(pathId);
+  const title = startCase(`${name} ${scaffoldId}`);
+  return {
+    "command": `generate.${pathId}.${scaffoldId}`,
+    "title": title
+  };
+}
