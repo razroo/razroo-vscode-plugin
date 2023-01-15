@@ -11,26 +11,15 @@ import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthenticatio
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  COMMAND_CANCEL_AUTH,
-  GENERATE_ANGULAR_COMPONENT,
-  GENERATE_ANGULAR_SERVICE,
-  COMMUNITY,
-  MEMENTO_RAZROO_ID_VS_CODE_TOKEN,
-  MEMENTO_RAZROO_USER_ID,
-  MEMENTO_RAZROO_ORG_ID,
-  GENERATE_ANGULAR_GUARD,
-  GENERATE_ANGULAR_TYPESCRIPT_INTERFACE,
-  GENERATE_ANGULAR_PIPE,
-  GENERATE_ANGULAR_DIRECTIVE,
+  COMMAND_CANCEL_AUTH
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
 import { getPackageJson, subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
-import { isEmptyWorkspace } from './utils/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
-import { getOrCreateAndUpdateIdToken } from 'utils/token/token';
-import { getNameFilePathFromFullPath, getNameFromFullPath } from 'common-utils/scaffold/scaffold.utils';
+import { getOrCreateAndUpdateIdToken } from './utils/token/token';
+import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -68,36 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', false);
   };
 
-  const generateAngularComponent = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_COMPONENT,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'component', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularComponent);
-  const generateAngularService = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_SERVICE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-service', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularService);
-  const generateAngularPipe = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_PIPE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-pipe', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularPipe);
-  const generateAngularGuard = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_GUARD,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-guard', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularGuard);
-  const generateAngularDirective = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_DIRECTIVE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-directive', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularDirective);
-  const generateAngularTypescriptInterface = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_TYPESCRIPT_INTERFACE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'typescript-interface', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularTypescriptInterface);
+  pushScaffoldCommands(context, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
@@ -275,35 +235,3 @@ export async function deactivate() {
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
   await onVSCodeClose(context);
 };
-
-function createAngularScaffold(path, context, isProduction, scaffoldId, packageJsonParams){
-  const orgId = COMMUNITY;
-  const pathId = 'angular-15.0.0';
-  const recipeId = 'angular-core';
-  const nameFilePath = getNameFilePathFromFullPath(path);
-  const name = getNameFromFullPath(path);
-  const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
-  
-  const parameters = {
-    nameFilePath: nameFilePath,
-    name: name,
-    projectName: parsedPackageJsonParams.name
-  };
-
-  const generateVsCodeDownloadCodeParameters = {
-    projectName: parsedPackageJsonParams.name,
-    parameters: JSON.stringify(parameters),
-    pathOrgId: orgId,
-    pathId: pathId,
-    recipeId: recipeId,
-    stepId: scaffoldId,
-    vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
-    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
-    userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
-  };
-
-  generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-    console.log('data');
-    console.log(data);
-  });
-}
