@@ -21,7 +21,7 @@ export function createScaffoldCommand(pathId: string, scaffoldId: string) {
   };
 }
 
-export function createScaffold(pathId: string, recipeId: string, path, context, isProduction, scaffoldId, packageJsonParams){
+export function createScaffold(pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
   const orgId = COMMUNITY;
   const nameFilePath = getNameFilePathFromFullPath(path);
   const name = getNameFromFullPath(path);
