@@ -3,6 +3,9 @@ import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
 import dotenv from "dotenv";
+import { createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
+import { readFileSync } from 'fs';
+import { morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -14,13 +17,37 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 // 6. import into extension.ts
 const accessToken = process.env.accessToken as string;
 const production = true;
+const packageJson = readFileSync('package.json').toString();
+
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
+  const scaffoldSubmenu = [] as any;
   const angularPath = paths[0];
   console.log('angularPath');
   console.log(angularPath);
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
-    console.log('scaffolds');
-    console.log(scaffolds);
+    scaffolds.forEach(scaffold => {
+      const createScaffoldSubmenuItem = createScaffoldSubmenu(scaffold.pathId, scaffold.id);
+      scaffoldSubmenu.push(createScaffoldSubmenuItem);
+    });
+
+    const edits = [
+      {
+        nodeType: 'addJsonKeyValue',
+        valueToModify: 'scaffold.submenu',
+        codeBlock: scaffoldSubmenu
+      }
+    ];
+    const morphCodeEditJson = {
+      fileType: 'json',
+      fileToBeAddedTo: packageJson,
+      edits: edits
+    };
+
+    const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
+    console.log('packageJsonFilePostEdits');
+    console.log(packageJsonFilePostEdits);
   });
+
+  
 });
