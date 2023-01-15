@@ -70,32 +70,32 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const generateAngularComponent = vscode.commands.registerCommand(
     GENERATE_ANGULAR_COMPONENT,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'component', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'component', packageJsonParams)
   );
   context.subscriptions.push(generateAngularComponent);
   const generateAngularService = vscode.commands.registerCommand(
     GENERATE_ANGULAR_SERVICE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-service', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-service', packageJsonParams)
   );
   context.subscriptions.push(generateAngularService);
   const generateAngularPipe = vscode.commands.registerCommand(
     GENERATE_ANGULAR_PIPE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-pipe', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-pipe', packageJsonParams)
   );
   context.subscriptions.push(generateAngularPipe);
   const generateAngularGuard = vscode.commands.registerCommand(
     GENERATE_ANGULAR_GUARD,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-guard', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-guard', packageJsonParams)
   );
   context.subscriptions.push(generateAngularGuard);
   const generateAngularDirective = vscode.commands.registerCommand(
     GENERATE_ANGULAR_DIRECTIVE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'angular-directive', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-directive', packageJsonParams)
   );
   context.subscriptions.push(generateAngularDirective);
   const generateAngularTypescriptInterface = vscode.commands.registerCommand(
     GENERATE_ANGULAR_TYPESCRIPT_INTERFACE,
-    async ({path}) => createAngularScaffold(path, context, isProduction, 'typescript-interface', packageJsonParams)
+    async ({path}) => createScaffold('angular-15.0.0', 'angular-core', path, context, isProduction, 'typescript-interface', packageJsonParams)
   );
   context.subscriptions.push(generateAngularTypescriptInterface);
 
@@ -276,10 +276,8 @@ export async function deactivate() {
   await onVSCodeClose(context);
 };
 
-function createAngularScaffold(path, context, isProduction, scaffoldId, packageJsonParams){
+function createScaffold(pathId: string, recipeId: string, path, context, isProduction, scaffoldId, packageJsonParams){
   const orgId = COMMUNITY;
-  const pathId = 'angular-15.0.0';
-  const recipeId = 'angular-core';
   const nameFilePath = getNameFilePathFromFullPath(path);
   const name = getNameFromFullPath(path);
   const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
