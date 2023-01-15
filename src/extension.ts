@@ -27,10 +27,9 @@ import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
 import { getPackageJson, subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
-import { isEmptyWorkspace } from './utils/directory.utils';
 import { setWorkspaceState } from './utils/state.utils';
-import { getOrCreateAndUpdateIdToken } from 'utils/token/token';
-import { getNameFilePathFromFullPath, getNameFromFullPath } from 'common-utils/scaffold/scaffold.utils';
+import { getOrCreateAndUpdateIdToken } from './utils/token/token';
+import { createScaffold } from './utils/scaffold/scaffold';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -275,33 +274,3 @@ export async function deactivate() {
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
   await onVSCodeClose(context);
 };
-
-function createScaffold(pathId: string, recipeId: string, path, context, isProduction, scaffoldId, packageJsonParams){
-  const orgId = COMMUNITY;
-  const nameFilePath = getNameFilePathFromFullPath(path);
-  const name = getNameFromFullPath(path);
-  const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
-  
-  const parameters = {
-    nameFilePath: nameFilePath,
-    name: name,
-    projectName: parsedPackageJsonParams.name
-  };
-
-  const generateVsCodeDownloadCodeParameters = {
-    projectName: parsedPackageJsonParams.name,
-    parameters: JSON.stringify(parameters),
-    pathOrgId: orgId,
-    pathId: pathId,
-    recipeId: recipeId,
-    stepId: scaffoldId,
-    vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
-    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
-    userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
-  };
-
-  generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-    console.log('data');
-    console.log(data);
-  });
-}
