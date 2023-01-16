@@ -47,6 +47,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
         name: pushScaffoldCommandName,
+        parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}],
         codeBlock: pushScaffoldFunctionStatement
       });
       pushScafffoldCommands.push(pushScaffoldCommandName);
