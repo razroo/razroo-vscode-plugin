@@ -59,7 +59,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         codeBlock: scaffoldSubmenu
       },
     ];
-    
+
     const morphCodeEditJson = {
       fileType: 'json',
       fileToBeAddedTo: packageJson,
@@ -86,6 +86,9 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     writeFileSync('package.json', packageJsonFilePostCommandEdits);
 
     // add appropriate functions for push scaffold commands
+    // first will add global function to edits 
+
+    // next formulate all edits
     const pushScaffoldCommandsEditJson = {
       fileType: 'ts',
       fileToBeAddedTo: pushCommandScaffoldsTs,
