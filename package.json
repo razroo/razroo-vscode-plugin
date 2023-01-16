@@ -219,7 +219,7 @@
     "@aws-sdk/signature-v4-crt": "^3.45.0",
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@razroo/package-json-manager": "^1.0.2",
-    "@razroo/razroo-codemod": "^1.9.9",
+    "@razroo/razroo-codemod": "^2.0.0",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
     "auth0": "^2.37.0",
