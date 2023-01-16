@@ -3,7 +3,7 @@ import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
 import dotenv from "dotenv";
-import { buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
+import { buildPushScaffoldCommandsStatement, buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
 import { getVersionAndNameString, morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
@@ -87,6 +87,14 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
 
     // add appropriate functions for push scaffold commands
     // first will add global function to edits 
+    const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
+    pushScaffoldCommandsEdits.push({
+      nodeType: 'addFunction',
+      name: 'pushScaffoldCommands',
+      isExported: true,
+      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+      codeBlock: builtPushScaffoldCommandsStatement
+    });
 
     // next formulate all edits
     const pushScaffoldCommandsEditJson = {
