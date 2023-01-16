@@ -21,6 +21,15 @@ export function createScaffoldCommand(pathId: string, scaffoldId: string) {
   };
 }
 
+export function buildScaffoldFunction(pathId: string, scaffoldId: string, recipeId: string) {
+  return `
+    return vscode.commands.registerCommand(
+      generate.${pathId}.${scaffoldId},
+        async ({path}) => createScaffold('${pathId}', ${recipeId}, path, context, isProduction, ${scaffoldId}, packageJsonParams)
+      );
+  `;
+}
+
 export function createScaffold(pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
   const orgId = COMMUNITY;
   const nameFilePath = getNameFilePathFromFullPath(path);
