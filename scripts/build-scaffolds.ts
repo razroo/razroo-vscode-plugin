@@ -19,7 +19,7 @@ const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
 import { camelCase } from 'lodash';
-const pushCommandScaffoldsTs = readFileSync('src/utils/scaffold/push-scaffold-commands.ts').toString();
+const pushCommandScaffoldsTs = '';
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
   const scaffoldSubmenu = [] as any;
@@ -47,7 +47,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
         name: pushScaffoldCommandName,
-        parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}],
+        parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
         codeBlock: pushScaffoldFunctionStatement
       });
       pushScafffoldCommands.push(pushScaffoldCommandName);
