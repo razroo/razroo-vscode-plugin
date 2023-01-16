@@ -39,7 +39,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(scaffold.pathId, scaffold.id, scaffold.recipeId);
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
-        name: camelCase(`generate${pathId.name}${scaffold.id}`),
+        name: camelCase(`generate-${pathId.name}-${scaffold.id}`),
         codeBlock: pushScaffoldFunctionStatement
       });
     });
