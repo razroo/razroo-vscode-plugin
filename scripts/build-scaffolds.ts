@@ -32,8 +32,8 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
     const pathId = getVersionAndNameString(angularPath.id);
     scaffolds.forEach(scaffold => {
-      const createScaffoldSubmenuItem = createScaffoldSubmenu(scaffold.pathId, scaffold.id);
-      const createScaffoldCommandItem = createScaffoldCommand(scaffold.pathId, scaffold.id);
+      const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, scaffold.id);
+      const createScaffoldCommandItem = createScaffoldCommand(pathId.name, scaffold.id);
       scaffoldSubmenu.push(createScaffoldSubmenuItem);
       scaffoldCommands.push(createScaffoldCommandItem);
       const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
