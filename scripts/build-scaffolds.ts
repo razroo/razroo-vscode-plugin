@@ -3,9 +3,9 @@ import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
 import dotenv from "dotenv";
-import { buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
+import { buildPushScaffoldCommandsStatement, buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
-import { morphCode } from '@razroo/razroo-codemod';
+import { getVersionAndNameString, morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -18,7 +18,8 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
-const pushCommandScaffoldsTs = readFileSync('src/utils/scaffold/push-scaffold-commands.ts').toString();
+import { camelCase } from 'lodash';
+const pushCommandScaffoldsTs = '';
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
   const scaffoldSubmenu = [] as any;
@@ -26,20 +27,30 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     command: "extension.auth0Authentication",
     title: "Razroo Auth0 Authentication"
   }] as any;
-  const pushScaffoldCommandsEdits = [] as any;
+  const pushScaffoldCommandsEdits = [{
+    nodeType: 'import',
+    codeBlock: '{ createScaffold }',
+    path: './scaffold'
+  }] as any;
+  const pushScafffoldCommands = [] as any;
   const angularPath = paths[0];
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
+    const pathId = getVersionAndNameString(angularPath.id);
     scaffolds.forEach(scaffold => {
-      const createScaffoldSubmenuItem = createScaffoldSubmenu(scaffold.pathId, scaffold.id);
-      const createScaffoldCommandItem = createScaffoldCommand(scaffold.pathId, scaffold.id);
+      const camelCaseScaffoldId = camelCase(scaffold.id);
+      const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, camelCaseScaffoldId);
+      const createScaffoldCommandItem = createScaffoldCommand(pathId.name, camelCaseScaffoldId);
       scaffoldSubmenu.push(createScaffoldSubmenuItem);
       scaffoldCommands.push(createScaffoldCommandItem);
-      const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(scaffold.pathId, scaffold.id, scaffold.recipeId);
+      const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
+      const pushScaffoldCommandName = camelCase(`generate-${pathId.name}-${scaffold.id}`);
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
-        name: `generate${scaffold.pathId}${scaffold.id}`,
+        name: pushScaffoldCommandName,
+        parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
         codeBlock: pushScaffoldFunctionStatement
       });
+      pushScafffoldCommands.push(pushScaffoldCommandName);
     });
 
     const edits = [
@@ -49,6 +60,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         codeBlock: scaffoldSubmenu
       },
     ];
+
     const morphCodeEditJson = {
       fileType: 'json',
       fileToBeAddedTo: packageJson,
@@ -75,6 +87,17 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     writeFileSync('package.json', packageJsonFilePostCommandEdits);
 
     // add appropriate functions for push scaffold commands
+    // first will add global function to edits 
+    const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
+    pushScaffoldCommandsEdits.push({
+      nodeType: 'addFunction',
+      name: 'pushScaffoldCommands',
+      isExported: true,
+      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+      codeBlock: builtPushScaffoldCommandsStatement
+    });
+
+    // next formulate all edits
     const pushScaffoldCommandsEditJson = {
       fileType: 'ts',
       fileToBeAddedTo: pushCommandScaffoldsTs,

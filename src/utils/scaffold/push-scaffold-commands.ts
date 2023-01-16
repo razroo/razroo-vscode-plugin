@@ -1,5 +1,4 @@
 import { createScaffold } from "./scaffold";
-import * as vscode from 'vscode';
 import { GENERATE_ANGULAR_COMPONENT, GENERATE_ANGULAR_DIRECTIVE, GENERATE_ANGULAR_GUARD, GENERATE_ANGULAR_PIPE, GENERATE_ANGULAR_SERVICE, GENERATE_ANGULAR_TYPESCRIPT_INTERFACE } from "../../constants";
 
 export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
