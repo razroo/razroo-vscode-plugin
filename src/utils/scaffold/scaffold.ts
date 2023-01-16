@@ -28,6 +28,10 @@ export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: strin
     );`;
 }
 
+export function buildPushScaffoldCommandsStatement(scaffoldCommands: any[]) {
+  return `context.subscriptions.push(${scaffoldCommands})`;
+}
+
 export function createScaffold(vscode, pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
   const orgId = COMMUNITY;
   const nameFilePath = getNameFilePathFromFullPath(vscode, path);
