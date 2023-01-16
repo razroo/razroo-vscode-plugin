@@ -1,6 +1,6 @@
 import { getNameFilePathFromFullPath, getNameFromFullPath } from '../../common-utils/scaffold/scaffold.utils';
 import { getVersionAndNameString } from "@razroo/razroo-codemod";
-import {startCase} from "lodash";
+import { startCase, camelCase } from "lodash";
 import { COMMUNITY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from "../../constants";
 import { generateVsCodeDownloadCode } from '../../graphql/generate-code/generate-code.service';
 
@@ -23,7 +23,7 @@ export function createScaffoldCommand(pathId: string, scaffoldId: string) {
 
 export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: string, recipeId: string) {
   return `return vscode.commands.registerCommand(
-    generate.${pathId}.${scaffoldId},
+    generate.${pathId}.${camelCase(scaffoldId)},
       async ({path}) => createScaffold('${pathId}', '${recipeId}', path, context, isProduction, '${scaffoldId}', packageJsonParams)
     );`;
 }
