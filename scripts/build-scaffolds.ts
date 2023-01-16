@@ -50,7 +50,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
         codeBlock: pushScaffoldFunctionStatement
       });
-      pushScafffoldCommands.push(pushScaffoldCommandName);
+      pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
     });
 
     const edits = [
