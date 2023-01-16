@@ -23,7 +23,7 @@ export function createScaffoldCommand(pathId: string, scaffoldId: string) {
 
 export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: string, recipeId: string) {
   return `return vscode.commands.registerCommand(
-    generate.${pathId}.${camelCase(scaffoldId)},
+    'generate.${pathId}.${camelCase(scaffoldId)}',
       async ({path}) => createScaffold('${pathId}', '${recipeId}', path, context, isProduction, '${scaffoldId}', packageJsonParams)
     );`;
 }
