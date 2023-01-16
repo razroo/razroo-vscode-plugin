@@ -27,7 +27,11 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     command: "extension.auth0Authentication",
     title: "Razroo Auth0 Authentication"
   }] as any;
-  const pushScaffoldCommandsEdits = [] as any;
+  const pushScaffoldCommandsEdits = [{
+    nodeType: 'import',
+    codeBlock: '{ createScaffold }',
+    path: './scaffold'
+  }] as any;
   const angularPath = paths[0];
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
     const pathId = getVersionAndNameString(angularPath.id);
