@@ -21,9 +21,16 @@ export function createScaffoldCommand(pathId: string, scaffoldId: string) {
   };
 }
 
-export function createScaffold(pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
+export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: string, recipeId: string) {
+  return `return vscode.commands.registerCommand(
+    generate.${pathId}.${scaffoldId},
+      async ({path}) => createScaffold('${pathId}', ${recipeId}, path, context, isProduction, ${scaffoldId}, packageJsonParams)
+    );`;
+}
+
+export function createScaffold(vscode, pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
   const orgId = COMMUNITY;
-  const nameFilePath = getNameFilePathFromFullPath(path);
+  const nameFilePath = getNameFilePathFromFullPath(vscode, path);
   const name = getNameFromFullPath(path);
   const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
   

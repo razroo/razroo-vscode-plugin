@@ -3,14 +3,14 @@ import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
 import path from "path";
 import dotenv from "dotenv";
-import { createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
+import { buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
 import { morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // 1. getPaths - TODO modify this so 
-// 2. loop throguh each path
+// 2. loop through each path
 // 3. get scaffolds of each path
 // 4. build to package.json 
 // 5. create separate command files for each programming language
@@ -18,6 +18,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
+const pushCommandScaffoldsTs = readFileSync('src/utils/scaffold/push-scaffold-commands.ts').toString();
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
   const scaffoldSubmenu = [] as any;
@@ -25,6 +26,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     command: "extension.auth0Authentication",
     title: "Razroo Auth0 Authentication"
   }] as any;
+  const pushScaffoldCommandsEdits = [] as any;
   const angularPath = paths[0];
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
     scaffolds.forEach(scaffold => {
@@ -32,6 +34,12 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       const createScaffoldCommandItem = createScaffoldCommand(scaffold.pathId, scaffold.id);
       scaffoldSubmenu.push(createScaffoldSubmenuItem);
       scaffoldCommands.push(createScaffoldCommandItem);
+      const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(scaffold.pathId, scaffold.id, scaffold.recipeId);
+      pushScaffoldCommandsEdits.push({
+        nodeType: 'addFunction',
+        name: `generate${scaffold.pathId}${scaffold.id}`,
+        codeBlock: pushScaffoldFunctionStatement
+      });
     });
 
     const edits = [
@@ -47,6 +55,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       edits: edits
     };
 
+    // morph code so it has sub menu items needed
     const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
     const scaffoldCommandEdits = [
       {
@@ -60,8 +69,20 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       fileToBeAddedTo: packageJsonFilePostEdits,
       edits: scaffoldCommandEdits
     };
+
+    // morph code so it has commands needed
     const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
     writeFileSync('package.json', packageJsonFilePostCommandEdits);
+
+    // add appropriate functions for push scaffold commands
+    const pushScaffoldCommandsEditJson = {
+      fileType: 'ts',
+      fileToBeAddedTo: pushCommandScaffoldsTs,
+      edits: pushScaffoldCommandsEdits
+    };
+    // morph code so it has commands needed
+    const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
+    writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
   });
 
   

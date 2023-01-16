@@ -1,4 +1,4 @@
-import { createScaffoldCommand, createScaffoldSubmenu } from "./scaffold";
+import { buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from "./scaffold";
 
 describe('createScaffoldSubmenu', () => {
   it('should create a scaffold submenu', () => {
@@ -27,4 +27,19 @@ describe('createScaffoldCommand', () => {
 
     expect(result).toEqual(expected);
    });
+});
+
+describe('buildScaffoldFunctionStatement', () => {
+  it('should build the function statement for razroo', () => {
+    const pathId = 'angular-15.0.0';
+    const recipeId = 'angular-core';
+    const scaffoldId = 'component';
+
+    const result = buildScaffoldFunctionStatement(pathId, recipeId, scaffoldId);
+    const expected = `return vscode.commands.registerCommand(
+    generate.angular-15.0.0.angular-core,
+      async ({path}) => createScaffold('angular-15.0.0', component, path, context, isProduction, angular-core, packageJsonParams)
+    );`;
+    expect(result).toEqual(expected);
+  });
 });
