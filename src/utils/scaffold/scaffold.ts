@@ -25,8 +25,7 @@ export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: strin
   return `return vscode.commands.registerCommand(
     generate.${pathId}.${scaffoldId},
       async ({path}) => createScaffold('${pathId}', ${recipeId}, path, context, isProduction, ${scaffoldId}, packageJsonParams)
-    );
-  `;
+    );`;
 }
 
 export function createScaffold(vscode, pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){

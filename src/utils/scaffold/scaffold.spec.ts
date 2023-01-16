@@ -39,8 +39,7 @@ describe('buildScaffoldFunctionStatement', () => {
     const expected = `return vscode.commands.registerCommand(
     generate.angular-15.0.0.angular-core,
       async ({path}) => createScaffold('angular-15.0.0', component, path, context, isProduction, angular-core, packageJsonParams)
-    );
-    `;
+    );`;
     expect(result).toEqual(expected);
   });
 });
