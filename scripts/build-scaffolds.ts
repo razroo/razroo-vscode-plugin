@@ -10,7 +10,7 @@ import { morphCode } from '@razroo/razroo-codemod';
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 // 1. getPaths - TODO modify this so 
-// 2. loop throguh each path
+// 2. loop through each path
 // 3. get scaffolds of each path
 // 4. build to package.json 
 // 5. create separate command files for each programming language
