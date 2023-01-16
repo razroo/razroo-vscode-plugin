@@ -32,6 +32,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     codeBlock: '{ createScaffold }',
     path: './scaffold'
   }] as any;
+  const pushScafffoldCommands = [] as any;
   const angularPath = paths[0];
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
     const pathId = getVersionAndNameString(angularPath.id);
@@ -42,11 +43,13 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       scaffoldSubmenu.push(createScaffoldSubmenuItem);
       scaffoldCommands.push(createScaffoldCommandItem);
       const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
+      const pushScaffoldCommandName = camelCase(`generate-${pathId.name}-${scaffold.id}`);
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
-        name: camelCase(`generate-${pathId.name}-${scaffold.id}`),
+        name: pushScaffoldCommandName,
         codeBlock: pushScaffoldFunctionStatement
       });
+      pushScafffoldCommands.push(pushScaffoldCommandName);
     });
 
     const edits = [
