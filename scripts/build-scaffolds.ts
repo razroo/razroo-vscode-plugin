@@ -59,6 +59,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         codeBlock: scaffoldSubmenu
       },
     ];
+    
     const morphCodeEditJson = {
       fileType: 'json',
       fileToBeAddedTo: packageJson,
