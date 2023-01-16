@@ -5,7 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
-import { morphCode } from '@razroo/razroo-codemod';
+import { getVersionAndNameString, morphCode } from '@razroo/razroo-codemod';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -18,6 +18,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
+import { camelCase } from 'lodash';
 const pushCommandScaffoldsTs = readFileSync('src/utils/scaffold/push-scaffold-commands.ts').toString();
 
 getPaths(COMMUNITY, accessToken, production).then(paths => {
@@ -29,6 +30,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
   const pushScaffoldCommandsEdits = [] as any;
   const angularPath = paths[0];
   getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
+    const pathId = getVersionAndNameString(angularPath.id);
     scaffolds.forEach(scaffold => {
       const createScaffoldSubmenuItem = createScaffoldSubmenu(scaffold.pathId, scaffold.id);
       const createScaffoldCommandItem = createScaffoldCommand(scaffold.pathId, scaffold.id);
@@ -37,7 +39,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(scaffold.pathId, scaffold.id, scaffold.recipeId);
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
-        name: `generate${scaffold.pathId}${scaffold.id}`,
+        name: camelCase(`generate${pathId.name}${scaffold.id}`),
         codeBlock: pushScaffoldFunctionStatement
       });
     });
