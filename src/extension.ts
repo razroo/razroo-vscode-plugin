@@ -57,6 +57,19 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', false);
   };
 
+  const cancelAction = {
+    title: "Cancel",
+    action: () => {
+      console.log("Cancel scaffolding button clicked");
+    }
+  };
+
+  vscode.window.showInformationMessage("Scaffold generating...", cancelAction).then(selectedAction => {
+    if (selectedAction === cancelAction) {
+      console.log("Cancel button clicked");
+    }
+  });
+
   pushScaffoldCommands(context, vscode, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
