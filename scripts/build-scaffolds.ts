@@ -33,10 +33,16 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
     path: './scaffold'
   }] as any;
   const pushScafffoldCommands = [] as any;
-  await paths.forEach(path => {
-    getPathScaffolds(path.orgId, path.id, accessToken, production).then(scaffolds => {
-      const pathId = getVersionAndNameString(path.id);
-      scaffolds.forEach(scaffold => {
+  const getPathScaffoldsPromises = paths.map(async (path) => {
+    return await getPathScaffolds(path.orgId, path.id, accessToken, production);
+  });
+
+  // wait for all promises to resolve
+  const allScaffolds = await Promise.all(getPathScaffoldsPromises);
+
+  allScaffolds.forEach(async (scaffolds) => {
+      scaffolds && await scaffolds.forEach(scaffold => {
+        const pathId = getVersionAndNameString(scaffold.pathId);
         const camelCaseScaffoldId = camelCase(scaffold.id);
         const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, camelCaseScaffoldId);
         const createScaffoldCommandItem = createScaffoldCommand(pathId.name, camelCaseScaffoldId);
@@ -63,51 +69,53 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
         parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
         codeBlock: builtPushScaffoldCommandsStatement
       });
-    });
+
+    writeCodemods();
   });
 
-  const edits = [
-    {
-      nodeType: 'editJson',
-      valueToModify: '/contributes/menus/scaffold.submenu',
-      codeBlock: scaffoldSubmenu
-    },
-  ];
-
-  const morphCodeEditJson = {
-    fileType: 'json',
-    fileToBeAddedTo: packageJson,
-    edits: edits
-  };
-
-  // morph code so it has sub menu items needed
-  const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
-  const scaffoldCommandEdits = [
-    {
-      nodeType: 'editJson',
-      valueToModify: '/contributes/commands',
-      codeBlock: scaffoldCommands
-    },
-  ];
-  const scaffoldMorphCodeEditJson = {
-    fileType: 'json',
-    fileToBeAddedTo: packageJsonFilePostEdits,
-    edits: scaffoldCommandEdits
-  };
-
-  // morph code so it has commands needed
-  const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
-  writeFileSync('package.json', packageJsonFilePostCommandEdits);
-
-  // next formulate all edits
-  const pushScaffoldCommandsEditJson = {
-    fileType: 'ts',
-    fileToBeAddedTo: pushCommandScaffoldsTs,
-    edits: pushScaffoldCommandsEdits
-  };
-  // morph code so it has commands needed
-  const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
-  writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
-
+  function writeCodemods() {
+    const edits = [
+      {
+        nodeType: 'editJson',
+        valueToModify: '/contributes/menus/scaffold.submenu',
+        codeBlock: scaffoldSubmenu
+      },
+    ];
+  
+    const morphCodeEditJson = {
+      fileType: 'json',
+      fileToBeAddedTo: packageJson,
+      edits: edits
+    };
+  
+    // morph code so it has sub menu items needed
+    const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
+    const scaffoldCommandEdits = [
+      {
+        nodeType: 'editJson',
+        valueToModify: '/contributes/commands',
+        codeBlock: scaffoldCommands
+      },
+    ];
+    const scaffoldMorphCodeEditJson = {
+      fileType: 'json',
+      fileToBeAddedTo: packageJsonFilePostEdits,
+      edits: scaffoldCommandEdits
+    };
+  
+    // morph code so it has commands needed
+    const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
+    writeFileSync('package.json', packageJsonFilePostCommandEdits);
+  
+    // next formulate all edits
+    const pushScaffoldCommandsEditJson = {
+      fileType: 'ts',
+      fileToBeAddedTo: pushCommandScaffoldsTs,
+      edits: pushScaffoldCommandsEdits
+    };
+    // morph code so it has commands needed
+    const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
+    writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
+  }
   
 });
