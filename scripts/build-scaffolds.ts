@@ -21,7 +21,7 @@ const packageJson = readFileSync('package.json').toString();
 import { camelCase } from 'lodash';
 const pushCommandScaffoldsTs = '';
 
-getPaths(COMMUNITY, accessToken, production).then(paths => {
+getPaths(COMMUNITY, accessToken, production).then(async paths => {
   const scaffoldSubmenu = [] as any;
   const scaffoldCommands = [{
     command: "extension.auth0Authentication",
@@ -33,26 +33,47 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     path: './scaffold'
   }] as any;
   const pushScafffoldCommands = [] as any;
-  const angularPath = paths[0];
-  getPathScaffolds(angularPath.orgId, angularPath.id, accessToken, production).then(scaffolds => {
-    const pathId = getVersionAndNameString(angularPath.id);
-    scaffolds.forEach(scaffold => {
-      const camelCaseScaffoldId = camelCase(scaffold.id);
-      const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, camelCaseScaffoldId);
-      const createScaffoldCommandItem = createScaffoldCommand(pathId.name, camelCaseScaffoldId);
-      scaffoldSubmenu.push(createScaffoldSubmenuItem);
-      scaffoldCommands.push(createScaffoldCommandItem);
-      const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
-      const pushScaffoldCommandName = camelCase(`generate-${pathId.name}-${scaffold.id}`);
+  const getPathScaffoldsPromises = paths.map(async (path) => {
+    return await getPathScaffolds(path.orgId, path.id, accessToken, production);
+  });
+
+  // wait for all promises to resolve
+  const allScaffolds = await Promise.all(getPathScaffoldsPromises);
+
+  allScaffolds.forEach(async (scaffolds) => {
+      scaffolds && await scaffolds.forEach(scaffold => {
+        const pathId = getVersionAndNameString(scaffold.pathId);
+        const camelCaseScaffoldId = camelCase(scaffold.id);
+        const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, camelCaseScaffoldId);
+        const createScaffoldCommandItem = createScaffoldCommand(pathId.name, camelCaseScaffoldId);
+        scaffoldSubmenu.push(createScaffoldSubmenuItem);
+        scaffoldCommands.push(createScaffoldCommandItem);
+        const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
+        const pushScaffoldCommandName = camelCase(`generate-${pathId.name}-${scaffold.id}`);
+        pushScaffoldCommandsEdits.push({
+          nodeType: 'addFunction',
+          name: pushScaffoldCommandName,
+          parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
+          codeBlock: pushScaffoldFunctionStatement
+        });
+        pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
+      });
+  
+      // add appropriate functions for push scaffold commands
+      // first will add global function to edits 
+      const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
       pushScaffoldCommandsEdits.push({
         nodeType: 'addFunction',
-        name: pushScaffoldCommandName,
-        parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
-        codeBlock: pushScaffoldFunctionStatement
+        name: 'pushScaffoldCommands',
+        isExported: true,
+        parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+        codeBlock: builtPushScaffoldCommandsStatement
       });
-      pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
-    });
 
+    writeCodemods();
+  });
+
+  function writeCodemods() {
     const edits = [
       {
         nodeType: 'editJson',
@@ -60,13 +81,13 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         codeBlock: scaffoldSubmenu
       },
     ];
-
+  
     const morphCodeEditJson = {
       fileType: 'json',
       fileToBeAddedTo: packageJson,
       edits: edits
     };
-
+  
     // morph code so it has sub menu items needed
     const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
     const scaffoldCommandEdits = [
@@ -81,22 +102,11 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
       fileToBeAddedTo: packageJsonFilePostEdits,
       edits: scaffoldCommandEdits
     };
-
+  
     // morph code so it has commands needed
     const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
     writeFileSync('package.json', packageJsonFilePostCommandEdits);
-
-    // add appropriate functions for push scaffold commands
-    // first will add global function to edits 
-    const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
-    pushScaffoldCommandsEdits.push({
-      nodeType: 'addFunction',
-      name: 'pushScaffoldCommands',
-      isExported: true,
-      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
-      codeBlock: builtPushScaffoldCommandsStatement
-    });
-
+  
     // next formulate all edits
     const pushScaffoldCommandsEditJson = {
       fileType: 'ts',
@@ -106,7 +116,6 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     // morph code so it has commands needed
     const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
     writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
-  });
-
+  }
   
 });
