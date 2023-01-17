@@ -21,7 +21,7 @@ const packageJson = readFileSync('package.json').toString();
 import { camelCase } from 'lodash';
 const pushCommandScaffoldsTs = '';
 
-getPaths(COMMUNITY, accessToken, production).then(paths => {
+getPaths(COMMUNITY, accessToken, production).then(async paths => {
   const scaffoldSubmenu = [] as any;
   const scaffoldCommands = [{
     command: "extension.auth0Authentication",
@@ -33,7 +33,7 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
     path: './scaffold'
   }] as any;
   const pushScafffoldCommands = [] as any;
-  paths.forEach(path => {
+  await paths.forEach(path => {
     getPathScaffolds(path.orgId, path.id, accessToken, production).then(scaffolds => {
       const pathId = getVersionAndNameString(path.id);
       scaffolds.forEach(scaffold => {
@@ -53,39 +53,6 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
       });
   
-      const edits = [
-        {
-          nodeType: 'editJson',
-          valueToModify: '/contributes/menus/scaffold.submenu',
-          codeBlock: scaffoldSubmenu
-        },
-      ];
-  
-      const morphCodeEditJson = {
-        fileType: 'json',
-        fileToBeAddedTo: packageJson,
-        edits: edits
-      };
-  
-      // morph code so it has sub menu items needed
-      const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
-      const scaffoldCommandEdits = [
-        {
-          nodeType: 'editJson',
-          valueToModify: '/contributes/commands',
-          codeBlock: scaffoldCommands
-        },
-      ];
-      const scaffoldMorphCodeEditJson = {
-        fileType: 'json',
-        fileToBeAddedTo: packageJsonFilePostEdits,
-        edits: scaffoldCommandEdits
-      };
-  
-      // morph code so it has commands needed
-      const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
-      writeFileSync('package.json', packageJsonFilePostCommandEdits);
-  
       // add appropriate functions for push scaffold commands
       // first will add global function to edits 
       const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
@@ -96,18 +63,51 @@ getPaths(COMMUNITY, accessToken, production).then(paths => {
         parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
         codeBlock: builtPushScaffoldCommandsStatement
       });
-  
-      // next formulate all edits
-      const pushScaffoldCommandsEditJson = {
-        fileType: 'ts',
-        fileToBeAddedTo: pushCommandScaffoldsTs,
-        edits: pushScaffoldCommandsEdits
-      };
-      // morph code so it has commands needed
-      const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
-      writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
     });
   });
+
+  const edits = [
+    {
+      nodeType: 'editJson',
+      valueToModify: '/contributes/menus/scaffold.submenu',
+      codeBlock: scaffoldSubmenu
+    },
+  ];
+
+  const morphCodeEditJson = {
+    fileType: 'json',
+    fileToBeAddedTo: packageJson,
+    edits: edits
+  };
+
+  // morph code so it has sub menu items needed
+  const packageJsonFilePostEdits = morphCode(morphCodeEditJson);
+  const scaffoldCommandEdits = [
+    {
+      nodeType: 'editJson',
+      valueToModify: '/contributes/commands',
+      codeBlock: scaffoldCommands
+    },
+  ];
+  const scaffoldMorphCodeEditJson = {
+    fileType: 'json',
+    fileToBeAddedTo: packageJsonFilePostEdits,
+    edits: scaffoldCommandEdits
+  };
+
+  // morph code so it has commands needed
+  const packageJsonFilePostCommandEdits = morphCode(scaffoldMorphCodeEditJson);
+  writeFileSync('package.json', packageJsonFilePostCommandEdits);
+
+  // next formulate all edits
+  const pushScaffoldCommandsEditJson = {
+    fileType: 'ts',
+    fileToBeAddedTo: pushCommandScaffoldsTs,
+    edits: pushScaffoldCommandsEdits
+  };
+  // morph code so it has commands needed
+  const pushCommandScaffoldsTsEdits = morphCode(pushScaffoldCommandsEditJson);
+  writeFileSync('src/utils/scaffold/push-scaffold-commands.ts', pushCommandScaffoldsTsEdits);
 
   
 });
