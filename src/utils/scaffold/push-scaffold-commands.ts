@@ -1,34 +1,87 @@
 import { createScaffold } from "./scaffold";
-import { GENERATE_ANGULAR_COMPONENT, GENERATE_ANGULAR_DIRECTIVE, GENERATE_ANGULAR_GUARD, GENERATE_ANGULAR_PIPE, GENERATE_ANGULAR_SERVICE, GENERATE_ANGULAR_TYPESCRIPT_INTERFACE } from "../../constants";
+
+function generateAngularComponent(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.component',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'component', packageJsonParams)
+  );
+}
+
+function generateAngularAngularService(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.angularService',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-service', packageJsonParams)
+  );
+}
+
+function generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.angularGuard',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-guard', packageJsonParams)
+  );
+}
+
+function generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.typescriptInterface',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'typescript-interface', packageJsonParams)
+  );
+}
+
+function generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.angularPipe',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-pipe', packageJsonParams)
+  );
+}
+
+function generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.angular.angularDirective',
+    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-directive', packageJsonParams)
+  );
+}
 
 export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
-  //build-scaffolds.ts builds commans here
-  function generateAngularComponent() {
-    return vscode.commands.registerCommand(
-        GENERATE_ANGULAR_COMPONENT,
-        async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'component', packageJsonParams)
-    );
-  }
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
 
-  const generateAngularService = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_SERVICE,
-    async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-service', packageJsonParams)
-  );
-  const generateAngularPipe = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_PIPE,
-    async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-pipe', packageJsonParams)
-  );
-  const generateAngularGuard = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_GUARD,
-    async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-guard', packageJsonParams)
-  );
-  const generateAngularDirective = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_DIRECTIVE,
-    async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-directive', packageJsonParams)
-  );
-  const generateAngularTypescriptInterface = vscode.commands.registerCommand(
-    GENERATE_ANGULAR_TYPESCRIPT_INTERFACE,
-    async ({path}) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'typescript-interface', packageJsonParams)
-  );
-  context.subscriptions.push(generateAngularComponent, generateAngularService, generateAngularPipe, generateAngularGuard, generateAngularDirective, generateAngularTypescriptInterface);
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
+}
+
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams))
 }
