@@ -42,13 +42,14 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
 
   allScaffolds.forEach(async (scaffolds) => {
       scaffolds && await scaffolds.forEach(scaffold => {
+        const fullVersionedPathId = scaffold.pathId;
         const pathId = getVersionAndNameString(scaffold.pathId);
         const camelCaseScaffoldId = camelCase(scaffold.id);
         const createScaffoldSubmenuItem = createScaffoldSubmenu(pathId.name, camelCaseScaffoldId);
         const createScaffoldCommandItem = createScaffoldCommand(pathId.name, camelCaseScaffoldId);
         scaffoldSubmenu.push(createScaffoldSubmenuItem);
         scaffoldCommands.push(createScaffoldCommandItem);
-        const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(pathId.name, scaffold.id, scaffold.recipeId);
+        const pushScaffoldFunctionStatement = buildScaffoldFunctionStatement(fullVersionedPathId, scaffold.id, scaffold.recipeId);
         const pushScaffoldCommandName = camelCase(`generate-${pathId.name}-${scaffold.id}`);
         pushScaffoldCommandsEdits.push({
           nodeType: 'addFunction',

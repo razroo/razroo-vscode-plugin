@@ -54,24 +54,24 @@
         "title": "Angular Component"
       },
       {
-        "command": "generate.angular.service",
+        "command": "generate.angular.angularService",
         "title": "Angular Service"
       },
       {
-        "command": "generate.angular.pipe",
-        "title": "Angular Pipe"
-      },
-      {
-        "command": "generate.angular.directive",
-        "title": "Angular Directive"
-      },
-      {
-        "command": "generate.angular.guard",
+        "command": "generate.angular.angularGuard",
         "title": "Angular Guard"
       },
       {
         "command": "generate.angular.typescriptInterface",
-        "title": "Typescript Interface"
+        "title": "Angular Typescript Interface"
+      },
+      {
+        "command": "generate.angular.angularPipe",
+        "title": "Angular Pipe"
+      },
+      {
+        "command": "generate.angular.angularDirective",
+        "title": "Angular Directive"
       }
     ],
     "menus": {
@@ -88,27 +88,27 @@
           "when": "razroo-vscode-plugin:isAuthenticated"
         },
         {
-          "command": "generate.angular.service",
+          "command": "generate.angular.angularService",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         },
         {
-          "command": "generate.angular.pipe",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.angular.guard",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.angular.directive",
+          "command": "generate.angular.angularGuard",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         },
         {
           "command": "generate.angular.typescriptInterface",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.angularPipe",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.angular.angularDirective",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         }
