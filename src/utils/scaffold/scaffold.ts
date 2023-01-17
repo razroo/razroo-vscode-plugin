@@ -41,6 +41,19 @@ export function buildPushScaffoldCommandsStatement(scaffoldCommands: any[]) {
 }
 
 export function createScaffold(vscode, pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
+  const cancelAction = {
+    title: "Cancel",
+    action: () => {
+      console.log("Cancel scaffolding button clicked");
+    }
+  };
+
+  vscode.window.showInformationMessage("Scaffold generating...", cancelAction).then(selectedAction => {
+    if (selectedAction === cancelAction) {
+      console.log("Cancel button clicked");
+    }
+  });
+  
   const orgId = COMMUNITY;
   const nameFilePath = getNameFilePathFromFullPath(vscode, path);
   const name = getNameFromFullPath(path);
