@@ -40,7 +40,7 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
   // wait for all promises to resolve
   const allScaffolds = await Promise.all(getPathScaffoldsPromises);
 
-  allScaffolds.forEach(async (scaffolds) => {
+  allScaffolds.forEach(async (scaffolds, index, arr) => {
       scaffolds && await scaffolds.forEach(scaffold => {
         const fullVersionedPathId = scaffold.pathId;
         const pathId = getVersionAndNameString(scaffold.pathId);
@@ -60,21 +60,23 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
         pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
       });
   
-      // add appropriate functions for push scaffold commands
-      // first will add global function to edits 
-      const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
-      pushScaffoldCommandsEdits.push({
-        nodeType: 'addFunction',
-        name: 'pushScaffoldCommands',
-        isExported: true,
-        parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
-        codeBlock: builtPushScaffoldCommandsStatement
-      });
-
-    writeCodemods();
+    if(index === arr.length - 1) {
+      writeCodemods();
+    }  
   });
 
   function writeCodemods() {
+    // add appropriate functions for push scaffold commands
+    // first will add global function to edits 
+    const builtPushScaffoldCommandsStatement = buildPushScaffoldCommandsStatement(pushScafffoldCommands);
+    pushScaffoldCommandsEdits.push({
+      nodeType: 'addFunction',
+      name: 'pushScaffoldCommands',
+      isExported: true,
+      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+      codeBlock: builtPushScaffoldCommandsStatement
+    });
+
     const edits = [
       {
         nodeType: 'editJson',
