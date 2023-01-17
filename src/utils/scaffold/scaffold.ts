@@ -14,7 +14,13 @@ export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
 
 export function createScaffoldCommand(pathId: string, scaffoldId: string) {
   const { name } = getVersionAndNameString(pathId);
-  const title = startCase(`${name} ${scaffoldId}`);
+  let title;
+  if(scaffoldId.indexOf(name) > - 1) {
+    title = startCase(`${scaffoldId}`);
+  }
+  else {
+    title = startCase(`${name} ${scaffoldId}`);
+  }
   return {
     "command": `generate.${pathId}.${scaffoldId}`,
     "title": title

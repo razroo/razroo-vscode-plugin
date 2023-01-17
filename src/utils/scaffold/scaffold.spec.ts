@@ -26,7 +26,19 @@ describe('createScaffoldCommand', () => {
     };
 
     expect(result).toEqual(expected);
-   });
+  });
+
+  it('should create a scaffold command and remove pathId if already exists in scaffoldId', () => {
+    const pathId = 'angular-15.0.0';
+    const scaffoldId = 'angular component';
+    const result = createScaffoldCommand(pathId, scaffoldId);
+    const expected = {
+      "command": `generate.${pathId}.${scaffoldId}`,
+      "title": "Angular Component"
+    };
+
+    expect(result).toEqual(expected);
+  });
 });
 
 describe('buildScaffoldFunctionStatement', () => {
