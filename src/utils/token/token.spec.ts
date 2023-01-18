@@ -10,7 +10,8 @@ describe('getOrCreateAndUpdateIdToken', () => {
         get: (test: any) => test
       }
     };
-    const result = getOrCreateAndUpdateIdToken(mockContext as any);
+    const mockUserId = 'abc123';
+    const result = getOrCreateAndUpdateIdToken(mockContext as any, mockUserId);
     const expected = MEMENTO_RAZROO_ID_VS_CODE_TOKEN;
 
     expect(result).toEqual(expected);
@@ -23,8 +24,9 @@ describe('getOrCreateAndUpdateIdToken', () => {
         update: (test: any, newToken) => {}
       }
     };
+    const mockUserId = 'abc123';
     const spy = jest.spyOn(mockContext.workspaceState, 'update');
-    getOrCreateAndUpdateIdToken(mockContext as any);
+    getOrCreateAndUpdateIdToken(mockContext as any, mockUserId);
     const token = MEMENTO_RAZROO_ID_VS_CODE_TOKEN;
 
     expect(spy).toHaveBeenCalledWith(token, expect.anything());

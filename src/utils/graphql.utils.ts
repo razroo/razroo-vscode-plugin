@@ -90,9 +90,10 @@ async function fallback(content) {
 }
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
-  const token = await getOrCreateAndUpdateIdToken(context);
-  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
+  const token = await getOrCreateAndUpdateIdToken(context, userId);
+  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
