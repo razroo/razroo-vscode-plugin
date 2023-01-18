@@ -41,6 +41,9 @@ export function buildPushScaffoldCommandsStatement(scaffoldCommands: any[]) {
 }
 
 export function createScaffold(vscode, pathId: string, recipeId: string, path: string, context, isProduction: boolean, scaffoldId: string, packageJsonParams){
+  let uri = vscode.Uri.file(path);
+  // automatically expand folder so files generated appear
+  vscode.commands.executeCommand('list.expand', uri);
   const cancelAction = {
     title: "Cancel",
     action: () => {
@@ -78,7 +81,5 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
   };
 
   generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-    console.log('data');
-    console.log(data);
   });
 }
