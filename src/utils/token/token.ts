@@ -1,7 +1,7 @@
 import parseGitConfig from 'parse-git-config';
 import { EMPTY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN } from './../../constants';
 import * as vscode from 'vscode';
-import { extractProjectName } from '@razroo/razroo-codemod';
+import { extractProjectName } from '@razroo/razzle';
 import { isEmptyWorkspace } from '../../utils/directory.utils';
 
 export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionContext, userId: string): Promise<string> {

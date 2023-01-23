@@ -1,5 +1,5 @@
 import { getNameFilePathFromFullPath, getNameFromFullPath } from '../../common-utils/scaffold/scaffold.utils';
-import { getVersionAndNameString } from "@razroo/razroo-codemod";
+import { getVersionAndNameString } from "@razroo/razzle";
 import { startCase, camelCase } from "lodash";
 import { COMMUNITY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from "../../constants";
 import { generateVsCodeDownloadCode } from '../../graphql/generate-code/generate-code.service';
