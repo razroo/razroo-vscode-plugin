@@ -18,7 +18,7 @@ import { editFiles } from './edit.utils';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
-import { join, extname} from 'path';
+import { join, extname, normalize} from 'path';
 import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razroo-codemod';
 import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
 
@@ -60,7 +60,7 @@ export const saveFiles = async (
   const zipEntries = zip.getEntries();
   for await (const zipEntry of zipEntries) {
     const parametersParsed = JSON.parse(parameters);
-    const fileNameandPath = replaceCurlyBrace(parametersParsed, zipEntry.entryName);
+    const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName));
     const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
 
     if (extname(fileName) === ".sh") {
