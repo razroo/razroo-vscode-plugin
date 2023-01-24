@@ -19,7 +19,7 @@ import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import { join, extname, normalize} from 'path';
-import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@razroo/razzle';
+import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@codemorph/core';
 import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
 
 const showInformationMessage = vscode.window.showInformationMessage;

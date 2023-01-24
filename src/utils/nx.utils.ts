@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { readPackageJson } from '@razroo/razzle';
+import { readPackageJson } from '@codemorph/core';
 
 export async function readNxJson(workspacePath: string) {
     const nxJsonFilePath = path.join(workspacePath, 'nx.json');

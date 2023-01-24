@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { EditInput, morphCode, replaceTagParameters, replaceCurlyBrace, replaceCodeModEditsTemplateVariables } from '@razroo/razzle';
+import { EditInput, morphCode, replaceTagParameters, replaceCurlyBrace, replaceCodeModEditsTemplateVariables } from '@codemorph/core';
 import * as path from 'path';
 import * as fs from 'fs';
 

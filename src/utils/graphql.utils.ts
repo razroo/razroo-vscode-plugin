@@ -6,7 +6,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import axios from 'axios';
-import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@razroo/razzle';
+import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@codemorph/core';
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { readNxJson } from './nx.utils';

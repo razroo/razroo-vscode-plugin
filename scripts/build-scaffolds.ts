@@ -5,7 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { buildPushScaffoldCommandsStatement, buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
-import { getVersionAndNameString, morphCode } from '@razroo/razzle';
+import { getVersionAndNameString, morphCode } from '@codemorph/core';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
