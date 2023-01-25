@@ -170,14 +170,14 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token) {
     await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
     const isProduction = context.extensionMode === 1;
     await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId);
-    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
+    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
     showInformationMessage('User successfully authenticated with Razroo.');
     return userData;
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext) => {
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean) => {
   const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
@@ -192,7 +192,7 @@ export const tryToAuth = async (context: vscode.ExtensionContext) => {
     else {
       const isProduction = context.extensionMode === 1;
       await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId);
-      await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context });
+      await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       showInformationMessage('User successfully authenticated with Razroo.');
     }
