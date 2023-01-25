@@ -21,6 +21,15 @@ import { setWorkspaceState } from './utils/state.utils';
 import { getOrCreateAndUpdateIdToken } from './utils/token/token';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
 
+// function to determine if production environment or not
+function isProductionFunc(context: vscode.ExtensionContext): boolean {
+  // 1 is production mode
+  // Use this if have access to razroo-frontend and uncomment line below
+  // return context.extensionMode === 1;
+  // Open source members use this
+  return true;
+}
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
@@ -35,10 +44,10 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('getContext', () => context)
   );
   // 1 is production mode
-  // Use this if have access to razroo-frontend and comment out line
+  // Use this if have access to razroo-frontend and uncomment line below
   // const isProduction = context.extensionMode === 1;
-  // Open source member, use this and comment out line above
-  const isProduction = true;
+  // Open source members use this
+  const isProduction = isProductionFunc(context);
   await tryToAuth(context, isProduction);
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
@@ -101,7 +110,7 @@ export async function activate(context: vscode.ExtensionContext) {
               disposeServer(cancelAuthProgress, res, progress);
             }
           }).catch(async(err) => {
-            await onVSCodeClose(context, cancelAuthProgress, progress);
+            await onVSCodeClose(context, isProduction, cancelAuthProgress, progress);
             await showInformationMessage(err);
           });
         }
@@ -118,7 +127,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const logout = vscode.commands.registerCommand(
     'extension.logout',
     () => {
-      onVSCodeClose(context)?.finally(() => {
+      onVSCodeClose(context, isProduction)?.finally(() => {
         vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
       });
     }
@@ -234,7 +243,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export async function deactivate() {
-  vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
-  await onVSCodeClose(context);
+  const isProduction = isProductionFunc(context);
+  vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
+  await onVSCodeClose(context, isProduction);
 };

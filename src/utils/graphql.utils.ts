@@ -62,7 +62,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       const realtimeResults = async function realtimeResults(data: any) {
         //Save the files in a new folder
-        await saveFiles(data, context);
+        await saveFiles(data, context, isProduction);
         await updatePrivateDirectoriesPostCodeGeneration(context, isProduction);
       };
 
