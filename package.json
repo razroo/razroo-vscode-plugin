@@ -76,6 +76,26 @@
       {
         "command": "generate.ngrx.ngrxFeature",
         "title": "Ngrx Feature"
+      },
+      {
+        "command": "generate.react.reactComponent",
+        "title": "React Component"
+      },
+      {
+        "command": "generate.react.reactReduxSlice",
+        "title": "React Redux Slice"
+      },
+      {
+        "command": "generate.vue.component",
+        "title": "Vue Component"
+      },
+      {
+        "command": "generate.vue.view",
+        "title": "Vue View"
+      },
+      {
+        "command": "generate.vue.piniaStore",
+        "title": "Vue Pinia Store"
       }
     ],
     "menus": {
@@ -118,6 +138,31 @@
         },
         {
           "command": "generate.ngrx.ngrxFeature",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.react.reactComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.react.reactReduxSlice",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.vue.component",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.vue.view",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.vue.piniaStore",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         }
