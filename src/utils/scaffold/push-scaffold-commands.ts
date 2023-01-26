@@ -63,6 +63,27 @@ function generateReactReactReduxSlice(vscode, context, isProduction, packageJson
   );
 }
 
+function generateSvelteSvelteComponent(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.svelte.svelteComponent',
+    async ({ path }) => createScaffold(vscode, 'svelte-3.5.0', 'svelte-scaffolds', path, context, isProduction, 'svelte-component', packageJsonParams)
+  );
+}
+
+function generateSvelteSvelteModuleComponent(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.svelte.svelteModuleComponent',
+    async ({ path }) => createScaffold(vscode, 'svelte-3.5.0', 'svelte-scaffolds', path, context, isProduction, 'svelte-module-component', packageJsonParams)
+  );
+}
+
+function generateSvelteSvelteEndpoint(vscode, context, isProduction, packageJsonParams) {
+  return vscode.commands.registerCommand(
+    'generate.svelte.svelteEndpoint',
+    async ({ path }) => createScaffold(vscode, 'svelte-3.5.0', 'svelte-scaffolds', path, context, isProduction, 'svelte-endpoint', packageJsonParams)
+  );
+}
+
 function generateVueComponent(vscode, context, isProduction, packageJsonParams) {
   return vscode.commands.registerCommand(
     'generate.vue.component',
@@ -85,5 +106,5 @@ function generateVuePiniaStore(vscode, context, isProduction, packageJsonParams)
 }
 
 export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
-  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams), generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams), generateReactReactComponent(vscode, context, isProduction, packageJsonParams), generateReactReactReduxSlice(vscode, context, isProduction, packageJsonParams), generateVueComponent(vscode, context, isProduction, packageJsonParams), generateVueView(vscode, context, isProduction, packageJsonParams), generateVuePiniaStore(vscode, context, isProduction, packageJsonParams))
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams), generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams), generateReactReactComponent(vscode, context, isProduction, packageJsonParams), generateReactReactReduxSlice(vscode, context, isProduction, packageJsonParams), generateSvelteSvelteComponent(vscode, context, isProduction, packageJsonParams), generateSvelteSvelteModuleComponent(vscode, context, isProduction, packageJsonParams), generateSvelteSvelteEndpoint(vscode, context, isProduction, packageJsonParams), generateVueComponent(vscode, context, isProduction, packageJsonParams), generateVueView(vscode, context, isProduction, packageJsonParams), generateVuePiniaStore(vscode, context, isProduction, packageJsonParams))
 }

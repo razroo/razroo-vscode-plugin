@@ -86,6 +86,18 @@
         "title": "React Redux Slice"
       },
       {
+        "command": "generate.svelte.svelteComponent",
+        "title": "Svelte Component"
+      },
+      {
+        "command": "generate.svelte.svelteModuleComponent",
+        "title": "Svelte Module Component"
+      },
+      {
+        "command": "generate.svelte.svelteEndpoint",
+        "title": "Svelte Endpoint"
+      },
+      {
         "command": "generate.vue.component",
         "title": "Vue Component"
       },
@@ -148,6 +160,21 @@
         },
         {
           "command": "generate.react.reactReduxSlice",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.svelte.svelteComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.svelte.svelteModuleComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
+          "command": "generate.svelte.svelteEndpoint",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         },
