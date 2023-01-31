@@ -46,7 +46,7 @@ export const saveFiles = async (
 
   //Get files of S3
   const files = await getFileS3({ url });
-  const rootDirectory = vscode.workspace.workspaceFolders ? normalize(vscode.workspace.workspaceFolders[0].uri.path) : '';
+  const rootDirectory = vscode.workspace.workspaceFolders ? process.platform == 'win32' ? normalize(vscode.workspace.workspaceFolders[0].uri.path).slice(1) : normalize(vscode.workspace.workspaceFolders[0].uri.path) : '';
   const folderSelectedInWorkspace = join(rootDirectory);
   const folderRoot = `${folderSelectedInWorkspace}`;
 
