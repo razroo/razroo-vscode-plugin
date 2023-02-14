@@ -1,6 +1,5 @@
-export const RAZROO_URL = "https://razroo.com";
-export const RAZROO_DEV_URL = "http://localhost:4200";
-export const SOCKET_HOST = 'http://localhost:3000';
+export const RAZROO_URL = "https://vscode-auth.razroo.com";
+export const RAZROO_DEV_URL = "http://localhost:3000";
 
 export const MEMENTO_RAZROO_REFRESH_TOKEN = 'RAZROO_REFRESH_TOKEN';
 export const MEMENTO_RAZROO_ACCESS_TOKEN = 'RAZROO_ACCESS_TOKEN';

@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "razroo-vscode-plugin",
   "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "2.0.6",
+  "version": "2.0.8",
   "private": true,
   "engines": {
     "vscode": "^1.57.0"
@@ -74,6 +74,10 @@
         "title": "Angular Directive"
       },
       {
+        "command": "generate.nextjs.nextjsComponent",
+        "title": "Nextjs Component"
+      },
+      {
         "command": "generate.ngrx.ngrxFeature",
         "title": "Ngrx Feature"
       },
@@ -84,30 +88,6 @@
       {
         "command": "generate.react.reactReduxSlice",
         "title": "React Redux Slice"
-      },
-      {
-        "command": "generate.svelte.svelteComponent",
-        "title": "Svelte Component"
-      },
-      {
-        "command": "generate.svelte.svelteModuleComponent",
-        "title": "Svelte Module Component"
-      },
-      {
-        "command": "generate.svelte.svelteEndpoint",
-        "title": "Svelte Endpoint"
-      },
-      {
-        "command": "generate.vue.component",
-        "title": "Vue Component"
-      },
-      {
-        "command": "generate.vue.view",
-        "title": "Vue View"
-      },
-      {
-        "command": "generate.vue.piniaStore",
-        "title": "Vue Pinia Store"
       }
     ],
     "menus": {
@@ -149,6 +129,11 @@
           "when": "razroo-vscode-plugin:isAuthenticated"
         },
         {
+          "command": "generate.nextjs.nextjsComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated"
+        },
+        {
           "command": "generate.ngrx.ngrxFeature",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
@@ -160,36 +145,6 @@
         },
         {
           "command": "generate.react.reactReduxSlice",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.svelte.svelteComponent",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.svelte.svelteModuleComponent",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.svelte.svelteEndpoint",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.vue.component",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.vue.view",
-          "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
-        },
-        {
-          "command": "generate.vue.piniaStore",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated"
         }
