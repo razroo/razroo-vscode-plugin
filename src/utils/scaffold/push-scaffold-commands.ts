@@ -88,7 +88,7 @@ export function pushScaffoldCommands(context, vscode, isProduction: boolean, pac
         generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams)
       );
     }
-    if(specificLanguageUsed == 'next') {
+    else if(specificLanguageUsed == 'next') {
       context.subscriptions.push(
         generateNextjsNextjsComponent(vscode, context, isProduction, packageJsonParams), 
       );
@@ -103,7 +103,9 @@ export function pushScaffoldCommands(context, vscode, isProduction: boolean, pac
       generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), 
       generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams),
       generateNextjsNextjsComponent(vscode, context, isProduction, packageJsonParams), 
-      generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams)
+      generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams),
+      generateReactReactComponent(vscode, context, isProduction, packageJsonParams), 
+      generateReactReactReduxSlice(vscode, context, isProduction, packageJsonParams)
     );
   }
 }
