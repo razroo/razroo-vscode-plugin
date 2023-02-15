@@ -101,52 +101,52 @@
         {
           "command": "generate.angular.component",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.angular.angularService",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.angular.angularGuard",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.angular.typescriptInterface",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.angular.angularPipe",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.angular.angularDirective",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.nextjs.nextjsComponent",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.ngrx.ngrxFeature",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:ngrx || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.react.reactComponent",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react || razroo-vscode-plugin-language:undefined"
         },
         {
           "command": "generate.react.reactReduxSlice",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react || razroo-vscode-plugin-language:undefined"
         }
       ]
     },
@@ -284,7 +284,7 @@
     "mime": "^3.0.0",
     "mocha": "^10.0.0",
     "open": "^8.2.1",
-    "package-json-manager": "^1.0.5",
+    "package-json-manager": "^1.1.1",
     "parse-git-config": "^3.0.0",
     "parse-gitignore": "^2.0.0",
     "path": "^0.12.7",

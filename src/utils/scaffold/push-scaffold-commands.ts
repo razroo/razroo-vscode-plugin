@@ -70,6 +70,40 @@ function generateReactReactReduxSlice(vscode, context, isProduction, packageJson
   );
 }
 
-export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
-  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction, packageJsonParams), generateAngularAngularService(vscode, context, isProduction, packageJsonParams), generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams), generateNextjsNextjsComponent(vscode, context, isProduction, packageJsonParams), generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams), generateReactReactComponent(vscode, context, isProduction, packageJsonParams), generateReactReactReduxSlice(vscode, context, isProduction, packageJsonParams))
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams,specificLanguageUsed=null) {
+  if(specificLanguageUsed) {
+    if(specificLanguageUsed == 'react') {
+      context.subscriptions.push(
+        generateReactReactComponent(vscode, context, isProduction, packageJsonParams), 
+        generateReactReactReduxSlice(vscode, context, isProduction, packageJsonParams)
+      );
+    }
+    else if(specificLanguageUsed == 'angular') {
+      context.subscriptions.push(
+        generateAngularComponent(vscode, context, isProduction, packageJsonParams), 
+        generateAngularAngularService(vscode, context, isProduction, packageJsonParams), 
+        generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), 
+        generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), 
+        generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), 
+        generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams)
+      );
+    }
+    if(specificLanguageUsed == 'next') {
+      context.subscriptions.push(
+        generateNextjsNextjsComponent(vscode, context, isProduction, packageJsonParams), 
+      );
+    }
+  }
+  else {
+    context.subscriptions.push(
+      generateAngularComponent(vscode, context, isProduction, packageJsonParams), 
+      generateAngularAngularService(vscode, context, isProduction, packageJsonParams), 
+      generateAngularAngularGuard(vscode, context, isProduction, packageJsonParams), 
+      generateAngularTypescriptInterface(vscode, context, isProduction, packageJsonParams), 
+      generateAngularAngularPipe(vscode, context, isProduction, packageJsonParams), 
+      generateAngularAngularDirective(vscode, context, isProduction, packageJsonParams),
+      generateNextjsNextjsComponent(vscode, context, isProduction, packageJsonParams), 
+      generateNgrxNgrxFeature(vscode, context, isProduction, packageJsonParams)
+    );
+  }
 }
