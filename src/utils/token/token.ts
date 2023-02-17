@@ -17,7 +17,7 @@ export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionConte
       }).catch(()=>{
         return "no-git-found";
       });
-      if(gitOrigin != "no-git-found") {
+      if(gitOrigin !== "no-git-found") {
         token = gitOrigin ? `${userId}_${extractProjectName(gitOrigin)}` : EMPTY;
         context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
         return token as string;
