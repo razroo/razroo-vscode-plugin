@@ -14,10 +14,17 @@ export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionConte
       const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
       const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => {
         return gitConfig?.['remote "origin"']?.url;
+      }).catch(()=>{
+        return "no-git-found";
       });
-      token = gitOrigin ? `${userId}_${extractProjectName(gitOrigin)}` : EMPTY;
-      context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
-      return token as string;
+      if(gitOrigin != "no-git-found") {
+        token = gitOrigin ? `${userId}_${extractProjectName(gitOrigin)}` : EMPTY;
+        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, token);
+        return token as string;
+      }
+      else {
+        return "no-git-found";
+      }
     }
     else {
       return token;  

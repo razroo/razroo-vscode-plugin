@@ -99,10 +99,15 @@ export async function activate(context: vscode.ExtensionContext) {
               const { accessToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
               setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
               const vsCodeInstanceId = await getOrCreateAndUpdateIdToken(context, userId);
-              isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
-              isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
-              isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-              isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
+              if(vsCodeInstanceId == 'no-git-found') {
+                showInformationMessage('Please initialize a git repo to get started');
+              }
+              else {
+                isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
+                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
+                isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
+                isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
+              }
             } catch (error) {
               showErrorMessage(error as any);
             } finally {
