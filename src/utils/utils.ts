@@ -157,7 +157,7 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: bo
   }
 };
 
-async function refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction: boolean, specificLanguageUsed = null) {
+async function refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction: boolean) {
   return auth0Client(isProduction).refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
     if (err) {
       console.log("err: ", err);
@@ -169,13 +169,12 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token, is
     await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId);
     await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-    vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${specificLanguageUsed}`, true);
     showInformationMessage('User successfully authenticated with Razroo.');
     return userData;
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, specificLanguageUsed = null ) => {
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean) => {
   const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
@@ -184,14 +183,13 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   if (accessToken && refreshToken && userId && orgId && token) {
 
     if(isTokenExpired(accessToken)) {
-      await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction, specificLanguageUsed);
+      await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction);
     }
 
     else {
       await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId);
       await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-      vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${specificLanguageUsed}`, true);
       showInformationMessage('User successfully authenticated with Razroo.');
     }
   } else {
