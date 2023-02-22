@@ -5,10 +5,12 @@ import { COMMUNITY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEME
 import { generateVsCodeDownloadCode } from '../../graphql/generate-code/generate-code.service';
 
 export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
+  const { name } = getVersionAndNameString(pathId);
+
   return {
     "command": `generate.${pathId}.${scaffoldId}`,
     "group": "myextension.myGroup",
-    "when": "razroo-vscode-plugin:isAuthenticated"
+    "when": `razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:${name}`
   }; 
 }
 

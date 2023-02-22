@@ -20,6 +20,10 @@ import { EventEmitter } from 'stream';
 import { setWorkspaceState } from './utils/state.utils';
 import { getOrCreateAndUpdateIdToken } from './utils/token/token';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
+import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
+import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
+import { dirname } from 'path';
+const path = require('path');
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -40,6 +44,16 @@ export async function activate(context: vscode.ExtensionContext) {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const packageJsonParams = await getPackageJson(workspacePath as any);
 
+  const packageJsonPath = searchForPackageJson(workspacePath as any);
+  getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
+    determineLanguagesUsed(jsonMap).then(async (languagesUsed) => {
+      languagesUsed.forEach(languageUsed => {
+        vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+      });
+    });
+  }).catch((err)=>{
+    console.log(err);
+  });
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );
@@ -254,3 +268,36 @@ export async function deactivate() {
   vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
   await onVSCodeClose(context, isProduction);
 };
+
+async function getProjectDependencies(dir: string): Promise<Map<string, PackageTreeNode>> {
+  const pkg = await readPackageJson(path.join(dir, 'package.json'));
+  if (!pkg) {
+    throw new Error('Could not find package.json');
+  }
+
+  const results = new Map<string, PackageTreeNode>();
+  for (const [name, version] of getAllDependencies(pkg)) {
+    const packageJsonPath = searchForPackageJson(dir);
+    if (!packageJsonPath) {
+      continue;
+    }
+
+    results.set(name, {
+      name,
+      version,
+      path: dirname(packageJsonPath),
+      package: await readPackageJson(packageJsonPath),
+    });
+  }
+
+  return results;
+}
+
+function getAllDependencies(pkg: PackageJson): Set<[string, string]> {
+  return new Set([
+    ...Object.entries(pkg.dependencies || []),
+    ...Object.entries(pkg.devDependencies || []),
+    ...Object.entries(pkg.peerDependencies || []),
+    ...Object.entries(pkg.optionalDependencies || []),
+  ]);
+}
