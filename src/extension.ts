@@ -47,9 +47,10 @@ export async function activate(context: vscode.ExtensionContext) {
   let specificLanguageUsed;
   const packageJsonPath = searchForPackageJson(workspacePath as any);
   getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
-    determineLanguagesUsed(jsonMap).then((result)=>{
-      specificLanguageUsed = result[0];
-      vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${specificLanguageUsed}`, true);
+    determineLanguagesUsed(jsonMap).then(async (languagesUsed) => {
+      languagesUsed.forEach(languageUsed => {
+        vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+      });
     });
   }).catch((err)=>{
     console.log(err);
@@ -116,7 +117,6 @@ export async function activate(context: vscode.ExtensionContext) {
               isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
               isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
               isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-              isInProgress && vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${specificLanguageUsed}`, true);
               isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
             } catch (error) {
               showErrorMessage(error as any);
