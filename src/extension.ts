@@ -44,7 +44,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const packageJsonParams = await getPackageJson(workspacePath as any);
 
-  let specificLanguageUsed;
   const packageJsonPath = searchForPackageJson(workspacePath as any);
   getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
     determineLanguagesUsed(jsonMap).then(async (languagesUsed) => {
@@ -63,7 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
   const isProduction = isProductionFunc(context);
-  await tryToAuth(context, isProduction,specificLanguageUsed);
+  await tryToAuth(context, isProduction);
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
