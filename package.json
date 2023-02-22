@@ -88,6 +88,30 @@
       {
         "command": "generate.react.reactReduxSlice",
         "title": "React Redux Slice"
+      },
+      {
+        "command": "generate.svelte.svelteComponent",
+        "title": "Svelte Component"
+      },
+      {
+        "command": "generate.svelte.svelteModuleComponent",
+        "title": "Svelte Module Component"
+      },
+      {
+        "command": "generate.svelte.svelteEndpoint",
+        "title": "Svelte Endpoint"
+      },
+      {
+        "command": "generate.vue.component",
+        "title": "Vue Component"
+      },
+      {
+        "command": "generate.vue.view",
+        "title": "Vue View"
+      },
+      {
+        "command": "generate.vue.piniaStore",
+        "title": "Vue Pinia Store"
       }
     ],
     "menus": {
@@ -101,52 +125,82 @@
         {
           "command": "generate.angular.component",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.angular.angularService",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.angular.angularGuard",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.angular.typescriptInterface",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.angular.angularPipe",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.angular.angularDirective",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
           "command": "generate.nextjs.nextjsComponent",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:next || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:nextjs"
         },
         {
           "command": "generate.ngrx.ngrxFeature",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:ngrx || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:ngrx"
         },
         {
           "command": "generate.react.reactComponent",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react"
         },
         {
           "command": "generate.react.reactReduxSlice",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react || razroo-vscode-plugin-language:undefined"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:react"
+        },
+        {
+          "command": "generate.svelte.svelteComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:svelte"
+        },
+        {
+          "command": "generate.svelte.svelteModuleComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:svelte"
+        },
+        {
+          "command": "generate.svelte.svelteEndpoint",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:svelte"
+        },
+        {
+          "command": "generate.vue.component",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:vue"
+        },
+        {
+          "command": "generate.vue.view",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:vue"
+        },
+        {
+          "command": "generate.vue.piniaStore",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:vue"
         }
       ]
     },
