@@ -10,7 +10,7 @@ export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
   return {
     "command": `generate.${pathId}.${scaffoldId}`,
     "group": "myextension.myGroup",
-    "when": `razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-${name} || razroo-vscode-plugin-language:undefined`
+    "when": `razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-${name}`
   }; 
 }
 
