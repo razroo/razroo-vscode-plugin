@@ -51,6 +51,17 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
     }
   };
 
+  const razrooStepURL = `https://razroo.com/community/${pathId}/${recipeId}/${scaffoldId}`;
+  const openLinkCommand = {
+    title: 'Open in Razroo step',
+    command: 'extension.openLink'
+};
+  vscode.window.showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
+    if(selection && selection.command === 'extension.openLink') {
+      vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
+    }
+  })
+
   vscode.window.showInformationMessage("Scaffold generating...", cancelAction).then(selectedAction => {
     if (selectedAction === cancelAction) {
       console.log("Cancel button clicked");
