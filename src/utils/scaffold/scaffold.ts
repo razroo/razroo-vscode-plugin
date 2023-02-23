@@ -53,7 +53,7 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
 
   const razrooStepURL = `https://razroo.com/community/${pathId}/${recipeId}/${scaffoldId}`;
   const openLinkCommand = {
-    title: 'Open in Razroo step',
+    title: 'Open in Razroo',
     command: 'extension.openLink'
 };
   vscode.window.showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
