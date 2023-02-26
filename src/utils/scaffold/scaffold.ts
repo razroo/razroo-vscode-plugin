@@ -1,7 +1,7 @@
 import { getNameFilePathFromFullPath, getNameFromFullPath } from '../../common-utils/scaffold/scaffold.utils';
 import { getVersionAndNameString } from "@codemorph/core";
 import { startCase, camelCase } from "lodash";
-import { COMMUNITY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from "../../constants";
+import { COMMUNITY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, RAZROO_DEV_URL } from "../../constants";
 import { generateVsCodeDownloadCode } from '../../graphql/generate-code/generate-code.service';
 
 export function createScaffoldSubmenu(pathId: string, scaffoldId: string) {
@@ -51,17 +51,6 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
     }
   };
 
-  const razrooStepURL = `https://razroo.com/community/${pathId}/${recipeId}/${scaffoldId}`;
-  const openLinkCommand = {
-    title: 'Open in Razroo',
-    command: 'extension.openLink'
-};
-  vscode.window.showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
-    if(selection && selection.command === 'extension.openLink') {
-      vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
-    }
-  })
-
   vscode.window.showInformationMessage("Scaffold generating...", cancelAction).then(selectedAction => {
     if (selectedAction === cancelAction) {
       console.log("Cancel button clicked");
@@ -90,6 +79,17 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
     userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
     userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
   };
+
+  const razrooStepURL = `${isProduction ? 'https://razroo.com' : RAZROO_DEV_URL}/${orgId}/${pathId}/${recipeId}/${scaffoldId}`;
+  const openLinkCommand = {
+    title: 'Open in Razroo',
+    command: 'extension.openLink'
+  };
+  vscode.window.showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
+    if(selection && selection.command === 'extension.openLink') {
+      vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
+    };
+  });
 
   generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
   });
