@@ -131,6 +131,7 @@ export async function getPackageJson(workspacePath: string) {
 
   const newlyTransformedJson = {
     name: packageJson ? packageJson.name : '',
+    version: packageJson ? packageJson.version : '0.0.0',
     languages: transformedProjectDependencies,
     nx: nx
   };
