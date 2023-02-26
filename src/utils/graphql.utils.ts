@@ -13,6 +13,7 @@ import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { getOrCreateAndUpdateIdToken } from './token/token';
+import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
@@ -125,7 +126,7 @@ export async function getPackageJson(workspacePath: string) {
   const packageJsonFilePath = join(workspacePath, 'package.json');
   const packageJson = await readPackageJson(packageJsonFilePath);
   const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
-  const transformedProjectDependencies = await determineLanguagesUsed(projectDependenciesMap);
+  const transformedProjectDependencies = await determineLanguagesWithVersionUsed(projectDependenciesMap);
   const nx = await readNxJson(workspacePath);
 
   const newlyTransformedJson = {
