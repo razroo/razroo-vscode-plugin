@@ -87,11 +87,6 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
     title: 'Open in Razroo',
     command: 'extension.openLink'
   };
-  vscode.window.showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
-    if(selection && selection.command === 'extension.openLink') {
-      vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
-    };
-  });
 
   generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
   });

@@ -78,7 +78,6 @@ export const saveFiles = async (
         const coreProgrammingLanguage = getVersionAndNameString(pathId).name;
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
-        showInformationMessage('Files generated');
         const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
         const openLinkCommand = {
           title: 'Open in Razroo',
