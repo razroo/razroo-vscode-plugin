@@ -1,4 +1,4 @@
-import { RAZROO_DEV_URL } from '../../constants';
+import { DEV_APP_URL, PROD_APP_URL } from '../../constants';
 import * as vscode from 'vscode';
 
 export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any) {  
@@ -31,7 +31,7 @@ async function getCommandTasks() {
 async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any) {
     const execution = await vscode.tasks.executeTask(task);
     const {orgId, pathId, recipeId, id } = template;
-    const razrooStepURL = `${isProduction ? 'https://razroo.com' : RAZROO_DEV_URL}/${orgId}/${pathId}/${recipeId}/${id}`;
+    const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${orgId}/${pathId}/${recipeId}/${id}`;
     const openLinkCommand = {
       title: 'Open in Razroo',
       command: 'extension.openLink'

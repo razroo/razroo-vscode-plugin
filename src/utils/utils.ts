@@ -11,7 +11,7 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, RAZROO_DEV_URL } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
@@ -79,7 +79,7 @@ export const saveFiles = async (
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
         showInformationMessage('Files generated');
-        const razrooStepURL = `${isProduction ? 'https://razroo.com' : RAZROO_DEV_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
+        const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
         const openLinkCommand = {
           title: 'Open in Razroo',
           command: 'extension.openLink'
