@@ -15,13 +15,7 @@ jobs:
           cache: 'npm'
       - name: Login to DockerHub Registry
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-      - name: Build Private Dependencies and Test
-        run: |
-          sudo apt install -y jq
-          echo "@razroo:registry=https://npm.pkg.github.com/" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
-          npm install
-      - name: Test
+      - name: Install Dependencies and Test
         run: |
           npm install 
           npm test
