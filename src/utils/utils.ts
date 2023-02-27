@@ -11,7 +11,7 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
@@ -66,7 +66,7 @@ export const saveFiles = async (
 
     if (extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
-      await runRazrooCommand(commandToExecute, parametersParsed);
+      await runRazrooCommand(commandToExecute, parametersParsed,isProduction, template);
     }
 
     if (type !== 'edit' && extname(fileName) !== ".sh") {
@@ -79,6 +79,16 @@ export const saveFiles = async (
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
         showInformationMessage('Files generated');
+        const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
+        const openLinkCommand = {
+          title: 'Open in Razroo',
+          command: 'extension.openLink'
+        };
+        showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
+          if(selection && selection.command === 'extension.openLink') {
+            vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
+          };
+        });
       } catch (error) {
         console.log('extractEntryTo', error);
       }
