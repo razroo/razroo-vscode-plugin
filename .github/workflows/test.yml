@@ -13,8 +13,6 @@ jobs:
         with:
           node-version: '16'
           cache: 'npm'
-      - name: Login to DockerHub Registry
-        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: Install Dependencies and Test
         run: |
           npm install 
