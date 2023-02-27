@@ -328,7 +328,7 @@
     "fs-extra": "^10.1.0",
     "git-branch": "^2.0.1",
     "globify-gitignore": "^0.2.1",
-    "graphql": "^15.6.0",
+    "graphql": "15.3.0",
     "graphql-tag": "2.11.0",
     "ignore": "^5.2.0",
     "isomorphic-fetch": "^3.0.0",
