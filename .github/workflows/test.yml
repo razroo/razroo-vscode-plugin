@@ -2,7 +2,7 @@ name: Run Unit Tests
 
 on:
   pull_request:
-    branches: [ develop ]
+    branches: [ CI/CD ]
   workflow_dispatch:
 jobs:
   DevOpsPRUnitTests:
@@ -23,5 +23,5 @@ jobs:
           npm install
       - name: Test
         run: |
-          npm install 
-          npm test
+          yarn 
+          npm run test
