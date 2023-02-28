@@ -2,7 +2,7 @@ name: Run Unit Tests
 
 on:
   pull_request:
-    branches: [ CI/CD ]
+    branches: [ "CI/CD" ]
   workflow_dispatch:
 jobs:
   DevOpsPRUnitTests:
