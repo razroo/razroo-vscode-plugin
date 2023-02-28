@@ -20,8 +20,8 @@ jobs:
           sudo apt install -y jq
           echo "@razroo:registry=https://npm.pkg.github.com/" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
-          npm install
-      - name: Test
+          yarn
+      - name: Test 
         run: |
           yarn
           npm run test 
