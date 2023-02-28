@@ -21,7 +21,7 @@ jobs:
           echo "@razroo:registry=https://npm.pkg.github.com/" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
           npm install
-      - name: Test
+      - name: Test 
         run: |
           yarn
           npm run test 
