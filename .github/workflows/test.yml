@@ -2,7 +2,7 @@ name: Run Unit Tests
 
 on:
   pull_request:
-    branches: [ CI/CD ]
+    branches: [ develop ]
   workflow_dispatch:
 jobs:
   DevOpsPRUnitTests:
@@ -21,7 +21,7 @@ jobs:
           echo "@razroo:registry=https://npm.pkg.github.com/" >> ~/.npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GitHubToken }}" >> ~/.npmrc
           yarn
-      - name: Test 
+      - name: Test
         run: |
           yarn
-          npm run test 
+          npm run test
