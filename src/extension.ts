@@ -23,6 +23,7 @@ import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
 import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
+import { logCursorPosition } from 'snippets/log-position';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -43,6 +44,13 @@ export async function activate(context: vscode.ExtensionContext) {
   const showOpenDialog = vscode.window.showOpenDialog;
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const packageJsonParams = await getPackageJson(workspacePath as any);
+  let activeEditor = vscode.window.activeTextEditor;
+
+  vscode.workspace.onDidChangeTextDocument(event => {
+    if (activeEditor && event.document === activeEditor.document) {
+        logCursorPosition(activeEditor.selection);
+    }
+  }, null, context.subscriptions);
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);
   getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
@@ -161,7 +169,6 @@ export async function activate(context: vscode.ExtensionContext) {
     async () => {
       // get token
       const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-      console.log('Token: ', token);
       if (!token) {
         console.error('Token is null');
         showErrorMessage('Session has expired. Please login again.');
