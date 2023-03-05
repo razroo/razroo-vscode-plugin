@@ -7,7 +7,10 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   const vsCodeToken = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  const path = vsCodeToken ? (vsCodeToken as any).split('_').pop() : '';
+  const path = vsCodeToken ? (vsCodeToken as any).split('_').pop() + '-0.0.0' : '';
+  if(!path) {
+    return;
+  }
   const editor = vscode.window.activeTextEditor as any;
   const lineNumber = selection.active.line + 1;
   const columnNumber = selection.active.character + 1;
@@ -23,8 +26,6 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     if (selectedOption) {
         vscode.window.showInformationMessage(`You selected ${selectedOption}`);
     }
-    console.log(`Cursor position: line ${lineNumber}, column ${columnNumber}`);
-    console.log(`lineText: ${searchText}`);
   }
 }
 

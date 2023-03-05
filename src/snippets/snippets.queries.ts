@@ -5,8 +5,8 @@ export async function getSnippetTemplates(search: string, orgId: string,
     path: string, isProduction: boolean, accessToken: string) {
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
-      query: `query templates($search: String!, $orgId: String!, $path: String!) {
-        templates(search: $search, orgId: $orgId, path: $path, snippet: true) {
+      query: `query templates($search: String, $orgId: String, $path: String, snippet: Boolean) {
+        templates(search: $search, orgId: $orgId, path: $path, snippet: $snippet) {
             id
             title
           }
@@ -14,7 +14,8 @@ export async function getSnippetTemplates(search: string, orgId: string,
       variables: {
         search: search,
         orgId: orgId,
-        path: path
+        path: path,
+        snippet: true
       }
     };
     try {
