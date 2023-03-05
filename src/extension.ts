@@ -44,13 +44,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const showOpenDialog = vscode.window.showOpenDialog;
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const packageJsonParams = await getPackageJson(workspacePath as any);
-  let activeEditor = vscode.window.activeTextEditor;
-
-  vscode.workspace.onDidChangeTextDocument(event => {
-    if (activeEditor && event.document === activeEditor.document) {
-        logCursorPosition(activeEditor.selection);
-    }
-  }, null, context.subscriptions);
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);
   getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
@@ -79,6 +72,13 @@ export async function activate(context: vscode.ExtensionContext) {
       );
     }
   );
+
+  let activeEditor = vscode.window.activeTextEditor;
+  vscode.workspace.onDidChangeTextDocument(event => {
+    if (activeEditor && event.document === activeEditor.document) {
+      logCursorPosition(context, activeEditor.selection, isProduction);
+    }
+  }, null, context.subscriptions);
 
   context.subscriptions.push(disposable);
 
