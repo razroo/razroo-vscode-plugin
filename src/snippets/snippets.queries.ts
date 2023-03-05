@@ -1,4 +1,4 @@
-import { URL_GRAPHQL, URL_PROD_GRAPHQL } from "graphql/awsConstants";
+import { URL_GRAPHQL, URL_PROD_GRAPHQL } from "../graphql/awsConstants";
 import axios from 'axios';
 
 export async function getSnippetTemplates(search: string, orgId: string, 
