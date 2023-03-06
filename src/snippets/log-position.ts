@@ -20,13 +20,13 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       return;
     }
     const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
-    const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions.map(snippetOption => {
+    const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {
         id: snippetOption.id,
         label: snippetOption.title,
-        description: snippetOption.instructionalContent
+        detail: snippetOption.instructionalContent
       };
-    });
+    }) : [];
     const selectedOption = await vscode.window.showQuickPick(quickPickOptions, {
       title: 'Choose A Code Snippet'
     });
