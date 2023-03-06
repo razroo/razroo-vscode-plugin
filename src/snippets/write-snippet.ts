@@ -11,7 +11,7 @@ export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: Adm
   const columnNumber = context.workspaceState.get(VSCODE_ACTIVE_COLUMN_NUMBER) as number;
   const indentedSnippetFileText = indentString(snippetFileText, columnNumber);
   const edit = new vscode.TextEdit(
-    new vscode.Range(lineNumber, 0, lineNumber, 0),
+    new vscode.Range(lineNumber - 1, 0, lineNumber, 0),
     indentedSnippetFileText
   );
   const workspaceEdit = new vscode.WorkspaceEdit();
