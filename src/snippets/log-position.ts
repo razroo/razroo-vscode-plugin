@@ -2,6 +2,7 @@ import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_R
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
+import { codeSnippetGeneratingNotification } from './snippets-notifications';
 
 export async function logCursorPosition(context: vscode.ExtensionContext, selection: vscode.Selection, 
     isProduction: boolean) {
@@ -37,14 +38,9 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       title: 'Choose A Code Snippet'
     });
     if (selectedOption) {
-      console.log('selectedOption');
-      console.log(selectedOption);
+      codeSnippetGeneratingNotification();
       const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id);
-      console.log('generateVsCodeDownloadCodeParameters');
-      console.log(generateVsCodeDownloadCodeParameters);
       generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-        console.log('data');
-        console.log(data);
       });
       vscode.window.showInformationMessage(`You selected ${selectedOption}`);
     }
