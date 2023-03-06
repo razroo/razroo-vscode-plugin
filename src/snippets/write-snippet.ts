@@ -24,5 +24,9 @@ export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: Adm
 
 function indentString(str: string, indentSize: number): string {
   const indentation = ' '.repeat(indentSize);
-  return indentation + str.replace(/\n/g, '\n' + indentation);
+  const indentedString = indentation + str.replace(/\n/g, '\n' + indentation);
+  if (indentedString.endsWith('\n')) {
+    return indentedString;
+  }
+  return indentedString + '\n';
 }
