@@ -9,6 +9,7 @@ export async function getSnippetTemplates(search: string, orgId: string,
         templates(search: $search, orgId: $orgId, path: $path, snippet: true) {
             id
             title
+            instructionalContent
           }
         }`,
       variables: {

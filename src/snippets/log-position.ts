@@ -24,10 +24,14 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     console.log(snippetOptions);
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions.map(snippetOption => {
       return {
-        label: snippetOption.title
+        id: snippetOption.id,
+        label: snippetOption.title,
+        description: snippetOption.instructionalContent
       };
     });
-    const selectedOption = await vscode.window.showQuickPick(quickPickOptions);
+    const selectedOption = await vscode.window.showQuickPick(quickPickOptions, {
+      title: 'Choose A Code Snippet'
+    });
     if (selectedOption) {
         console.log('selected option');
         console.log(selectedOption);
