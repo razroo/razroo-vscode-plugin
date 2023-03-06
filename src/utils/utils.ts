@@ -50,6 +50,10 @@ export const saveFiles = async (
   const folderSelectedInWorkspace = join(rootDirectory);
   const folderRoot = `${folderSelectedInWorkspace}`;
 
+  if (type === 'Snippet') {
+    console.log('snippet generated');
+    return;
+  }
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
   if (type === 'Edit' && updates) {
     editFiles(updates, parameters);

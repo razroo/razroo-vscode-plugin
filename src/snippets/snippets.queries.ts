@@ -8,6 +8,9 @@ export async function getSnippetTemplates(search: string, orgId: string,
       query: `query templates($search: String, $orgId: String, $path: String) {
         templates(search: $search, orgId: $orgId, path: $path, snippet: true) {
             id
+            recipeId
+            orgId
+            pathId
             title
             instructionalContent
           }

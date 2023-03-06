@@ -1,6 +1,7 @@
-import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from '../constants';
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
+import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
 
 export async function logCursorPosition(context: vscode.ExtensionContext, selection: vscode.Selection, 
     isProduction: boolean) {
@@ -22,6 +23,9 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {
+        orgId: snippetOption.orgId,
+        pathId: snippetOption.pathId,
+        recipeId: snippetOption.recipeId,
         id: snippetOption.id,
         label: snippetOption.title,
         detail: snippetOption.instructionalContent
@@ -31,9 +35,33 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       title: 'Choose A Code Snippet'
     });
     if (selectedOption) {
+      console.log('selectedOption');
+      console.log(selectedOption);
+      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id);
+      console.log('generateVsCodeDownloadCodeParameters');
+      console.log(generateVsCodeDownloadCodeParameters);
+      generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
+        console.log('data');
+        console.log(data);
+      });
       vscode.window.showInformationMessage(`You selected ${selectedOption}`);
     }
   }
+}
+
+function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
+    pathId: string, recipeId: string, stepId: string) {
+  return {
+    projectName: '',
+    parameters: undefined,
+    pathOrgId: orgId,
+    pathId: pathId,
+    recipeId: recipeId,
+    stepId: stepId,
+    vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
+    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
+    userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
+  };
 }
 
 function isComment(lineText: string): boolean {
