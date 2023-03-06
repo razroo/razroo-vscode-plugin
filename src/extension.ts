@@ -22,6 +22,7 @@ import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'p
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
+import {debounce} from 'lodash';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -72,9 +73,16 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   let activeEditor = vscode.window.activeTextEditor;
+  let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
     if (activeEditor && event.document === activeEditor.document) {
-      logCursorPosition(context, activeEditor.selection, isProduction);
+      if(debouncedSnippetRequest) {
+        debouncedSnippetRequest.cancel();
+      }
+      debouncedSnippetRequest = debounce(() => {
+        logCursorPosition(context, (activeEditor as any).selection, isProduction);
+      }, 300);
+      debouncedSnippetRequest();
     }
   }, null, context.subscriptions);
 

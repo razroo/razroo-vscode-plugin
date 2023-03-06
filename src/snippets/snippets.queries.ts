@@ -25,7 +25,7 @@ export async function getSnippetTemplates(search: string, orgId: string,
           Authorization: `${accessToken}`,
         },
       });
-      return response?.data;
+      return response?.data?.data?.templates;
     } catch (error) {    
       console.log('error updatePrivateDirectoriesRequest', error);
       return error;

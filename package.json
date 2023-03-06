@@ -310,6 +310,7 @@
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@codemorph/core": "^1.0.4",
     "@types/jsonwebtoken": "^8.5.5",
+    "@types/lodash": "^4.14.191",
     "adm-zip": "^0.5.5",
     "auth0": "^2.37.0",
     "aws-appsync": "^4.1.8",
