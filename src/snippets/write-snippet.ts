@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
 import { VSCODE_ACTIVE_LINE_NUMBER } from '../constants';
+import { codeSnippetGeneratedNotification } from './snippets-notifications';
 
-export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: AdmZip.IZipEntry) {
+export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: AdmZip.IZipEntry, template: any, isProduction: boolean) {
   // Get the active text editor
   const editor = vscode.window.activeTextEditor as any;
   const snippetFileText = zipEntry.getData().toString("utf8");
@@ -14,4 +15,5 @@ export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: Adm
   const workspaceEdit = new vscode.WorkspaceEdit();
   workspaceEdit.set(editor.document.uri, [edit]);
   vscode.workspace.applyEdit(workspaceEdit);
+  codeSnippetGeneratedNotification(isProduction, template.orgId, template.pathId, template.recipeId, template.id);
 }

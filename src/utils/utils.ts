@@ -62,7 +62,7 @@ export const saveFiles = async (
   const zipEntries = zip.getEntries();
 
   if (type === 'Snippet') {
-    writeCodeSnippet(context, zipEntries[0]);
+    writeCodeSnippet(context, zipEntries[0], template, isProduction);
     return;
   }
   for await (const zipEntry of zipEntries) {
