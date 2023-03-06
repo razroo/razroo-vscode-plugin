@@ -1,13 +1,11 @@
-import { generateVsCodeDownloadCode } from './graphql/generate-code/generate-code.service';
-import { getPathScaffolds } from './graphql/scaffold/scaffold.service';
 import { getAuth0Url } from './utils/authentication/authentication';
-import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import AdmZip from 'adm-zip';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
 import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
+import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
@@ -23,6 +21,8 @@ import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
 import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
+import { logCursorPosition } from './snippets/log-position';
+import {debounce} from 'lodash';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -71,6 +71,20 @@ export async function activate(context: vscode.ExtensionContext) {
       );
     }
   );
+
+  let activeEditor = vscode.window.activeTextEditor;
+  let debouncedSnippetRequest;
+  vscode.workspace.onDidChangeTextDocument(event => {
+    if (activeEditor && event.document === activeEditor.document) {
+      if(debouncedSnippetRequest) {
+        debouncedSnippetRequest.cancel();
+      }
+      debouncedSnippetRequest = debounce(() => {
+        logCursorPosition(context, (activeEditor as any).selection, isProduction);
+      }, 300);
+      debouncedSnippetRequest();
+    }
+  }, null, context.subscriptions);
 
   context.subscriptions.push(disposable);
 
@@ -161,7 +175,6 @@ export async function activate(context: vscode.ExtensionContext) {
     async () => {
       // get token
       const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-      console.log('Token: ', token);
       if (!token) {
         console.error('Token is null');
         showErrorMessage('Session has expired. Please login again.');
