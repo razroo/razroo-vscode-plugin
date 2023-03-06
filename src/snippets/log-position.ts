@@ -22,10 +22,10 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
     console.log('snippetOptions');
     console.log(snippetOptions);
-    const selectedOption = await vscode.window.showQuickPick(snippetOptions);
-    if (selectedOption) {
-        vscode.window.showInformationMessage(`You selected ${selectedOption}`);
-    }
+    // const selectedOption = await vscode.window.showQuickPick(snippetOptions);
+    // if (selectedOption) {
+    //     vscode.window.showInformationMessage(`You selected ${selectedOption}`);
+    // }
   }
 }
 
