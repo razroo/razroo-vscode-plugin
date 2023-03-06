@@ -1,4 +1,4 @@
-import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from '../constants';
+import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_LINE_NUMBER } from '../constants';
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
@@ -20,6 +20,8 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     if(!orgId) {
       return;
     }
+    context.workspaceState.update(VSCODE_ACTIVE_LINE_NUMBER, lineNumber);
+    
     const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {

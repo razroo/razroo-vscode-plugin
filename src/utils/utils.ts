@@ -21,6 +21,7 @@ import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.ut
 import { join, extname, normalize} from 'path';
 import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@codemorph/core';
 import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
+import { writeCodeSnippet } from '../snippets/write-snippet';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -50,10 +51,6 @@ export const saveFiles = async (
   const folderSelectedInWorkspace = join(rootDirectory);
   const folderRoot = `${folderSelectedInWorkspace}`;
 
-  if (type === 'Snippet') {
-    console.log('snippet generated');
-    return;
-  }
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
   if (type === 'Edit' && updates) {
     editFiles(updates, parameters);
@@ -63,6 +60,11 @@ export const saveFiles = async (
   // Extract files from zip
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
+
+  if (type === 'Snippet') {
+    writeCodeSnippet(context, zipEntries[0]);
+    return;
+  }
   for await (const zipEntry of zipEntries) {
     const parametersParsed = JSON.parse(parameters);
     const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName));
