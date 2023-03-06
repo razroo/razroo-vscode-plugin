@@ -41,21 +41,32 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       title: 'Choose A Code Snippet'
     });
     if (selectedOption) {
-      codeSnippetGeneratingNotification();
-      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id);
       // state here used to freeze logging until snippet has loaded
       context.workspaceState.update(VSCODE_SNIPPET_LOADING, true);
-      generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
+      vscode.window.showInputBox({
+          prompt: `Name for ${selectedOption?.label}?`, // Set the prompt text
+          placeHolder: 'user'  // Set the placeholder text
+      }).then(customName => {
+        // Do something with the custom name
+        codeSnippetGeneratingNotification();
+        const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, customName as string);
+        generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
+        }); 
       });
+      
     }
   }
 }
 
 function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
-    pathId: string, recipeId: string, stepId: string) {
+    pathId: string, recipeId: string, stepId: string, customName: string) {
+  const parameters = {
+    name: customName
+  };
+
   return {
     projectName: '',
-    parameters: undefined,
+    parameters: JSON.stringify(parameters),
     pathOrgId: orgId,
     pathId: pathId,
     recipeId: recipeId,
