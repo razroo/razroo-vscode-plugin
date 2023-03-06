@@ -42,7 +42,6 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id);
       generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
       });
-      vscode.window.showInformationMessage(`You selected ${selectedOption}`);
     }
   }
 }
