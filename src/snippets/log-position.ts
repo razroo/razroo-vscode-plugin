@@ -1,4 +1,4 @@
-import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_LINE_NUMBER } from '../constants';
+import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_LINE_NUMBER, VSCODE_SNIPPET_LOADING } from '../constants';
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
@@ -40,6 +40,8 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     if (selectedOption) {
       codeSnippetGeneratingNotification();
       const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id);
+      // state here used to freeze logging until snippet has loaded
+      context.workspaceState.update(VSCODE_SNIPPET_LOADING, true);
       generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
       });
     }

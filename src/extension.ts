@@ -9,7 +9,8 @@ import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  COMMAND_CANCEL_AUTH
+  COMMAND_CANCEL_AUTH,
+  VSCODE_SNIPPET_LOADING
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
@@ -75,7 +76,8 @@ export async function activate(context: vscode.ExtensionContext) {
   let activeEditor = vscode.window.activeTextEditor;
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
-    if (activeEditor && event.document === activeEditor.document) {
+    const codeSnippetLoading = context.workspaceState.get(VSCODE_SNIPPET_LOADING);
+    if (activeEditor && event.document === activeEditor.document && !codeSnippetLoading) {
       if(debouncedSnippetRequest) {
         debouncedSnippetRequest.cancel();
       }
