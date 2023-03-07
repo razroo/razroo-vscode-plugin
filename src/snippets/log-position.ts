@@ -53,7 +53,8 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     if(!doubleForwardSlashType(searchText)) {
       return;
     }
-    const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
+    const trimmedSearchText = removeSsFromSearchResult(searchText);
+    const snippetOptions = await getSnippetTemplates(trimmedSearchText, orgId as string, path, isProduction, accessToken);
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {
         orgId: snippetOption.orgId,
@@ -106,8 +107,8 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
   };
 }
 
-function isTabKeyPressed(lineText: string) {
-  return lineText.includes('\t');
+function removeSsFromSearchResult(searchText: string) {
+  return searchText.replace(/ss\s*$/, '');
 }
 
 function doubleForwardSlashType(lineText: string) {
