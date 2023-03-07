@@ -108,7 +108,8 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
 }
 
 function removeSsFromSearchResult(searchText: string) {
-  return searchText.replace(/ss\s*$/, '');
+  const trimmedSearchText = searchText.trim();
+  return trimmedSearchText.replace(/ss\s*$/, '');
 }
 
 function doubleForwardSlashType(lineText: string) {
