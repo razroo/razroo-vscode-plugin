@@ -32,7 +32,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     renderOptions: { 
       after: {
         color: "gray",
-        contentText: "👈 Type // to select code snippet",
+        contentText: "👈 Type ss to select code snippet",
         margin: "20px",
         border: "0.5px solid",
       }
@@ -112,7 +112,7 @@ function isTabKeyPressed(lineText: string) {
 
 function doubleForwardSlashType(lineText: string) {
   const trimmedLineText = lineText.trim();
-  const doubleForwardSlashAtEndRegex = /\/\/\s*$/;
+  const doubleForwardSlashAtEndRegex = /ss\s*$/;
 
   return doubleForwardSlashAtEndRegex.test(trimmedLineText);
 }
