@@ -39,6 +39,10 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
+  // reset snippet loading state on load
+  context.workspaceState.update(VSCODE_SNIPPET_LOADING, false);
+  
+
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;

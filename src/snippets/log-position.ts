@@ -32,14 +32,13 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     renderOptions: { 
       after: {
         color: "gray",
-        contentText: "👈 Press Tab to select code snippet",
+        contentText: "👈 Type // to select code snippet",
         margin: "20px",
         border: "0.5px solid",
       }
     }
   };
-  console.log('codeLine');
-  console.log(codeLine);
+
   const searchText = codeLine.text.trim();
   const codeIndentationColumn = codeLine.firstNonWhitespaceCharacterIndex;
   if (isComment(searchText)) {
@@ -51,6 +50,9 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     context.workspaceState.update(VSCODE_ACTIVE_LINE_NUMBER, lineNumber);
     context.workspaceState.update(VSCODE_ACTIVE_COLUMN_NUMBER, codeIndentationColumn);
     
+    if(!doubleForwardSlashType(searchText)) {
+      return;
+    }
     const snippetOptions = await getSnippetTemplates(searchText, orgId as string, path, isProduction, accessToken);
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {
@@ -108,6 +110,12 @@ function isTabKeyPressed(lineText: string) {
   return lineText.includes('\t');
 }
 
+function doubleForwardSlashType(lineText: string) {
+  const trimmedLineText = lineText.trim();
+  const doubleForwardSlashAtEndRegex = /\/\/\s*$/;
+
+  return doubleForwardSlashAtEndRegex.test(trimmedLineText);
+}
 function isComment(lineText: string): boolean {
   // Regex pattern to match comment styles across different programming languages\
   // for JavaScript, # for Python, /* for Java, <!-- for HTML,
