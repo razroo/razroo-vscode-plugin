@@ -82,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
         debouncedSnippetRequest.cancel();
       }
       debouncedSnippetRequest = debounce(() => {
-        logCursorPosition(context, (activeEditor as any).selection, isProduction);
+        logCursorPosition(context, (activeEditor as any).selection, isProduction, event);
       }, 300);
       debouncedSnippetRequest();
     }

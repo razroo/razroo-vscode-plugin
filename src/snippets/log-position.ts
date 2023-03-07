@@ -4,8 +4,13 @@ import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
 import { codeSnippetGeneratingNotification } from './snippets-notifications';
 
+// Define a custom text decoration
+const decorationType = vscode.window.createTextEditorDecorationType({
+  rangeBehavior: vscode.DecorationRangeBehavior.ClosedOpen,
+});
+
 export async function logCursorPosition(context: vscode.ExtensionContext, selection: vscode.Selection, 
-    isProduction: boolean) {
+    isProduction: boolean, event: any) {
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   const vsCodeToken = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
@@ -17,9 +22,29 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
   const lineNumber = selection.active.line + 1;
   const columnNumber = selection.active.character + 1;
   const codeLine = editor.document.lineAt(lineNumber - 1);
+
+  const decoration = {
+    range: new vscode.Range(
+      codeLine.range.end,
+      codeLine.range.end
+    ),
+    // range: new vscode.Range(lineNumber, 0, lineNumber, 0),
+    renderOptions: { 
+      after: {
+        color: "gray",
+        contentText: "👈 Press Tab to select code snippet",
+        margin: "20px",
+        border: "0.5px solid",
+      }
+    }
+  };
+  console.log('codeLine');
+  console.log(codeLine);
   const searchText = codeLine.text.trim();
   const codeIndentationColumn = codeLine.firstNonWhitespaceCharacterIndex;
   if (isComment(searchText)) {
+    // && isTabKeyPressed(searchText)
+    editor.setDecorations(decorationType, [decoration], editor);
     if(!orgId) {
       return;
     }
@@ -55,6 +80,8 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       });
       
     }
+  } else {
+    editor.setDecorations(decorationType, [], editor);
   }
 }
 
@@ -75,6 +102,10 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
     userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
     userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
   };
+}
+
+function isTabKeyPressed(lineText: string) {
+  return lineText.includes('\t');
 }
 
 function isComment(lineText: string): boolean {
