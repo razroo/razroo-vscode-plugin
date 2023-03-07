@@ -48,6 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const showOpenDialog = vscode.window.showOpenDialog;
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   const packageJsonParams = await getPackageJson(workspacePath as any);
+  const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);
   getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
@@ -86,7 +87,7 @@ export async function activate(context: vscode.ExtensionContext) {
         debouncedSnippetRequest.cancel();
       }
       debouncedSnippetRequest = debounce(() => {
-        logCursorPosition(context, (activeEditor as any).selection, isProduction, event);
+        logCursorPosition(context, (activeEditor as any).selection, isProduction, packageJsonParamsParsed);
       }, 300);
       debouncedSnippetRequest();
     }
