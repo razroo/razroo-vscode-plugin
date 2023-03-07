@@ -9,8 +9,7 @@ import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  COMMAND_CANCEL_AUTH,
-  VSCODE_SNIPPET_LOADING
+  COMMAND_CANCEL_AUTH
 } from './constants';
 import { createDisposableAuthServer } from './auth/local';
 import { Uri } from 'vscode';
@@ -39,9 +38,6 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
-  // reset snippet loading state on load
-  context.workspaceState.update(VSCODE_SNIPPET_LOADING, false);
-  
 
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
@@ -82,10 +78,7 @@ export async function activate(context: vscode.ExtensionContext) {
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
     let activeEditor = vscode.window.activeTextEditor;
-    const codeSnippetLoading = context.workspaceState.get(VSCODE_SNIPPET_LOADING);
-    console.log('codeSnippetLoading');
-    console.log(codeSnippetLoading);
-    if (activeEditor && event.document === activeEditor.document && !codeSnippetLoading) {
+    if (activeEditor && event.document === activeEditor.document) {
       if(debouncedSnippetRequest) {
         debouncedSnippetRequest.cancel();
       }
