@@ -82,6 +82,8 @@ export async function activate(context: vscode.ExtensionContext) {
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
     const codeSnippetLoading = context.workspaceState.get(VSCODE_SNIPPET_LOADING);
+    console.log('codeSnippetLoading');
+    console.log(codeSnippetLoading);
     if (activeEditor && event.document === activeEditor.document && !codeSnippetLoading) {
       if(debouncedSnippetRequest) {
         debouncedSnippetRequest.cancel();
