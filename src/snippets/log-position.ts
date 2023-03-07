@@ -10,11 +10,11 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 });
 
 export async function logCursorPosition(context: vscode.ExtensionContext, selection: vscode.Selection, 
-    isProduction: boolean, event: any) {
+    isProduction: boolean, packageJsonParams: any) {
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
   const vsCodeToken = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  const path = vsCodeToken ? (vsCodeToken as any).split('_').pop() + '-0.0.0' : '';
+  const path = vsCodeToken ? (vsCodeToken as any).split('_').pop() + '-' + packageJsonParams.version : '';
   if(!path) {
     return;
   }
