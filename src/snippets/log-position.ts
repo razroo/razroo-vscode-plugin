@@ -32,7 +32,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     renderOptions: { 
       after: {
         color: "gray",
-        contentText: "👈 Type ss to select code snippet",
+        contentText: "👈 Type ss to select snippet",
         margin: "20px",
         border: "0.5px solid",
       }
