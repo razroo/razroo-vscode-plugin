@@ -78,9 +78,10 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  let activeEditor = vscode.window.activeTextEditor;
+  
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
+    let activeEditor = vscode.window.activeTextEditor;
     const codeSnippetLoading = context.workspaceState.get(VSCODE_SNIPPET_LOADING);
     console.log('codeSnippetLoading');
     console.log(codeSnippetLoading);
