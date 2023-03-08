@@ -90,6 +90,9 @@ async function collectInputBoxValues(nonFilePathParameters: any) {
 
 async function showInputBox(nonFilePathParameters: any, index: number, parameters) {
   const parameter = nonFilePathParameters[index];
+  if(!parameter) {
+    return;
+  }
   const paramValue = await vscode.window.showInputBox({
     prompt: `${parameter?.description}?`, // Set the prompt text
     placeHolder: parameter.defualtValue  // Set the placeholder text
@@ -107,7 +110,7 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
 
   return {
     projectName: '',
-    parameters: JSON.stringify(parameters),
+    parameters: parameters ? JSON.stringify(parameters) : undefined,
     pathOrgId: orgId,
     pathId: pathId,
     recipeId: recipeId,
