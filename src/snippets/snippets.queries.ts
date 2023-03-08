@@ -13,6 +13,18 @@ export async function getSnippetTemplates(search: string, orgId: string,
             pathId
             title
             instructionalContent
+            parameters {
+              defaultValue
+              description
+              inputType
+              name
+              type
+              optionalTypes {
+                name
+                selected
+              }
+              paramType
+            }
           }
         }`,
       variables: {
