@@ -85,7 +85,8 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
 async function collectInputBoxValues(nonFilePathParameters: any) {
   let parameters = {};
   let index = 0;
-  return await showInputBox(nonFilePathParameters, index, parameters);
+  await showInputBox(nonFilePathParameters, index, parameters);
+  return parameters;
 }
 
 async function showInputBox(nonFilePathParameters: any, index: number, parameters) {
@@ -99,9 +100,8 @@ async function showInputBox(nonFilePathParameters: any, index: number, parameter
   });
   parameters[parameter.name] = paramValue;
   if(nonFilePathParameters[index + 1]) {
+    index++;
     await showInputBox(nonFilePathParameters, index, parameters);
-  } else {
-    return parameters;
   }
 }
 
