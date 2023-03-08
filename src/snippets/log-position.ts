@@ -62,35 +62,48 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
         recipeId: snippetOption.recipeId,
         id: snippetOption.id,
         label: snippetOption.title,
-        detail: snippetOption.instructionalContent
+        detail: snippetOption.instructionalContent,
+        parameters: snippetOption.parameters
       };
     }) : [];
     const selectedOption = await vscode.window.showQuickPick(quickPickOptions, {
       title: 'Choose A Code Snippet'
     });
     if (selectedOption) {
-      vscode.window.showInputBox({
-          prompt: `Name for ${selectedOption?.label}?`, // Set the prompt text
-          placeHolder: 'user'  // Set the placeholder text
-      }).then(customName => {
-        // Do something with the custom name
-        codeSnippetGeneratingNotification();
-        const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, customName as string);
-        generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
-        }); 
+      const nonFilePathParameters = (selectedOption as any).parameters.filter(parameter => parameter.paramType !== 'filePath');
+      const parameters = await collectInputBoxValues(nonFilePathParameters);
+      codeSnippetGeneratingNotification();
+      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, parameters);
+      generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
       });
-      
     }
   } else {
     editor.setDecorations(decorationType, [], editor);
   }
 }
 
+async function collectInputBoxValues(nonFilePathParameters: any) {
+  let parameters = {};
+  let index = 0;
+  return await showInputBox(nonFilePathParameters, index, parameters);
+}
+
+async function showInputBox(nonFilePathParameters: any, index: number, parameters) {
+  const parameter = nonFilePathParameters[index];
+  const paramValue = await vscode.window.showInputBox({
+    prompt: `${parameter?.description}?`, // Set the prompt text
+    placeHolder: parameter.defualtValue  // Set the placeholder text
+  });
+  parameters[parameter.name] = paramValue;
+  if(nonFilePathParameters[index + 1]) {
+    await showInputBox(nonFilePathParameters, index, parameters);
+  } else {
+    return parameters;
+  }
+}
+
 function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
-    pathId: string, recipeId: string, stepId: string, customName: string) {
-  const parameters = {
-    name: customName
-  };
+    pathId: string, recipeId: string, stepId: string, parameters: any) {
 
   return {
     projectName: '',
