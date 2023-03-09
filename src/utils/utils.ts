@@ -21,6 +21,7 @@ import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.ut
 import { join, extname, normalize} from 'path';
 import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@codemorph/core';
 import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
+import { writeCodeSnippet } from '../snippets/write-snippet';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -59,6 +60,11 @@ export const saveFiles = async (
   // Extract files from zip
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
+
+  if (type === 'Snippet') {
+    writeCodeSnippet(context, zipEntries[0], template, isProduction);
+    return;
+  }
   for await (const zipEntry of zipEntries) {
     const parametersParsed = JSON.parse(parameters);
     const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName));

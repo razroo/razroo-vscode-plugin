@@ -31,3 +31,6 @@ export const GENERATE_ANGULAR_GUARD = 'generate.angular.guard';
 export const GENERATE_ANGULAR_TYPESCRIPT_INTERFACE = 'generate.angular.typescriptInterface';
 export const GENERATE_ANGULAR_PIPE = 'generate.angular.pipe';
 export const GENERATE_ANGULAR_DIRECTIVE = 'generate.angular.directive';
+// SNIPPET CONSTANTS
+export const VSCODE_ACTIVE_LINE_NUMBER = 'VSCODE_ACTIVE_LINE_NUMBER';
+export const VSCODE_ACTIVE_COLUMN_NUMBER = 'VSCODE_ACTIVE_COLUMN_NUMBER';
