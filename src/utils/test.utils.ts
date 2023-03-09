@@ -40,8 +40,8 @@ async function executeBuildTask(task: vscode.Task, fileName, testType, template,
                 await cleanWorkspace();
                 //send mutation with results
                 saveTestOutputMutation(accessToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
-                    console.log('data from mutation: ', data?.data?.saveTestOutput)
-                })
+                    console.log('data from mutation: ', data?.data?.saveTestOutput);
+                });
                 // disposable.dispose();
                 resolve();
             }

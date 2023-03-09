@@ -8,7 +8,7 @@ describe('createScaffoldSubmenu', () => {
     const expected = {
       "command": `generate.${pathId}.${scaffoldId}`,
       "group": "myextension.myGroup",
-      "when": "razroo-vscode-plugin:isAuthenticated"
+      "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
     };
 
     expect(result).toEqual(expected);
