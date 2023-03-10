@@ -99,9 +99,19 @@ async function showInputBox(nonFilePathParameters: any, index: number, parameter
     placeHolder: parameter.defualtValue  // Set the placeholder text
   });
   parameters[parameter.name] = paramValue;
+  // TODO refactor this if block. It is feeling a bit unweildy
   if(nonFilePathParameters[index + 1]) {
-    index++;
-    await showInputBox(nonFilePathParameters, index, parameters);
+    if(nonFilePathParameters[index + 1].type !== 'system') {
+      index++;
+      await showInputBox(nonFilePathParameters, index, parameters);
+    } else {
+      // system parameter and skip over 
+      index++;
+      index++;
+      if(nonFilePathParameters[index]) {
+        await showInputBox(nonFilePathParameters, index, parameters);
+      }
+    }
   }
 }
 
