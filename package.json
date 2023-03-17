@@ -23,6 +23,8 @@
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
     "build-scaffolds": "ts-node scripts/build-scaffolds.ts",
+    "start:webview": "cd projects-webview-ui && npm run start",
+    "build:webview": "cd projects-webview-ui && npm run build",
     "esm": "esm",
     "webpack-watch": "webpack --mode development --watch",
     "package": "webpack --devtool hidden-source-map",
@@ -41,8 +43,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished",
-    "onView:razroo.projects"
+    "onStartupFinished"
   ],
   "extensionKind": [
 		"ui",
@@ -284,7 +285,7 @@
     "@types/parse-git-config": "^3.0.1",
     "@types/request": "^2.48.7",
     "@types/uuid": "^8.3.1",
-    "@types/vscode": "^1.57.0",
+    "@types/vscode": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "@vscode/test-electron": "^2.1.5",

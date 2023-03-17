@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as main from './media/main';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
@@ -30,7 +31,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
+        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'src', 'projects', 'media', 'main.js'));
 
         // Do the same for the stylesheet.
 		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
@@ -63,7 +64,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
                     <option value="option2">Option 2</option>
                     <option value="option3">Option 3</option>
                 </select>
-                <button>GO!</button>
+                <button class="Projects__connect-projects-button">GO!</button>
                 <script nonce="${nonce}" src="${scriptUri}"></script>
             </body>
             </html>
