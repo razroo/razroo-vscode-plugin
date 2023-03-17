@@ -58,7 +58,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
             </head>
             <body>
                 <h3>Click on the GO! button, to connect your VSCode Editor to Razroo</h3>
-                <select>
+                <select multiple>
                     <option value="option1">Option 1</option>
                     <option value="option2">Option 2</option>
                     <option value="option3">Option 3</option>
