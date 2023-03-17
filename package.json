@@ -225,17 +225,11 @@
       ]
     },
     "views": {
-      "explorer": [
+      "razroo-bar": [
         {
           "type": "webview",
           "id": "razroo.projects",
           "name": "Razroo Projects"
-        }
-      ],
-      "razroo-bar": [
-        {
-          "id": "razroo-authentication",
-          "name": "Authentication"
         }
       ]
     },
