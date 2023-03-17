@@ -23,6 +23,7 @@ import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/pac
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
+import { ProjectsWebview } from './projects/projects';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -38,6 +39,14 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
+  const provider = new ProjectsWebview(context.extensionUri);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      ProjectsWebview.viewType,
+      provider
+    )
+  );
 
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;

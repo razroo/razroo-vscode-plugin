@@ -41,8 +41,13 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onView:razroo.projects"
   ],
+  "extensionKind": [
+		"ui",
+		"workspace"
+	],
   "contributes": {
     "commands": [
       {
@@ -220,6 +225,13 @@
       ]
     },
     "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "razroo.projects",
+          "name": "Razroo Projects"
+        }
+      ],
       "razroo-bar": [
         {
           "id": "razroo-authentication",
