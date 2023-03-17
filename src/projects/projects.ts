@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as main from './media/main';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
