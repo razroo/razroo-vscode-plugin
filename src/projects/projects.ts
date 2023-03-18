@@ -38,11 +38,11 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
 
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
         // The CSS file from the Angular build output
-        const stylesUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "styles.css"]);
+        const stylesUri = getUri(webview, extensionUri, ["dist", "projects-webview-ui", "styles.css"]);
         // The JS files from the Angular build output
-        const runtimeUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "runtime.js"]);
-        const polyfillsUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "polyfills.js"]);
-        const scriptUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "main.js"]);
+        const runtimeUri = getUri(webview, extensionUri, ["dist", "projects-webview-ui", "runtime.js"]);
+        const polyfillsUri = getUri(webview, extensionUri, ["dist", "projects-webview-ui", "polyfills.js"]);
+        const scriptUri = getUri(webview, extensionUri, ["dist", "projects-webview-ui", "main.js"]);
     
         const nonce = getNonce();
     
