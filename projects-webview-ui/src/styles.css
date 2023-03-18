@@ -1,1 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
+/* vscode overrides */
+.App__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.App__dropdown {
+  display: flex;
+  margin-top: 8px;
+  flex-direction: column;
+  background-color: transparent;
+  width: 100%;
+}
+
+.App__button {
+  display: flex;
+  width: 100%;
+}

@@ -1,4 +1,9 @@
-<main>
-  <h1>Hello world!</h1>
-  <vscode-button (click)="handleHowdyClick()">Howdy!</vscode-button>
+<main class="App__main">
+  <label for="projects-dropdown">Select project(s) to connect to Razroo</label>
+  <vscode-dropdown [style]="'height: ' + ((projectOptions.length + 1) * 18) + 'px'"
+    class="App__dropdown" id="projects-dropdown" multiple>
+    <vscode-option *ngFor="let projectOption of projectOptions" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
+  </vscode-dropdown>
+
+  <vscode-button class="App__button" (click)="connectProjects()">Connect</vscode-button>
 </main>

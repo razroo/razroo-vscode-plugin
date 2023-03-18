@@ -1,8 +1,11 @@
+import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
+import { getNonce } from '../utils/webview-utils/getNonce';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
     public static readonly viewType = 'razroo.projects';
+    private _disposables: vscode.Disposable[] = [];
 
     private _view?: vscode.WebviewView;
 
@@ -26,56 +29,72 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
 			]
 		};
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+      webviewView.webview.html = this._getWebviewContent(webviewView.webview, this._extensionUri);
+
+      this._setWebviewMessageListener(webviewView.webview);
     }
 
-    private _getHtmlForWebview(webview: vscode.Webview): string {
-        const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'src', 'projects', 'media', 'main.js'));
-
-        // Do the same for the stylesheet.
-		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
-		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
-		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css'));
-        // Use a nonce to only allow a specific script to be run.
-		const nonce = getNonce();
-        return `
-            <!DOCTYPE html>
-            <html>
+    private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
+        // The CSS file from the Angular build output
+        const stylesUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "styles.css"]);
+        // The JS files from the Angular build output
+        const runtimeUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "runtime.js"]);
+        const polyfillsUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "polyfills.js"]);
+        const scriptUri = getUri(webview, extensionUri, ["projects-webview-ui", "build", "main.js"]);
+    
+        const nonce = getNonce();
+    
+        // Tip: Install the es6-string-html VS Code extension to enable code highlighting below
+        return /*html*/ `
+          <!DOCTYPE html>
+          <html lang="en">
             <head>
-                <meta charset="UTF-8">
-				<!--
-					Use a content security policy to only allow loading styles from our extension directory,
-					and only allow scripts that have a specific nonce.
-					(See the 'webview-sample' extension sample for img-src content security policy examples)
-				-->
-				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${styleResetUri}" rel="stylesheet">
-				<link href="${styleVSCodeUri}" rel="stylesheet">
-				<link href="${styleMainUri}" rel="stylesheet">
-
-                <title>Razroo Projects</title>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+              <link rel="stylesheet" type="text/css" href="${stylesUri}">
+              <title>Razroo Projects</title>
             </head>
             <body>
-                <h3>Click on the GO! button, to connect your VSCode Editor to Razroo</h3>
-                <select multiple>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                </select>
-                <button class="Projects__connect-projects-button">GO!</button>
-                <script nonce="${nonce}" src="${scriptUri}"></script>
+              <app-root></app-root>
+              <script type="module" nonce="${nonce}" src="${runtimeUri}"></script>
+              <script type="module" nonce="${nonce}" src="${polyfillsUri}"></script>
+              <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
             </body>
-            </html>
+          </html>
         `;
-    }
-}
+      }
 
-function getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
+      /**
+   * Sets up an event listener to listen for messages passed from the webview context and
+   * executes code based on the message that is recieved.
+   *
+   * @param webview A reference to the extension webview
+   * @param context A reference to the extension context
+   */
+  private _setWebviewMessageListener(webview: vscode.Webview) {
+    console.log('webview');
+    console.log(webview);
+    webview.onDidReceiveMessage(
+      (message: any) => {
+        const command = message.command;
+        const text = message.text;
+        console.log('message');
+        console.log(message);
+        console.log('text');
+        console.log(text);
+
+        switch (command) {
+          case "connectProjects":
+            // Code that should run in response to the hello message command
+            vscode.window.showInformationMessage(text);
+            return;
+          // Add more switch case statements here as more webview message commands
+          // are created within the webview context (i.e. inside media/main.js)
+        }
+      },
+      undefined,
+      this._disposables
+    );
+  }
 }
