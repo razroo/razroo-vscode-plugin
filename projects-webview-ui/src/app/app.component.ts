@@ -55,20 +55,27 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.authIsLoading = true;
+    vscode.postMessage({
+      command: "initialAuthInfoRequest",
+      description: 'get auth info for projects vscode webview panel'
+    });
     // Handle the message inside the webview
     window.addEventListener('message', event => {
       const message = event.data; // The JSON data our extension sent
 
       switch (message.command) {
+        case "initAuthData":
+          this.authIsLoading = false;
+          this.isAuthenticated = true;
+          return;
         case "sendAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
-          console.log('connect projects called inside of app');
           return;
         case "loggedOut":
           this.loggingOutLoading = false;
           this.isAuthenticated = false;
-          console.log('connect projects called inside of app');
           return;
       }
     });

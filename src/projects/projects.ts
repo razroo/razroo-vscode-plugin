@@ -84,14 +84,12 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
           case "connectProjects":
             vscode.commands.executeCommand('extension.auth0Authentication');
             return;
+          case "initialAuthInfoRequest":
+            vscode.commands.executeCommand('extension.tryToAuth');
+            return;  
           case "unConnectProject":
             vscode.commands.executeCommand('extension.logout');
-            return;  
-          case "sendAuthData":
-            console.log('sendAuthData called');
-            // Code that should run in response to the hello message command
-            vscode.window.showInformationMessage(data);
-            return;  
+            return;    
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

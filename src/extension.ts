@@ -73,13 +73,19 @@ export async function activate(context: vscode.ExtensionContext) {
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
   const isProduction = isProductionFunc(context);
-  await tryToAuth(context, isProduction);
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
       vscode.window.showInformationMessage(
         'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
       );
+    }
+  );
+
+  const tryToAuthCommmand = vscode.commands.registerCommand(
+    'extension.tryToAuth',
+    async () => {
+      await tryToAuth(context, isProduction, projectsProvider);
     }
   );
 
@@ -99,6 +105,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }, null, context.subscriptions);
 
   context.subscriptions.push(disposable);
+  context.subscriptions.push(tryToAuthCommmand);
 
   const authEventEmitter = new EventEmitter();
   const cancelAuthProgress = (progress: vscode.Progress<{
@@ -144,7 +151,7 @@ export async function activate(context: vscode.ExtensionContext) {
               }
               else {
                 isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
-                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
+                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction });
                 isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
                 isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
               }
