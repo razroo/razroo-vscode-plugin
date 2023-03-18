@@ -23,6 +23,7 @@ import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/pac
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
+import { ProjectsWebview } from './projects/projects';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -38,6 +39,14 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
+  const projectsProvider = new ProjectsWebview(context);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      ProjectsWebview.viewType,
+      projectsProvider
+    )
+  );
 
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
@@ -64,13 +73,19 @@ export async function activate(context: vscode.ExtensionContext) {
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
   const isProduction = isProductionFunc(context);
-  await tryToAuth(context, isProduction);
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
       vscode.window.showInformationMessage(
         'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
       );
+    }
+  );
+
+  const tryToAuthCommmand = vscode.commands.registerCommand(
+    'extension.tryToAuth',
+    async () => {
+      await tryToAuth(context, isProduction, projectsProvider);
     }
   );
 
@@ -90,6 +105,7 @@ export async function activate(context: vscode.ExtensionContext) {
   }, null, context.subscriptions);
 
   context.subscriptions.push(disposable);
+  context.subscriptions.push(tryToAuthCommmand);
 
   const authEventEmitter = new EventEmitter();
   const cancelAuthProgress = (progress: vscode.Progress<{
@@ -135,13 +151,18 @@ export async function activate(context: vscode.ExtensionContext) {
               }
               else {
                 isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
-                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
+                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction });
                 isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
                 isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
               }
             } catch (error) {
               showErrorMessage(error as any);
             } finally {
+              if(projectsProvider){ 
+                await projectsProvider?.view?.webview.postMessage({
+                  command: "sendAuthData"
+                });
+              }
               vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
               disposeServer(cancelAuthProgress, res, progress);
             }
@@ -158,13 +179,16 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_CANCEL_AUTH,
     async () => {
       authEventEmitter.emit('cancel');
-    });
+    });  
 
   const logout = vscode.commands.registerCommand(
     'extension.logout',
     () => {
       onVSCodeClose(context, isProduction)?.finally(() => {
         showInformationMessage('Successfully Logged Out Of Razroo');
+        projectsProvider?.view?.webview.postMessage({
+          command: "loggedOut"
+        });
         vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
       });
     }
