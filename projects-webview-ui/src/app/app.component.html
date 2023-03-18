@@ -5,5 +5,5 @@
     <vscode-option *ngFor="let projectOption of projectOptions" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
   </vscode-dropdown>
 
-  <vscode-button class="App__button" (click)="connectProjects()">Connect</vscode-button>
+  <vscode-button class="App__button" [disabled]="authIsLoading" (click)="connectProjects()">Connect</vscode-button>
 </main>

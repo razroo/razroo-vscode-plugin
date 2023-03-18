@@ -24,6 +24,7 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropd
 })
 export class AppComponent implements OnInit {
   title = "hello-world";
+  authIsLoading = false;
   projectOptions = [
     {
       name: 'Razroo Frontend',
@@ -58,6 +59,7 @@ export class AppComponent implements OnInit {
 
       switch (message.command) {
         case "sendAuthData":
+          this.authIsLoading = false;
           console.log('connect projects called inside of app');
           return;
       }
@@ -66,6 +68,7 @@ export class AppComponent implements OnInit {
 
   connectProjects() {
     const selectedProjects = this.projectOptions.filter(projectOption => projectOption.selected === true);
+    this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
       text: 'sample event'
