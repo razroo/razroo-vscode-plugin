@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
@@ -22,7 +22,7 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropd
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.css"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = "hello-world";
   projectOptions = [
     {
@@ -51,10 +51,21 @@ export class AppComponent {
     });
   }
 
+  ngOnInit() {
+    // Handle the message inside the webview
+    window.addEventListener('message', event => {
+      const message = event.data; // The JSON data our extension sent
+
+      switch (message.command) {
+        case "sendAuthData":
+          console.log('connect projects called inside of app');
+          return;
+      }
+    });
+  }
+
   connectProjects() {
     const selectedProjects = this.projectOptions.filter(projectOption => projectOption.selected === true);
-    console.log('selectedProjects');
-    console.log(selectedProjects);
     vscode.postMessage({
       command: "connectProjects",
       text: 'sample event'

@@ -39,7 +39,7 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
-  const provider = new ProjectsWebview(context.extensionUri);
+  const provider = new ProjectsWebview(context);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -151,6 +151,17 @@ export async function activate(context: vscode.ExtensionContext) {
             } catch (error) {
               showErrorMessage(error as any);
             } finally {
+              if(provider){
+                console.log('provider?.view?.webview');
+                console.log(provider?.view?.webview);
+                
+                await provider?.view?.webview.postMessage({
+                  command: "sendAuthData",
+                  data: {
+                    test: '123'
+                  }
+                });
+              }
               vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
               disposeServer(cancelAuthProgress, res, progress);
             }

@@ -1,37 +1,39 @@
 import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
 import { getNonce } from '../utils/webview-utils/getNonce';
+import { tryToAuth } from 'utils/utils';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
     public static readonly viewType = 'razroo.projects';
     private _disposables: vscode.Disposable[] = [];
 
-    private _view?: vscode.WebviewView;
+    view?: vscode.WebviewView;
+    _extensionUri = this.extensionContext.extensionUri;
 
     constructor(
-      private readonly _extensionUri: vscode.Uri,
+      private extensionContext: vscode.ExtensionContext
     ) { }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
-		_token: vscode.CancellationToken
+		    _token: vscode.CancellationToken
     ): void {
-        this._view = webviewView;
+        this.view = webviewView;
 
         webviewView.webview.options = {
 			// Allow scripts in the webview
-			enableScripts: true,
+          enableScripts: true,
 
-			localResourceRoots: [
-				this._extensionUri
-			]
-		};
+          localResourceRoots: [
+            this._extensionUri
+          ]
+		  };
 
       webviewView.webview.html = this._getWebviewContent(webviewView.webview, this._extensionUri);
 
-      this._setWebviewMessageListener(webviewView.webview);
+      this._setWebviewMessageListener(webviewView.webview, context);
     }
 
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
@@ -72,23 +74,21 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
    * @param webview A reference to the extension webview
    * @param context A reference to the extension context
    */
-  private _setWebviewMessageListener(webview: vscode.Webview) {
-    console.log('webview');
-    console.log(webview);
+  private _setWebviewMessageListener(webview: vscode.Webview, context: vscode.WebviewViewResolveContext) {
+    // Handle messages sent from the extension
     webview.onDidReceiveMessage(
       (message: any) => {
-        const command = message.command;
-        const text = message.text;
-        console.log('message');
-        console.log(message);
-        console.log('text');
-        console.log(text);
-
+        const {command, text, data} = message;
+        
         switch (command) {
           case "connectProjects":
-            // Code that should run in response to the hello message command
-            vscode.window.showInformationMessage(text);
+            vscode.commands.executeCommand('extension.auth0Authentication');
             return;
+          case "sendAuthData":
+            console.log('sendAuthData called');
+            // Code that should run in response to the hello message command
+            vscode.window.showInformationMessage(data);
+            return;  
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

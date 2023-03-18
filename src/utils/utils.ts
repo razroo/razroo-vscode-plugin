@@ -196,7 +196,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   if (accessToken && refreshToken && userId && orgId && token) {
-
     if(isTokenExpired(accessToken)) {
       await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction);
     }
