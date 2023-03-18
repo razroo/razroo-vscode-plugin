@@ -151,10 +151,7 @@ export async function activate(context: vscode.ExtensionContext) {
             } catch (error) {
               showErrorMessage(error as any);
             } finally {
-              if(provider){
-                console.log('provider?.view?.webview');
-                console.log(provider?.view?.webview);
-                
+              if(provider){ 
                 await provider?.view?.webview.postMessage({
                   command: "sendAuthData",
                   data: {
