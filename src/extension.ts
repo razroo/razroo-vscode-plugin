@@ -153,10 +153,7 @@ export async function activate(context: vscode.ExtensionContext) {
             } finally {
               if(provider){ 
                 await provider?.view?.webview.postMessage({
-                  command: "sendAuthData",
-                  data: {
-                    test: '123'
-                  }
+                  command: "sendAuthData"
                 });
               }
               vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);

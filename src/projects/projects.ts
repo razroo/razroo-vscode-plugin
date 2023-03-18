@@ -84,6 +84,9 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
           case "connectProjects":
             vscode.commands.executeCommand('extension.auth0Authentication');
             return;
+          case "unConnectProject":
+            vscode.commands.executeCommand('extension.logout');
+            return;  
           case "sendAuthData":
             console.log('sendAuthData called');
             // Code that should run in response to the hello message command
