@@ -65,6 +65,11 @@ export class AppComponent implements OnInit {
           this.isAuthenticated = true;
           console.log('connect projects called inside of app');
           return;
+        case "loggedOut":
+          this.loggingOutLoading = false;
+          this.isAuthenticated = false;
+          console.log('connect projects called inside of app');
+          return;
       }
     });
   }
