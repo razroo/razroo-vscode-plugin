@@ -120,7 +120,6 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_AUTH0_AUTH,
     async (allSelectedData) => {
       const selectedProjects: PackageJson[] = allSelectedData.selectedProjects;
-      vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
       const loginUrl = getAuth0Url(isProduction);
 
       vscode.window.withProgress(
@@ -134,7 +133,6 @@ export async function activate(context: vscode.ExtensionContext) {
             let isInProgress = true;
             authEventEmitter.on('cancel', () => {
               isInProgress = false;
-              vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', true);
               rej('Authentication canceled');
             });
             let disposeServer = (cancelAuthProgress, res, progress) => { };
@@ -149,9 +147,8 @@ export async function activate(context: vscode.ExtensionContext) {
               //   showInformationMessage('Please initialize a git repo to get started');
               // }
               // else {
-                isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
+                isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId, allPackageJsons);
                 isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction, allPackageJsons });
-                isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
                 isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
               // }
             } catch (error) {
