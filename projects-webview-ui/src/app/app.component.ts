@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   isAuthenticated = false;
   loggingOutLoading = false;
   allPackageJsons: any[] = [];
+  selectedProjects: any[] = [];
 
   toggleProjectOption($event: any) {
     const projectName = $event.target.value;
@@ -36,6 +37,7 @@ export class AppComponent implements OnInit {
       }
       return projectOption;
     });
+    this.selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
   }
 
   ngOnInit() {
@@ -70,11 +72,11 @@ export class AppComponent implements OnInit {
   }
 
   connectProjects() {
-    const selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
+    this.selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
-      text: 'sample event'
+      selectedProjects: this.selectedProjects
     });
   }
 
