@@ -40,6 +40,16 @@ export class AppComponent implements OnInit {
     this.selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
   }
 
+  // will take state of selectedProjects, and revert back to initial state
+  initToggleSelectedProjects(allPackageJsons: any[], selectedOptions: any[]): any[] {
+    return allPackageJsons.map(projectOption => {
+      if(selectedOptions.some(option => option.name === projectOption.name)) {
+        projectOption.selected = true;
+      }
+      return projectOption;
+    });
+  }
+
   ngOnInit() {
     this.authIsLoading = true;
     vscode.postMessage({
@@ -55,7 +65,7 @@ export class AppComponent implements OnInit {
         case "initAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
-          this.allPackageJsons = message.allPackageJsons;
+          this.allPackageJsons = this.initToggleSelectedProjects(message.allPackageJsons, message.selectedProjects);
           return;
         case "sendAuthData":
           this.authIsLoading = false;

@@ -1,8 +1,7 @@
 import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
 import { getNonce } from '../utils/webview-utils/getNonce';
-import { tryToAuth } from 'utils/utils';
-import { COMMAND_AUTH0_AUTH } from '../constants';
+import { COMMAND_AUTH0_AUTH, COMMAND_TRY_TO_AUTH } from '../constants';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
@@ -86,7 +85,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
             vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
             return;
           case "initialAuthInfoRequest":
-            vscode.commands.executeCommand('extension.tryToAuth');
+            vscode.commands.executeCommand(COMMAND_TRY_TO_AUTH);
             return;  
           case "unConnectProject":
             vscode.commands.executeCommand('extension.logout');
