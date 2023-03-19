@@ -161,10 +161,6 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: bo
     return removeVsCodeInstanceMutation(accessToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
-        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
-        context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
-        context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, null);
-        context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
         if(progress) {
           cancelAuthProgress(progress);
         }    
