@@ -53,12 +53,14 @@ export async function activate(context: vscode.ExtensionContext) {
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  const isProduction = isProductionFunc(context);
+  let allPackageJsons;
   if(workspacePath) {
-    const packageJsonPaths = getAllPackageJsons(workspacePath);
-    console.log('packageJsonPaths');
-    console.log(packageJsonPaths);
+    allPackageJsons = await getAllPackageJsons(workspacePath);
+    console.log('allPackageJsons');
+    console.log(allPackageJsons);
   }
-  const packageJsonParams = await getPackageJson(workspacePath as any);
+  const packageJsonParams = allPackageJsons[0];
   const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);

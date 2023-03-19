@@ -26,22 +26,7 @@ export class AppComponent implements OnInit {
   authIsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
-  allPackageJsons = [
-    {
-      name: 'Razroo Frontend',
-      selected: false,
-    },
-    {
-      name: 'Razroo Graphql',
-      selected: false
-    },
-    {
-      name: 'Razroo Angular Starter',
-      selected: false
-    }
-  ];
-
-  selectedOptions = [];
+  allPackageJsons: any[] = [];
 
   toggleProjectOption($event: any) {
     const projectName = $event.target.value;
@@ -69,10 +54,12 @@ export class AppComponent implements OnInit {
         case "initAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
+          this.allPackageJsons = message.allPackageJsons;
           return;
         case "sendAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
+          this.allPackageJsons = message.allPackageJsons;
           return;
         case "loggedOut":
           this.loggingOutLoading = false;
