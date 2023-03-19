@@ -119,12 +119,12 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   isProduction: boolean,
   userId: string,
   orgId: string,
-  allPackageJsons: PackageJson[]
+  selectedProjects: PackageJson[]
 ) => {
   const privateDirectories = await getPrivateDirs();
-  console.log("PRIV DIRECTORIES", privateDirectories);
-
-  for(let packageJsonParams of allPackageJsons) {
+  const packageJsonParams = typeof selectedProjects[0] === 'object' ? JSON.stringify(selectedProjects[0]) : selectedProjects[0];
+  
+  // for(let packageJsonParams of allPackageJsons) {
     await updatePrivateDirectoriesRequest({
       vsCodeToken,
       accessToken,

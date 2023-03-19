@@ -127,11 +127,10 @@ export async function activate(context: vscode.ExtensionContext) {
     'extension.logout',
     () => {
       onVSCodeClose(context, isProduction)?.finally(() => {
-        showInformationMessage('Successfully Logged Out Of Razroo');
+        showInformationMessage('Un-Connected From Razroo');
         projectsProvider?.view?.webview.postMessage({
           command: "loggedOut"
         });
-        vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
       });
     }
   );

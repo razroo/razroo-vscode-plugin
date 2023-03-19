@@ -65,7 +65,6 @@ export class AppComponent implements OnInit {
           this.loggingOutLoading = false;
           this.isAuthenticated = false;
           this.authIsLoading = false;
-          this.allPackageJsons = message.allPackageJsons;
           return;
       }
     });
