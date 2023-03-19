@@ -24,6 +24,7 @@ import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
+import { getAllPackageJsons } from './utils/package-json/package-json';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -52,6 +53,11 @@ export async function activate(context: vscode.ExtensionContext) {
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  if(workspacePath) {
+    const packageJsonPaths = getAllPackageJsons(workspacePath);
+    console.log('packageJsonPaths');
+    console.log(packageJsonPaths);
+  }
   const packageJsonParams = await getPackageJson(workspacePath as any);
   const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
