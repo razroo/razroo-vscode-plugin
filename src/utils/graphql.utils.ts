@@ -19,7 +19,8 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
   context, 
   isProduction,
-  projectsProvider
+  projectsProvider,
+  allPackageJsons
 }: any) => {
   //Subscribe with appsync client
   client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
@@ -65,12 +66,12 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       const realtimeResults = async function realtimeResults(data: any) {
         //Save the files in a new folder
         await saveFiles(data, context, isProduction);
-        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction);
+        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, allPackageJsons);
       };
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider);
+        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, allPackageJsons);
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
@@ -91,16 +92,16 @@ async function fallback(content) {
   console.log(content);
 }
 
-async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
+async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean, allPackageJsons) {
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
   const token = await getOrCreateAndUpdateIdToken(context, userId);
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
-  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
+  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId, allPackageJsons);
 }
 
-async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider) {
+async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
   let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(accessToken as string)) {
@@ -108,7 +109,7 @@ async function generateVsCodeDownloadCodeSubError(data: any, context, isProducti
       'Authentication Token Expired. Re-logging you in now.'
     );
 
-    tryToAuth(context, isProduction, projectsProvider);
+    tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
   }
   return data;
 }
@@ -145,16 +146,16 @@ export const updatePrivateDirectoriesRequest = async ({
   privateDirectories,
   isProduction,
   userId,
-  orgId
+  orgId,
+  packageJsonParams
 }: any) => {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  let packageJsonParams: any = '';
+  
   let versionControlsParams = {
     gitBranch: '',
     gitOrigin: ''
   };
-  if(privateDirectories.length){
-    packageJsonParams = await getPackageJson(workspacePath as any);
+  if(privateDirectories.length && packageJsonParams){
     versionControlsParams = await getVersionControlParams(workspacePath as string);
   } else {
     packageJsonParams = `{"name":"${vscode.workspace.name}","languages":[],"nx":{}}`;

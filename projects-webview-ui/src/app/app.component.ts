@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
 import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
 
@@ -27,31 +26,18 @@ export class AppComponent implements OnInit {
   authIsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
-  projectOptions = [
-    {
-      name: 'Razroo Frontend',
-      selected: false,
-    },
-    {
-      name: 'Razroo Graphql',
-      selected: false
-    },
-    {
-      name: 'Razroo Angular Starter',
-      selected: false
-    }
-  ];
-
-  selectedOptions = [];
+  allPackageJsons: any[] = [];
+  selectedProjects: any[] = [];
 
   toggleProjectOption($event: any) {
     const projectName = $event.target.value;
-    this.projectOptions = this.projectOptions.map(projectOption => {
+    this.allPackageJsons = this.allPackageJsons.map(projectOption => {
       if(projectOption.name === projectName) {
         projectOption.selected = !projectOption.selected;
       }
       return projectOption;
     });
+    this.selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
   }
 
   ngOnInit() {
@@ -60,6 +46,7 @@ export class AppComponent implements OnInit {
       command: "initialAuthInfoRequest",
       description: 'get auth info for projects vscode webview panel'
     });
+
     // Handle the message inside the webview
     window.addEventListener('message', event => {
       const message = event.data; // The JSON data our extension sent
@@ -68,6 +55,7 @@ export class AppComponent implements OnInit {
         case "initAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
+          this.allPackageJsons = message.allPackageJsons;
           return;
         case "sendAuthData":
           this.authIsLoading = false;
@@ -76,17 +64,18 @@ export class AppComponent implements OnInit {
         case "loggedOut":
           this.loggingOutLoading = false;
           this.isAuthenticated = false;
+          this.authIsLoading = false;
           return;
       }
     });
   }
 
   connectProjects() {
-    const selectedProjects = this.projectOptions.filter(projectOption => projectOption.selected === true);
+    this.selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
-      text: 'sample event'
+      selectedProjects: this.selectedProjects
     });
   }
 

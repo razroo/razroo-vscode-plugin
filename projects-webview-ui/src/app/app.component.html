@@ -1,12 +1,12 @@
 <main class="App__main">
   <h3 *ngIf="!isAuthenticated">Connect Your Project To Razroo</h3>
   <h3 *ngIf="isAuthenticated">Un-Connect Your Project</h3>
-  <!-- <label for="projects-dropdown">Connect  project(s) to connect to Razroo</label> -->
-  <!-- <vscode-dropdown [style]="'height: ' + ((projectOptions.length + 1) * 18) + 'px'"
+  <label for="projects-dropdown">Connect  project(s) to connect to Razroo</label>
+  <vscode-dropdown [style]="'height: ' + ((((allPackageJsons.length + 1) * 18) >= 200) ? 200 : (allPackageJsons.length + 1 * 18) + 6) + 'px'"
     class="App__dropdown" id="projects-dropdown" multiple>
-    <vscode-option *ngFor="let projectOption of projectOptions" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
-  </vscode-dropdown> -->
+    <vscode-option *ngFor="let projectOption of allPackageJsons" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
+  </vscode-dropdown>
 
-  <vscode-button class="App__button" *ngIf="!isAuthenticated" [disabled]="authIsLoading" (click)="connectProjects()">Connect</vscode-button>
-  <vscode-button class="App__button" *ngIf="isAuthenticated" (click)="unConnectProject()">Un-Connect</vscode-button>
+  <vscode-button class="App__button" *ngIf="!isAuthenticated" [disabled]="authIsLoading || !(selectedProjects.length)" (click)="connectProjects()">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
+  <vscode-button class="App__button" *ngIf="isAuthenticated" [disabled]="loggingOutLoading" (click)="unConnectProject()">Un-Connect</vscode-button>
 </main>
