@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface PackageJson {
+export interface PackageJson {
   name: string;
   version: string;
   // add any other properties you need

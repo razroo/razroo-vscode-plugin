@@ -61,11 +61,11 @@ export class AppComponent implements OnInit {
         case "sendAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
-          this.allPackageJsons = message.allPackageJsons;
           return;
         case "loggedOut":
           this.loggingOutLoading = false;
           this.isAuthenticated = false;
+          this.authIsLoading = false;
           return;
       }
     });

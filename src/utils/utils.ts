@@ -134,7 +134,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
       orgId,
       packageJsonParams
     });
-  }
+  // }
 };
 
 const getPrivateDirs = async () => {
