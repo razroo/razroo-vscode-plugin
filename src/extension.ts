@@ -73,14 +73,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Use this if have access to razroo-frontend and uncomment line below
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
-  let disposable = vscode.commands.registerCommand(
-    'razroo-vscode-plugin.initialization',
-    () => {
-      vscode.window.showInformationMessage(
-        'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
-      );
-    }
-  );
   
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
@@ -95,8 +87,6 @@ export async function activate(context: vscode.ExtensionContext) {
       debouncedSnippetRequest();
     }
   }, null, context.subscriptions);
-
-  context.subscriptions.push(disposable);
 
   const authEventEmitter = new EventEmitter();
 
