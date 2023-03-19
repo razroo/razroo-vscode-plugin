@@ -4,6 +4,7 @@ import * as path from 'path';
 export interface PackageJson {
   name: string;
   version: string;
+  selected?: boolean;
   // add any other properties you need
 }
 
@@ -70,5 +71,5 @@ async function getGitignorePatterns(gitignorePath: string): Promise<string[]> {
   return gitignoreContent
     .split(/\r?\n/)
     .filter((line) => line.trim() !== '' && !line.trim().startsWith('#'))
-    .map((line) => path.join(path.dirname(gitignorePath), line));
+    .map((line: any) => path.join(path.dirname(gitignorePath), line));
 }

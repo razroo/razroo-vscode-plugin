@@ -8,7 +8,9 @@ import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  COMMAND_CANCEL_AUTH
+  COMMAND_CANCEL_AUTH,
+  COMMAND_TRY_TO_AUTH,
+  MEMENTO_SELECTED_PROJECTS
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -73,14 +75,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Use this if have access to razroo-frontend and uncomment line below
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
-  let disposable = vscode.commands.registerCommand(
-    'razroo-vscode-plugin.initialization',
-    () => {
-      vscode.window.showInformationMessage(
-        'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
-      );
-    }
-  );
   
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
@@ -96,23 +90,22 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }, null, context.subscriptions);
 
-  context.subscriptions.push(disposable);
-
   const authEventEmitter = new EventEmitter();
 
   pushScaffoldCommands(context, vscode, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async (allSelectedData) => {
-      const selectedProjects: PackageJson[] = allSelectedData?.selectedProjects ? allSelectedData.selectedProjects : [];
-      await updateVsCode(context, isProduction, selectedProjects, projectsProvider);
+    async ({selectedProjects}) => {
+      await context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
+      const selectedProjectsArr: PackageJson[] = selectedProjects ? selectedProjects : [];
+      await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
     }
   );
 
   const tryToAuthCommmand = vscode.commands.registerCommand(
-    'extension.tryToAuth',
-    async () => {
+    COMMAND_TRY_TO_AUTH,
+    async() => {
       await tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
     }
   );

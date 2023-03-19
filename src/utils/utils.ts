@@ -12,7 +12,7 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
@@ -195,13 +195,16 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
+  const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS);
   const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
   if (accessToken && refreshToken && userId && orgId && token) {
+    
     if(isTokenExpired(accessToken)) {
       await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction, projectsProvider, allPackageJsons);
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
-        allPackageJsons: allPackageJsons
+        allPackageJsons,
+        selectedProjects
       });
     }
 
@@ -211,11 +214,12 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
-        allPackageJsons: allPackageJsons
+        allPackageJsons: allPackageJsons,
+        selectedProjects
       });
       showInformationMessage('User successfully connected to Razroo.');
     }
   } else {
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
   }
 };

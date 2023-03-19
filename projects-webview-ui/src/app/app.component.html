@@ -4,7 +4,7 @@
   <label for="projects-dropdown">Connect  project(s) to connect to Razroo</label>
   <vscode-dropdown [style]="'height: ' + ((((allPackageJsons.length + 1) * 18) >= 200) ? 200 : (allPackageJsons.length + 1 * 18) + 6) + 'px'"
     class="App__dropdown" id="projects-dropdown" multiple>
-    <vscode-option *ngFor="let projectOption of allPackageJsons" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
+    <vscode-option *ngFor="let projectOption of allPackageJsons" [selected]="projectOption.selected" (click)="toggleProjectOption($event)">{{projectOption.name}}</vscode-option>
   </vscode-dropdown>
 
   <vscode-button class="App__button" *ngIf="!isAuthenticated" [disabled]="authIsLoading || !(selectedProjects.length)" (click)="connectProjects()">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
