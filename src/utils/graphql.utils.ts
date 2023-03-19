@@ -19,7 +19,8 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   vsCodeInstanceId,
   context, 
   isProduction,
-  projectsProvider
+  projectsProvider,
+  allPackageJsons
 }: any) => {
   //Subscribe with appsync client
   client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
@@ -70,7 +71,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider);
+        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, allPackageJsons);
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
@@ -100,7 +101,7 @@ async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction:
   await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
 }
 
-async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider) {
+async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
   let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(accessToken as string)) {
@@ -108,7 +109,7 @@ async function generateVsCodeDownloadCodeSubError(data: any, context, isProducti
       'Authentication Token Expired. Re-logging you in now.'
     );
 
-    tryToAuth(context, isProduction, projectsProvider);
+    tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
   }
   return data;
 }

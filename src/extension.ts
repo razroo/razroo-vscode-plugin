@@ -78,7 +78,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Use this if have access to razroo-frontend and uncomment line below
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
-  const isProduction = isProductionFunc(context);
   let disposable = vscode.commands.registerCommand(
     'razroo-vscode-plugin.initialization',
     () => {
@@ -87,14 +86,6 @@ export async function activate(context: vscode.ExtensionContext) {
       );
     }
   );
-
-  const tryToAuthCommmand = vscode.commands.registerCommand(
-    'extension.tryToAuth',
-    async () => {
-      await tryToAuth(context, isProduction, projectsProvider);
-    }
-  );
-
   
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
@@ -111,7 +102,6 @@ export async function activate(context: vscode.ExtensionContext) {
   }, null, context.subscriptions);
 
   context.subscriptions.push(disposable);
-  context.subscriptions.push(tryToAuthCommmand);
 
   const authEventEmitter = new EventEmitter();
   const cancelAuthProgress = (progress: vscode.Progress<{
@@ -152,21 +142,22 @@ export async function activate(context: vscode.ExtensionContext) {
               const { accessToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
               setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
               const vsCodeInstanceId = await getOrCreateAndUpdateIdToken(context, userId);
-              if(vsCodeInstanceId === 'no-git-found') {
-                showInformationMessage('Please initialize a git repo to get started');
-              }
-              else {
+              // if(vsCodeInstanceId === 'no-git-found') {
+              //   showInformationMessage('Please initialize a git repo to get started');
+              // }
+              // else {
                 isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
-                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction });
+                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction, allPackageJsons });
                 isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
                 isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
-              }
+              // }
             } catch (error) {
               showErrorMessage(error as any);
             } finally {
               if(projectsProvider){ 
                 await projectsProvider?.view?.webview.postMessage({
-                  command: "sendAuthData"
+                  command: "sendAuthData",
+                  allPackageJsons: allPackageJsons
                 });
               }
               vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
@@ -178,6 +169,13 @@ export async function activate(context: vscode.ExtensionContext) {
           });
         }
       );
+    }
+  );
+
+  const tryToAuthCommmand = vscode.commands.registerCommand(
+    'extension.tryToAuth',
+    async () => {
+      await tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
     }
   );
 
@@ -199,6 +197,8 @@ export async function activate(context: vscode.ExtensionContext) {
       });
     }
   );
+
+  context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);

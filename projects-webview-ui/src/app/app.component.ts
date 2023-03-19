@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { FormGroup } from "@angular/forms";
 import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption } from "@vscode/webview-ui-toolkit";
 import { vscode } from "./utilities/vscode";
 
@@ -27,7 +26,7 @@ export class AppComponent implements OnInit {
   authIsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
-  projectOptions = [
+  allPackageJsons = [
     {
       name: 'Razroo Frontend',
       selected: false,
@@ -46,7 +45,7 @@ export class AppComponent implements OnInit {
 
   toggleProjectOption($event: any) {
     const projectName = $event.target.value;
-    this.projectOptions = this.projectOptions.map(projectOption => {
+    this.allPackageJsons = this.allPackageJsons.map(projectOption => {
       if(projectOption.name === projectName) {
         projectOption.selected = !projectOption.selected;
       }
@@ -60,6 +59,8 @@ export class AppComponent implements OnInit {
       command: "initialAuthInfoRequest",
       description: 'get auth info for projects vscode webview panel'
     });
+
+
     // Handle the message inside the webview
     window.addEventListener('message', event => {
       const message = event.data; // The JSON data our extension sent
@@ -82,7 +83,7 @@ export class AppComponent implements OnInit {
   }
 
   connectProjects() {
-    const selectedProjects = this.projectOptions.filter(projectOption => projectOption.selected === true);
+    const selectedProjects = this.allPackageJsons.filter(projectOption => projectOption.selected === true);
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",

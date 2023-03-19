@@ -189,7 +189,7 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token, is
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider) => {
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, allPackageJsons) => {
   const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
@@ -199,7 +199,8 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
     if(isTokenExpired(accessToken)) {
       await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction, projectsProvider);
       await projectsProvider?.view?.webview.postMessage({
-        command: "initAuthData"
+        command: "initAuthData",
+        allPackageJsons: allPackageJsons
       });
     }
 
@@ -208,7 +209,8 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       await projectsProvider?.view?.webview.postMessage({
-        command: "initAuthData"
+        command: "initAuthData",
+        allPackageJsons: allPackageJsons
       });
       showInformationMessage('User successfully connected to Razroo.');
     }

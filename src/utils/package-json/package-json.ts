@@ -10,20 +10,8 @@ interface PackageJson {
 export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[]> {
   const packageJsons: PackageJson[] = [];
 
-  // Read the .gitignore file and return an array of patterns to ignore
-  async function getIgnorePatterns(directoryPath: string): Promise<string[]> {
-    const gitignorePath = path.join(directoryPath, '.gitignore');
-    if (!fs.existsSync(gitignorePath)) {
-      return [];
-    }
-    const gitignoreContent = await fs.promises.readFile(gitignorePath, 'utf8');
-    return gitignoreContent.split(/\r?\n/)
-      .filter((line) => line.trim() !== '' && !line.trim().startsWith('#'))
-      .map((line) => path.join(directoryPath, line));
-  }
-
   // Recursive function to traverse the directory structure and find package.json files
-  async function traverseDirectory(directoryPath: string, ignorePatterns: string[]) {
+  async function traverseDirectory(directoryPath: string, ignorePatterns: string[]): Promise<void> {
     const entries = await fs.promises.readdir(directoryPath, { withFileTypes: true });
 
     for (const entry of entries) {
@@ -35,7 +23,13 @@ export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[
       }
 
       if (entry.isDirectory()) {
-        const childIgnorePatterns = await getIgnorePatterns(fullPath);
+        // Load the .gitignore file, if it exists
+        let childIgnorePatterns: string[] = [];
+        const childGitignorePath = path.join(fullPath, '.gitignore');
+        if (await fileExists(childGitignorePath)) {
+          childIgnorePatterns = await getGitignorePatterns(childGitignorePath);
+        }
+
         await traverseDirectory(fullPath, [...ignorePatterns, ...childIgnorePatterns]);
       } else if (entry.isFile() && entry.name === 'package.json') {
         try {
@@ -49,9 +43,32 @@ export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[
     }
   }
 
+  // Load the root .gitignore file, if it exists
+  let ignorePatterns: string[] = [];
+  const gitignorePath = path.join(repoPath, '.gitignore');
+  if (await fileExists(gitignorePath)) {
+    ignorePatterns = await getGitignorePatterns(gitignorePath);
+  }
+
   // Start the traversal at the root of the repository
-  const ignorePatterns = await getIgnorePatterns(repoPath);
   await traverseDirectory(repoPath, ignorePatterns);
 
   return packageJsons;
+}
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.promises.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function getGitignorePatterns(gitignorePath: string): Promise<string[]> {
+  const gitignoreContent = await fs.promises.readFile(gitignorePath, 'utf8');
+  return gitignoreContent
+    .split(/\r?\n/)
+    .filter((line) => line.trim() !== '' && !line.trim().startsWith('#'))
+    .map((line) => path.join(path.dirname(gitignorePath), line));
 }
