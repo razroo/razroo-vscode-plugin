@@ -118,7 +118,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async () => {
+    async (allSelectedData) => {
+      const selectedProjects: PackageJson[] = allSelectedData.selectedProjects;
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
       const loginUrl = getAuth0Url(isProduction);
 
