@@ -1,9 +1,9 @@
 {
   "name": "razroo-vscode-plugin",
   "publisher": "Razroo",
-  "displayName": "razroo-vscode-plugin",
-  "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "2.3.3",
+  "displayName": "Razroo Codegen",
+  "description": "The Go To Premium Code Generation Tool For Production-Ready Applications",
+  "version": "2.3.4",
   "private": true,
   "engines": {
     "vscode": "^1.73.0"
