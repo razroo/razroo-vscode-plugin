@@ -7,6 +7,5 @@
     <vscode-option *ngFor="let projectOption of projectConfigs" [selected]="projectOption.packageJsonParams.selected" (click)="toggleProjectOption($event, projectConfigs)">{{projectOption.packageJsonParams.name}}</vscode-option>
   </vscode-dropdown>
 
-  <vscode-button class="App__button" *ngIf="!isAuthenticated" [disabled]="authIsLoading || !(selectedProjects.length)" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
-  <vscode-button class="App__button" *ngIf="isAuthenticated" [disabled]="loggingOutLoading" (click)="unConnectProject(projectConfigs)">Un-Connect</vscode-button>
+  <vscode-button class="App__button" [disabled]="authIsLoading || !(selectedProjects?.length)" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
 </main>
