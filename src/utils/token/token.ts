@@ -30,3 +30,8 @@ export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionConte
       return token;  
     }
 }
+
+export function createVSCodeIdToken(userId: string, gitConfig: any) {
+  const gitOrigin = gitConfig.gitOrigin;
+  return gitOrigin ? `${userId}_${extractProjectName(gitOrigin)}` : EMPTY;
+}
