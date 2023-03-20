@@ -17,7 +17,6 @@ export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[
 
     for (const entry of entries) {
       const fullPath = path.join(directoryPath, entry.name);
-
       // Skip files or directories that match the ignore patterns
       if (ignorePatterns.some((pattern) => fullPath.startsWith(pattern))) {
         continue;
@@ -36,6 +35,9 @@ export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[
         try {
           const packageJsonContent = await fs.promises.readFile(fullPath, 'utf8');
           const packageJson = JSON.parse(packageJsonContent) as PackageJson;
+          // use node so takes windows and mac into consideration
+          const packageDir = path.dirname(fullPath);
+          packageJson['path'] = packageDir;
           packageJsons.push(packageJson);
         } catch (error) {
           console.error(`Error parsing package.json file at ${fullPath}: ${(error as any).message}`);
