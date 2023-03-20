@@ -3,12 +3,12 @@ import { setWorkspaceState } from "../utils/state.utils";
 import { createDisposableAuthServer } from "../auth/local";
 import { onVSCodeClose, updatePrivateDirectoriesInVSCodeAuthentication } from "../utils/utils";
 import { subscribeToGenerateVsCodeDownloadCodeSub } from "../utils/graphql.utils";
-import { PackageJson } from "../utils/package-json/package-json";
 import { getAuth0Url } from '../utils/authentication/authentication';
 import { getOrCreateAndUpdateIdToken } from '../utils/token/token';
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 
 
-export async function updateVsCode(context: vscode.ExtensionContext, isProduction: boolean, selectedProjects: PackageJson[], projectsProvider: any) {
+export async function updateVsCode(context: vscode.ExtensionContext, isProduction: boolean, selectedProjects: ProjectConfig[], projectsProvider: any) {
     const loginUrl = getAuth0Url(isProduction);
     
     let isInProgress = true;

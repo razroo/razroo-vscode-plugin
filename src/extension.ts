@@ -22,6 +22,9 @@ import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
 import { getAllPackageJsons } from './utils/package-json/package-json';
 import { updateVsCode } from './update-vscode/update-vscode';
+import { getProjectConfigs } from './projects/project-configs';
+import { getWorkspaceFolders } from './utils/directory.utils';
+import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -49,13 +52,19 @@ export async function activate(context: vscode.ExtensionContext) {
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
+  
+  const workspaceFolders = getWorkspaceFolders();
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+  
   const isProduction = isProductionFunc(context);
-  let allPackageJsons;
-  if(workspacePath) {
-    allPackageJsons = await getAllPackageJsons(workspacePath);
+  let projectConfigs: ProjectConfig[] = [];
+  if(workspaceFolders) {
+    for(let workspaceFolder of workspaceFolders) {
+      const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
+      projectConfigs.push(individualProjectConfig);
+    }
   }
-  const packageJsonParams = allPackageJsons[0];
+  const packageJsonParams = projectConfigs[0]?.packageJsonParams;
   const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);
@@ -98,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_AUTH0_AUTH,
     async ({selectedProjects}) => {
       await context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
-      const selectedProjectsArr: PackageJson[] = selectedProjects ? selectedProjects : [];
+      const selectedProjectsArr: ProjectConfig[] = selectedProjects ? selectedProjects : [];
       await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
     }
   );
@@ -106,7 +115,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const tryToAuthCommmand = vscode.commands.registerCommand(
     COMMAND_TRY_TO_AUTH,
     async() => {
-      await tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
+      await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
     }
   );
 

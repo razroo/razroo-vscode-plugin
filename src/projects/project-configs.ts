@@ -3,6 +3,7 @@ import * as path from 'path';
 import ignore from 'ignore';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
+import { ProjectConfig } from './interfaces/project-config.interfaces';
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
@@ -14,7 +15,7 @@ export async function getVersionControlParams(workspacePath: string) {
   };
 }
 
-export async function getProjectConfigs(dir: string): Promise<any> { 
+export async function getProjectConfigs(dir: string): Promise<ProjectConfig> { 
   // const subdirs = fs.readdirSync(dir);
   // get top level git config, and package json first
   // let ignorePatterns: string[] = [];

@@ -1,3 +1,4 @@
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import { PackageJson } from 'package-json-manager/dist/core/package-json';
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
@@ -119,12 +120,12 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   isProduction: boolean,
   userId: string,
   orgId: string,
-  selectedProjects: PackageJson[]
+  selectedProjects: ProjectConfig[]
 ) => {
-  const privateDirectories = await getPrivateDirs();
-  const packageJsonParams = typeof selectedProjects[0] === 'object' ? JSON.stringify(selectedProjects[0]) : selectedProjects[0];
-  
-  // for(let packageJsonParams of allPackageJsons) {
+  for(let packageJsonParams of selectedProjects) {
+    const privateDirectories = await getPrivateDirs((packageJsonParams as any)?.fullPath);
+
+    const packageJsonParamsStringified = typeof packageJsonParams === 'object' ? JSON.stringify(packageJsonParams) : packageJsonParams;
     await updatePrivateDirectoriesRequest({
       vsCodeToken,
       accessToken,
