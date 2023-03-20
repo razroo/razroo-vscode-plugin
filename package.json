@@ -317,6 +317,7 @@
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@codemorph/core": "^1.1.1",
+    "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
     "auth0": "^2.37.0",
