@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   isAuthenticated = false;
   loggingOutLoading = false;
   projectConfigs: any[] = [];
-  selectedProjects: any[] = [];
+  selectedProjects?: any[] = [];
 
   toggleProjectOption($event: any, projectConfigs: ProjectConfig[]) {
     const projectName = $event.target.value;
@@ -67,6 +67,9 @@ export class AppComponent implements OnInit {
           this.authIsLoading = false;
           this.isAuthenticated = true;
           this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
+          this.selectedProjects = message.selectedProjects;
+          console.log('message');
+          console.log(message);
           return;
         case "sendAuthData":
           this.authIsLoading = false;
@@ -81,20 +84,11 @@ export class AppComponent implements OnInit {
     });
   }
 
-  connectProjects(selectedProjects: ProjectConfig[]) {
+  connectProjects(selectedProjects?: ProjectConfig[]) {
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
       selectedProjects: selectedProjects
     });
   }
-
-  unConnectProject(projectConfigs: ProjectConfig[]) {
-    this.loggingOutLoading = true;
-    vscode.postMessage({
-      command: "unConnectProject",
-      text: 'sample event'
-    });
-  }
-
 }
