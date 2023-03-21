@@ -28,13 +28,7 @@ export class AppComponent implements OnInit {
   authIsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
-  projectConfigs: ProjectConfig[] = [
-    {
-      packageJsonParams: {
-        name: 'test 123'
-      }
-    }
-  ];
+  projectConfigs: ProjectConfig[] = [];
   selectedProjects?: any[] = [];
   userId?: string = undefined;
   orgId?: string = undefined;
