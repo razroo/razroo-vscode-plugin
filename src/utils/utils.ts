@@ -217,12 +217,17 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
-        projectConfigs: projectConfigs,
+        projectConfigs,
         selectedProjects
       });
       showInformationMessage('User successfully connected to Razroo.');
     }
   } else {
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
+    await projectsProvider?.view?.webview.postMessage({
+      command: "initAuthData",
+      projectConfigs,
+      selectedProjects
+    });
+    // vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs});
   }
 };

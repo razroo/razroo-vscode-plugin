@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
   // will take state of selectedProjects, and revert back to initial state
   initToggleSelectedProjects(projectConfigs: ProjectConfig[], selectedOptions: ProjectConfig[]): ProjectConfig[] {
     return projectConfigs ? projectConfigs.map(projectOption => {
-      if(selectedOptions && selectedOptions.some(option => option.packageJsonParams.name === projectOption.packageJsonParams.name)) {
+      if(selectedOptions && selectedOptions.some(option => option.packageJsonParams?.name === projectOption.packageJsonParams.name)) {
         projectOption.packageJsonParams.selected = true;
       }
       return projectOption;
