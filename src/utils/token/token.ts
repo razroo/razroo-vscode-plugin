@@ -1,3 +1,4 @@
+import { VersionControlParams } from './../../projects/interfaces/project-config.interfaces';
 import parseGitConfig from 'parse-git-config';
 import { EMPTY, MEMENTO_RAZROO_ID_VS_CODE_TOKEN } from './../../constants';
 import * as vscode from 'vscode';
@@ -31,7 +32,7 @@ export async function getOrCreateAndUpdateIdToken(context: vscode.ExtensionConte
     }
 }
 
-export function createVSCodeIdToken(userId: string, gitConfig: any) {
-  const gitOrigin = gitConfig.gitOrigin;
+export function createVSCodeIdToken(userId: string, versionControlParams: VersionControlParams) {
+  const gitOrigin = versionControlParams.gitOrigin;
   return gitOrigin ? `${userId}_${extractProjectName(gitOrigin)}` : EMPTY;
 }

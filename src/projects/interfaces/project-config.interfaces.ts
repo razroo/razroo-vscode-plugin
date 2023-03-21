@@ -1,9 +1,9 @@
 export interface ProjectConfig {
   packageJsonParams?: any;
-  versionControlParams?: any;
+  versionControlParams: VersionControlParams;
 }
 
-export interface versionControlParams {
+export interface VersionControlParams {
   gitOrigin: string;
   gitBranch: string;
   path: string;
