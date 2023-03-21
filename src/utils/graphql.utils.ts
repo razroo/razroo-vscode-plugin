@@ -13,18 +13,20 @@ import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
-import { getOrCreateAndUpdateIdToken } from './token/token';
+import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from './token/token';
 import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
-  vsCodeInstanceId,
   context, 
   isProduction,
   projectsProvider,
-  selectedProjects
+  selectedProjects,
+  userId
 }: any) => {
   //Subscribe with appsync client
-  client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
+  for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -86,6 +88,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       await fallback(context);
     });
+  }
 };
 
 async function fallback(content) {
