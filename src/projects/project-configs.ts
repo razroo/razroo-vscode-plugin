@@ -8,10 +8,12 @@ import { ProjectConfig } from './interfaces/project-config.interfaces';
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
   const gitBranch = await getBranch(workspacePath);
+  const path = workspacePath;
 
   return {
     gitOrigin,
     gitBranch,
+    path
   };
 }
 

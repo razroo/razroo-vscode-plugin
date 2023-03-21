@@ -6,4 +6,5 @@ export interface ProjectConfig {
 export interface versionControlParams {
   gitOrigin: string;
   gitBranch: string;
+  path: string;
 }
