@@ -105,7 +105,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async ({selectedProjects}) => {
+    async ({selectedProjects, projectConfigs}) => {
       await context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
       const selectedProjectsArr: ProjectConfig[] = selectedProjects ? selectedProjects : [];
       await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
@@ -115,6 +115,8 @@ export async function activate(context: vscode.ExtensionContext) {
   const tryToAuthCommmand = vscode.commands.registerCommand(
     COMMAND_TRY_TO_AUTH,
     async() => {
+      console.log('projectConfigs');
+      console.log(projectConfigs);
       await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
     }
   );
