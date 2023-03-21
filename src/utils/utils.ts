@@ -114,7 +114,6 @@ export const saveFiles = async (
 };
 
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
-  vsCodeToken: string,
   accessToken: string,
   isProduction: boolean,
   userId: string,
@@ -122,13 +121,14 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   selectedProjects: ProjectConfig[]
 ) => {
   for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
     // needs to use this path for directories
     const path = selectedProject.versionControlParams.path;
     const privateDirectories = await getPrivateDirs(path);
 
     const packageJsonParamsStringified = typeof selectedProject.packageJsonParams === 'object' ? JSON.stringify(selectedProject.packageJsonParams) : selectedProject.packageJsonParams;
     await updatePrivateDirectoriesRequest({
-      vsCodeToken,
+      vsCodeInstanceId,
       accessToken,
       privateDirectories,
       isProduction,
@@ -141,7 +141,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 
 const getPrivateDirs = async(fullPath: string) => {
   const name = path.basename(fullPath);
-  const VsCodeFolder = {path: fullPath, name}
+  const VsCodeFolder = {path: fullPath, name};
   // uses short code for map
   let dirs = [VsCodeFolder].map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
   if (process.platform === 'win32') {
@@ -175,7 +175,7 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: bo
   }
 };
 
-async function refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction: boolean, projectsProvider, selectedProjects) {
+async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduction: boolean, projectsProvider, selectedProjects) {
   return auth0Client(isProduction).refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
     if (err) {
       vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
@@ -183,8 +183,8 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, token, is
 
     await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
     await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId, selectedProjects);
-    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction, projectsProvider });
+    await updatePrivateDirectoriesInVSCodeAuthentication(userData.access_token, isProduction, userId, orgId, selectedProjects);
+    await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
     showInformationMessage('User successfully authenticated with Razroo.');
     return userData;
@@ -197,10 +197,9 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
   const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
-  const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  if (accessToken && refreshToken && userId && orgId && token) {
+  if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
-      await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction, projectsProvider, selectedProjects);
+      await refreshAuth0Token(context, refreshToken, userId, orgId, isProduction, projectsProvider, selectedProjects);
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
         projectConfigs,
@@ -209,11 +208,8 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
     }
     else {
       if(selectedProjects) {
-        for(let selectedProject of selectedProjects) {
-          const token = createVSCodeIdToken(userId, selectedProject.versionControlParams);
-          await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId, selectedProjects);
-          await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
-        }
+        await updatePrivateDirectoriesInVSCodeAuthentication(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId, selectedProjects);
+        await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId});
       }
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
       await projectsProvider?.view?.webview.postMessage({

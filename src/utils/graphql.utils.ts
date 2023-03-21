@@ -1,3 +1,4 @@
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
@@ -12,18 +13,20 @@ import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
-import { getOrCreateAndUpdateIdToken } from './token/token';
+import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from './token/token';
 import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
-  vsCodeInstanceId,
   context, 
   isProduction,
   projectsProvider,
-  allPackageJsons
+  selectedProjects,
+  userId
 }: any) => {
   //Subscribe with appsync client
-  client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
+  for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -66,12 +69,12 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       const realtimeResults = async function realtimeResults(data: any) {
         //Save the files in a new folder
         await saveFiles(data, context, isProduction);
-        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, allPackageJsons);
+        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
       };
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, allPackageJsons);
+        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, selectedProjects);
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
@@ -85,6 +88,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       await fallback(context);
     });
+  }
 };
 
 async function fallback(content) {
@@ -94,11 +98,9 @@ async function fallback(content) {
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean, allPackageJsons) {
   const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  const token = await getOrCreateAndUpdateIdToken(context, userId);
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
-  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId, allPackageJsons);
+  await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, allPackageJsons);
 }
 
 async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
@@ -141,7 +143,7 @@ export async function getPackageJson(workspacePath: string) {
 }
 
 export const updatePrivateDirectoriesRequest = async ({
-  vsCodeToken,
+  vsCodeInstanceId,
   accessToken,
   privateDirectories,
   isProduction,
@@ -185,7 +187,7 @@ export const updatePrivateDirectoriesRequest = async ({
       userId: userId,
       orgId: orgId,
       projectName: JSON.parse(packageJsonParams)?.name,
-      vsCodeInstanceId: vsCodeToken,
+      vsCodeInstanceId,
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
       versionControlsParams: versionControlsParams,
