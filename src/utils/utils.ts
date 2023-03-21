@@ -203,7 +203,9 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
         projectConfigs,
-        selectedProjects
+        selectedProjects,
+        userId,
+        orgId,
       });
     }
     else {
@@ -215,16 +217,21 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       await projectsProvider?.view?.webview.postMessage({
         command: "initAuthData",
         projectConfigs,
-        selectedProjects
+        selectedProjects,
+        userId,
+        orgId
       });
       showInformationMessage('User successfully connected to Razroo.');
     }
   } else {
+    console.log('else block for orgId is called');
     await projectsProvider?.view?.webview.postMessage({
       command: "initAuthData",
       projectConfigs,
-      selectedProjects
+      selectedProjects,
+      userId,
+      orgId
     });
-    // vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs});
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs});
   }
 };

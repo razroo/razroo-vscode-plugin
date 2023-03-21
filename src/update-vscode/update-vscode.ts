@@ -41,7 +41,8 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
     } finally {
         if(projectsProvider){ 
         await projectsProvider?.view?.webview.postMessage({
-            command: "sendAuthData"
+          command: "sendAuthData",
+          
         });
         }
         disposeServer();
