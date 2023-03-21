@@ -1,8 +1,6 @@
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
-import { PackageJson } from 'package-json-manager/dist/core/package-json';
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
-import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import {
   removeVsCodeInstanceMutation,
@@ -20,9 +18,9 @@ import { editFiles } from './edit.utils';
 import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
-import { join, extname, normalize} from 'path';
-import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@codemorph/core';
-import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
+import path, { join, extname, normalize} from 'path';
+import { determineFilePathParameter, effects, getVersionAndNameString, replaceCurlyBrace, getAllDirectoriesFromVsCodeFolder } from '@codemorph/core';
+import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
 
@@ -123,10 +121,12 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   orgId: string,
   selectedProjects: ProjectConfig[]
 ) => {
-  for(let packageJsonParams of selectedProjects) {
-    const privateDirectories = await getPrivateDirs((packageJsonParams as any)?.fullPath);
+  for(let selectedProject of selectedProjects) {
+    // needs to use this path for directories
+    const path = selectedProject.versionControlParams.path;
+    const privateDirectories = await getPrivateDirs(path);
 
-    const packageJsonParamsStringified = typeof packageJsonParams === 'object' ? JSON.stringify(packageJsonParams) : packageJsonParams;
+    const packageJsonParamsStringified = typeof selectedProject.packageJsonParams === 'object' ? JSON.stringify(selectedProject.packageJsonParams) : selectedProject.packageJsonParams;
     await updatePrivateDirectoriesRequest({
       vsCodeToken,
       accessToken,
@@ -140,9 +140,10 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
 };
 
 const getPrivateDirs = async(fullPath: string) => {
-  const workspaceFolders = getWorkspaceFolders();
+  const name = path.basename(fullPath);
+  const VsCodeFolder = {path: fullPath, name}
   // uses short code for map
-  let dirs = workspaceFolders?.map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
+  let dirs = [VsCodeFolder].map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
