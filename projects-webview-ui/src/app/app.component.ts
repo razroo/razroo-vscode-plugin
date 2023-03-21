@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption } from "@vscode/webview-ui-toolkit";
 import { ProjectConfig } from "./interfaces/project-config.interfaces";
 import { vscode } from "./utilities/vscode";
+import {FormControl} from '@angular/forms';
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -27,24 +28,37 @@ export class AppComponent implements OnInit {
   authIsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
-  projectConfigs: any[] = [];
-  selectedProjects?: any[] = [];
-
-  toggleProjectOption($event: any, projectConfigs: ProjectConfig[]) {
-    const projectName = $event.target.value;
-    this.projectConfigs = projectConfigs.map(projectOption => {
-      if(projectOption.packageJsonParams.name === projectName) {
-        projectOption.packageJsonParams.selected = !projectOption.packageJsonParams.selected;
+  projectConfigs: ProjectConfig[] = [
+    {
+      packageJsonParams: {
+        name: 'test 123'
       }
-      return projectOption;
+    }
+  ];
+  selectedProjects?: any[] = [];
+  userId?: string = undefined;
+  orgId?: string = undefined;
+  projectOptions = new FormControl('');
+
+  toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
+    const projectName = projectOption.packageJsonParams.name;
+    this.projectConfigs = projectConfigs.map(projectOptionItem => {
+      if(projectOptionItem.packageJsonParams.name === projectName) {
+        projectOptionItem.packageJsonParams.selected = !projectOptionItem.packageJsonParams.selected;
+      }
+      return projectOptionItem;
     });
-    this.selectedProjects = this.projectConfigs.filter(projectOption => projectOption.packageJsonParams.selected === true);
+    this.selectedProjects = this.projectConfigs.filter(projectOptionItem => projectOptionItem.packageJsonParams.selected === true);
+    console.log('this.selectedProjects');
+    console.log(this.selectedProjects);
+    console.log('this.projectConfigs');
+    console.log(this.projectConfigs);
   }
 
   // will take state of selectedProjects, and revert back to initial state
-  initToggleSelectedProjects(projectConfigs: ProjectConfig[], selectedOptions: ProjectConfig[]): ProjectConfig[] {
-    return projectConfigs ? projectConfigs.map(projectOption => {
-      if(selectedOptions && selectedOptions.some(option => option.packageJsonParams?.name === projectOption.packageJsonParams.name)) {
+  initToggleSelectedProjects(projects: ProjectConfig[], selectedProjects: ProjectConfig[]): ProjectConfig[] {
+    return projects ? projects.map(projectOption => {
+      if(selectedProjects && selectedProjects.some(option => option.packageJsonParams?.name === projectOption.packageJsonParams.name)) {
         projectOption.packageJsonParams.selected = true;
       }
       return projectOption;
@@ -66,12 +80,19 @@ export class AppComponent implements OnInit {
         case "initAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
-          this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
           this.selectedProjects = message.selectedProjects;
-          console.log('message');
+          this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
+          console.log('this.projectConfigs');
+          console.log(this.projectConfigs);
+
+          this.userId = message.userId;
+          this.orgId = message.orgId;
+          console.log('initAuthData message');
           console.log(message);
           return;
         case "sendAuthData":
+          console.log('sendAuthData message');
+          console.log(message);
           this.authIsLoading = false;
           this.isAuthenticated = true;
           return;
