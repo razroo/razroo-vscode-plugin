@@ -1,8 +1,10 @@
-import { MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_COLUMN_NUMBER, VSCODE_ACTIVE_LINE_NUMBER} from '../constants';
+import { ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_COLUMN_NUMBER, VSCODE_ACTIVE_LINE_NUMBER} from '../constants';
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
 import { codeSnippetGeneratingNotification } from './snippets-notifications';
+import { createVSCodeIdToken } from '../utils/token/token';
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 
 // Define a custom text decoration
 const decorationType = vscode.window.createTextEditorDecorationType({
@@ -10,18 +12,27 @@ const decorationType = vscode.window.createTextEditorDecorationType({
 });
 
 export async function logCursorPosition(context: vscode.ExtensionContext, selection: vscode.Selection, 
-    isProduction: boolean, packageJsonParams: any) {
+    isProduction: boolean) {
+  const editor = vscode.window.activeTextEditor as any;
+  const lineNumber = selection.active.line + 1;
+  const codeLine = editor.document.lineAt(lineNumber - 1);
+  const searchText = codeLine.text.trim();
+  if(!isComment(searchText)) {
+    return;
+  }
+  const activeWorkspaceFolderState = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as ProjectConfig; 
+  const packageJsonParams = activeWorkspaceFolderState.packageJsonParams;
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
-  const vsCodeToken = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  const path = vsCodeToken ? (vsCodeToken as any).split('_').pop() + '-' + packageJsonParams.version : '';
+  const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const vsCodeInstanceId = createVSCodeIdToken(userId, activeWorkspaceFolderState.versionControlParams);
+  
+  const path = vsCodeInstanceId ? (vsCodeInstanceId as any).split('_').pop() + '-' + packageJsonParams.version : '';
   if(!path) {
     return;
   }
-  const editor = vscode.window.activeTextEditor as any;
-  const lineNumber = selection.active.line + 1;
-  const columnNumber = selection.active.character + 1;
-  const codeLine = editor.document.lineAt(lineNumber - 1);
+
+  // const columnNumber = selection.active.character + 1;
 
   const decoration = {
     range: new vscode.Range(
@@ -39,7 +50,6 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     }
   };
 
-  const searchText = codeLine.text.trim();
   const codeIndentationColumn = codeLine.firstNonWhitespaceCharacterIndex;
   if (isComment(searchText)) {
     // && isTabKeyPressed(searchText)

@@ -10,7 +10,8 @@ import {
   MEMENTO_RAZROO_ACCESS_TOKEN,
   COMMAND_CANCEL_AUTH,
   COMMAND_TRY_TO_AUTH,
-  MEMENTO_SELECTED_PROJECTS
+  MEMENTO_SELECTED_PROJECTS,
+  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -61,6 +62,11 @@ export async function activate(context: vscode.ExtensionContext) {
   if(workspaceFolders) {
     for(let workspaceFolder of workspaceFolders) {
       const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
+      const workspaceFolderName = workspaceFolder.name;
+      // use workspace folder name, to create state for project config
+      // will allow active state for that workspace folder to be pulled up
+      // whenever user is inside of that folder
+      context.workspaceState.update(workspaceFolderName, individualProjectConfig);
       projectConfigs.push(individualProjectConfig);
     }
   }
@@ -93,11 +99,22 @@ export async function activate(context: vscode.ExtensionContext) {
         debouncedSnippetRequest.cancel();
       }
       debouncedSnippetRequest = debounce(() => {
-        logCursorPosition(context, (activeEditor as any).selection, isProduction, packageJsonParamsParsed);
+        logCursorPosition(context, (activeEditor as any).selection, isProduction);
       }, 300);
       debouncedSnippetRequest();
     }
   }, null, context.subscriptions);
+
+  vscode.window.onDidChangeActiveTextEditor((editor) => {
+    if(editor) {
+      const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+      if (workspaceFolder) {
+        const workspaceFolderName = workspaceFolder.name;
+        const workspaceState = context.workspaceState.get(workspaceFolderName);
+        context.workspaceState.update(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG, workspaceState);
+      }
+    }
+  });
 
   const authEventEmitter = new EventEmitter();
 
