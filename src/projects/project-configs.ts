@@ -24,9 +24,14 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   let ignorePatterns: string[] = [];
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
+
+  const packageJsonPath = path.join(dir, 'package.json');
+  let packageJsonParams: PackageJson | object = {};
+  if (await fileExists(packageJsonPath)) {
+    const packageJsonContent = await fs.promises.readFile(packageJsonPath, 'utf8');
+    packageJsonParams = JSON.parse(packageJsonContent);
+  }
   
-  // const packageJsonContent = await fs.promises.readFile(packageJsonPath, 'utf8');
-  let packageJsonParams;
   // BEGIN NEW LOGIC - get ignore patterns for use with application
   if (await fileExists(gitignorePath)) {
     ignorePatterns = await getGitignorePatterns(gitignorePath);
@@ -40,6 +45,7 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
       dependencies: {},
       devDependencies: {},
       peerDependencies: {},
+      ...packageJsonParams
     };
     packageJsonParams = await aggregatePackageJsons(dir, subdirs, gitignorePath, combinedPackageJsonParams);
   } catch (error) {
