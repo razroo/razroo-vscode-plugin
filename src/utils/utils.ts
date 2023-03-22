@@ -35,7 +35,8 @@ export const validateEmail = (email: string) => {
 export const saveFiles = async (
   data: any,
   context: vscode.ExtensionContext,
-  isProduction: boolean
+  isProduction: boolean,
+  path: string
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   // parameters will always be a string <-- architected specifically this way
@@ -48,9 +49,7 @@ export const saveFiles = async (
 
   //Get files of S3
   const files = await getFileS3({ url });
-  const rootDirectory = vscode.workspace.workspaceFolders ? process.platform === 'win32' ? normalize(vscode.workspace.workspaceFolders[0].uri.path).slice(1) : normalize(vscode.workspace.workspaceFolders[0].uri.path) : '';
-  const folderSelectedInWorkspace = join(rootDirectory);
-  const folderRoot = `${folderSelectedInWorkspace}`;
+  const folderRoot = path;
 
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
   if (type === 'Edit' && updates) {

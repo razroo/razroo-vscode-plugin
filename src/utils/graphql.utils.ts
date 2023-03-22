@@ -1,3 +1,4 @@
+import { VersionControlParams } from './../projects/interfaces/project-config.interfaces';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
@@ -67,8 +68,9 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       });
 
       const realtimeResults = async function realtimeResults(data: any) {
-        //Save the files in a new folder
-        await saveFiles(data, context, isProduction);
+        // Save the files in a new folder
+        const path = selectedProject.versionControlParams.path;
+        await saveFiles(data, context, isProduction, path);
         await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
       };
 
