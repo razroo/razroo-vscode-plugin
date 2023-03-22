@@ -4,8 +4,11 @@ import * as path from 'path';
 export interface PackageJson {
   name: string;
   version: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
   selected?: boolean;
-  // add any other properties you need
+  [key: string]: any;
 }
 
 export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[]> {
@@ -57,6 +60,40 @@ export async function getAllPackageJsons(repoPath: string): Promise<PackageJson[
   await traverseDirectory(repoPath, ignorePatterns);
 
   return packageJsons;
+}
+
+export async function combinePackageJsons(packageJsonAddedTo: PackageJson, packageJsonToAdd: PackageJson): Promise<PackageJson> {
+    if(packageJsonAddedTo.name === '') {
+      // use further most root level package.json
+      packageJsonAddedTo.name = packageJsonToAdd.name;
+    }
+
+    if(packageJsonAddedTo.version === '') {
+      packageJsonAddedTo.version = packageJsonToAdd.version;
+    }
+
+    if (packageJsonToAdd.dependencies) {
+      packageJsonAddedTo.dependencies = {
+        ...packageJsonAddedTo.dependencies,
+        ...packageJsonToAdd.dependencies,
+      };
+    }
+
+    if (packageJsonToAdd.devDependencies) {
+      packageJsonAddedTo.devDependencies = {
+        ...packageJsonAddedTo.devDependencies,
+        ...packageJsonToAdd.devDependencies,
+      };
+    }
+
+    if (packageJsonToAdd.peerDependencies) {
+      packageJsonAddedTo.peerDependencies = {
+        ...packageJsonAddedTo.peerDependencies,
+        ...packageJsonToAdd.peerDependencies,
+      };
+    }
+
+  return packageJsonAddedTo;
 }
 
 async function fileExists(filePath: string): Promise<boolean> {

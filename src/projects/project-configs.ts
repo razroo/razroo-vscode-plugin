@@ -4,6 +4,7 @@ import ignore from 'ignore';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
 import { ProjectConfig } from './interfaces/project-config.interfaces';
+import { combinePackageJsons, PackageJson } from '../utils/package-json/package-json';
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
@@ -20,23 +21,65 @@ export async function getVersionControlParams(workspacePath: string) {
 export async function getProjectConfigs(dir: string): Promise<ProjectConfig> { 
   // const subdirs = fs.readdirSync(dir);
   // get top level git config, and package json first
-  // let ignorePatterns: string[] = [];
-  const packageJsonPath = path.join(dir, 'package.json');
-  // const gitignorePath = path.join(dir, '.gitignore');
+  let ignorePatterns: string[] = [];
+  const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
-  
-  const packageJsonContent = await fs.promises.readFile(packageJsonPath, 'utf8');
-  const packageJsonParams = JSON.parse(packageJsonContent) as any;
-  // if (await fileExists(gitignorePath)) {
-  //   ignorePatterns = await getGitignorePatterns(gitignorePath);
-  // }
-  
-  // for (const filePath of subdirs) { 
-  //   if (ignorePatterns.some((pattern) => filePath.startsWith(filePath))) {
-  //     continue;
-  //   }
 
-  // }
+  const packageJsonPath = path.join(dir, 'package.json');
+  let packageJsonParams: PackageJson | object = {};
+  if (await fileExists(packageJsonPath)) {
+    const packageJsonContent = await fs.promises.readFile(packageJsonPath, 'utf8');
+    packageJsonParams = JSON.parse(packageJsonContent);
+  }
+  
+  // BEGIN NEW LOGIC - get ignore patterns for use with application
+  if (await fileExists(gitignorePath)) {
+    ignorePatterns = await getGitignorePatterns(gitignorePath);
+  }
+  const subdirs = fs.readdirSync(dir);
+  // uses an array, so taking string of dir and putting in array
+  try {
+    let combinedPackageJsonParams: PackageJson = {
+      name: '',
+      version: '',
+      dependencies: {},
+      devDependencies: {},
+      peerDependencies: {},
+      ...packageJsonParams
+    };
+    packageJsonParams = await aggregatePackageJsons(dir, subdirs, gitignorePath, combinedPackageJsonParams);
+  } catch (error) {
+    console.error(error);
+  }
+  
+  async function aggregatePackageJsons(dir: string, subdirs: string[], gitignorePath: string, combinedPackageJsonParams: PackageJson ) {
+    for (let fileName of subdirs) {
+      const fullFilePath = path.join(dir, fileName);
+      const stat = fs.statSync(fullFilePath);
+      if(await isGitIgnored(gitignorePath, fullFilePath)) {
+        continue;
+      } 
+      
+      if(fileName.startsWith('package.json')) {
+        const fullFilePath = path.join(dir, fileName);
+        const packageJsonContentChild = await fs.promises.readFile(fullFilePath, 'utf8');
+        const packageJsonTemp = JSON.parse(packageJsonContentChild) as any;
+        combinedPackageJsonParams = await combinePackageJsons(combinedPackageJsonParams, packageJsonTemp);
+      } else {
+        if (stat.isDirectory() && fileName !== '.git' ) {
+          const childSubDirs = fs.readdirSync(fullFilePath);
+          await aggregatePackageJsons(fullFilePath, childSubDirs, gitignorePath, combinedPackageJsonParams);
+        }
+      }
+    }
+    return combinedPackageJsonParams;
+  }
+
+  // END NEW LOGIC
+
+  console.log('packageJsonParams');
+  console.log(packageJsonParams);
+
   return {
     versionControlParams,
     packageJsonParams
@@ -50,6 +93,18 @@ async function fileExists(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+// Check if file is ignored
+async function isGitIgnored(gitIgnorePath: string, fullFilePath: string): Promise<boolean> {
+  const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf-8');
+  const patterns = gitIgnoreContent.split('\n').filter((pattern) => pattern.trim() !== '');
+  return patterns.some((pattern) => {
+    const isNegated = pattern.startsWith('!');
+    const patternToMatch = isNegated ? pattern.slice(1) : pattern;
+    const isMatch = fullFilePath.includes(patternToMatch);
+    return isNegated ? !isMatch : isMatch;
+  });
 }
 
 async function getGitignorePatterns(gitignorePath: string): Promise<string[]> {
