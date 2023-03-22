@@ -115,7 +115,12 @@ export async function activate(context: vscode.ExtensionContext) {
   const tryToAuthCommmand = vscode.commands.registerCommand(
     COMMAND_TRY_TO_AUTH,
     async() => {
-      await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
+      try {
+        await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
+      } catch (error) {
+        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
     }
   );
 

@@ -22,7 +22,6 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   // const subdirs = fs.readdirSync(dir);
   // get top level git config, and package json first
   let ignorePatterns: string[] = [];
-  const packageJsonPath = path.join(dir, 'package.json');
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
   
