@@ -17,10 +17,10 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
   const lineNumber = selection.active.line + 1;
   const codeLine = editor.document.lineAt(lineNumber - 1);
   const searchText = codeLine.text.trim();
-  if(!isComment(searchText)) {
-    return;
-  }
   const activeWorkspaceFolderState = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as ProjectConfig; 
+  if(!activeWorkspaceFolderState) {
+    console.log('logCursorPosition no active state');
+  }
   const packageJsonParams = activeWorkspaceFolderState.packageJsonParams;
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
