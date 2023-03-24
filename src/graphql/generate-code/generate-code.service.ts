@@ -10,7 +10,7 @@ export const generateVsCodeDownloadCode = async (
     context: vscode.ExtensionContext,
     isProduction: boolean
 ) => {
-    const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+    const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
       query: GenerateVsCodeDownloadCode,
