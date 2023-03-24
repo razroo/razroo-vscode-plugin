@@ -168,7 +168,7 @@ export async function activate(context: vscode.ExtensionContext) {
     'extension.getGenerateCode',
     async () => {
       // get token
-      const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+      const token = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
       if (!token) {
         console.error('Token is null');
         showErrorMessage('Session has expired. Please login again.');

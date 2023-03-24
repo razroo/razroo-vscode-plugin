@@ -27,7 +27,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   //Subscribe with appsync client
   for(let selectedProject of selectedProjects) {
     const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
-    client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
+    client(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -100,13 +100,13 @@ async function fallback(content) {
 
 async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean, allPackageJsons) {
   const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID);
-  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID);
   await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, allPackageJsons);
 }
 
 async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
-  let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  let accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(accessToken as string)) {
     vscode.window.showInformationMessage(
