@@ -24,7 +24,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
   const packageJsonParams = activeWorkspaceFolderState.packageJsonParams;
   const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
-  const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
   const vsCodeInstanceId = createVSCodeIdToken(userId, activeWorkspaceFolderState.versionControlParams);
   
   const path = vsCodeInstanceId ? (vsCodeInstanceId as any).split('_').pop() + '-' + packageJsonParams.version : '';
@@ -136,7 +136,7 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
     recipeId: recipeId,
     stepId: stepId,
     vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
-    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
+    userId: context.globalState.get(MEMENTO_RAZROO_USER_ID) as string,
     userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
   };
 }
