@@ -180,8 +180,8 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduct
       vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
     }
 
-    await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
-    await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
+    await context.globalState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
+    await context.globalState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
     await updatePrivateDirectoriesInVSCodeAuthentication(userData.access_token, isProduction, userId, orgId, selectedProjects);
     await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
