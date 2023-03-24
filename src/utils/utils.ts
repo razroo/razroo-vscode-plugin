@@ -194,7 +194,7 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
-  const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
+  const orgId = await context.globalState.update(MEMENTO_RAZROO_ORG_ID) as string;
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
   if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
