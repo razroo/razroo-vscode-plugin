@@ -1,3 +1,5 @@
+import { VersionControlParams } from './../projects/interfaces/project-config.interfaces';
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
@@ -12,16 +14,20 @@ import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
-import { getOrCreateAndUpdateIdToken } from './token/token';
+import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from './token/token';
 import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
-  vsCodeInstanceId,
   context, 
-  isProduction
+  isProduction,
+  projectsProvider,
+  selectedProjects,
+  userId
 }: any) => {
   //Subscribe with appsync client
-  client(context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
+  for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    client(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -62,14 +68,15 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       });
 
       const realtimeResults = async function realtimeResults(data: any) {
-        //Save the files in a new folder
-        await saveFiles(data, context, isProduction);
-        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction);
+        // Save the files in a new folder
+        const path = selectedProject.versionControlParams.path;
+        await saveFiles(data, context, isProduction, path);
+        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
       };
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        await generateVsCodeDownloadCodeSubError(data, context, isProduction);
+        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, selectedProjects);
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
@@ -83,6 +90,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       await fallback(context);
     });
+  }
 };
 
 async function fallback(content) {
@@ -90,24 +98,22 @@ async function fallback(content) {
   console.log(content);
 }
 
-async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean) {
-  const userId = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  const token = await getOrCreateAndUpdateIdToken(context, userId);
-  const accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  
-  const orgId = context.workspaceState.get(MEMENTO_RAZROO_ORG_ID);
-  await updatePrivateDirectoriesInVSCodeAuthentication(token, accessToken, isProduction, userId, orgId);
+async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean, allPackageJsons) {
+  const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID);
+  const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID);
+  await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, allPackageJsons);
 }
 
-async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean) {
-  let accessToken = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
+  let accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   
   if(isTokenExpired(accessToken as string)) {
     vscode.window.showInformationMessage(
       'Authentication Token Expired. Re-logging you in now.'
     );
 
-    tryToAuth(context, isProduction);
+    tryToAuth(context, isProduction, projectsProvider, allPackageJsons);
   }
   return data;
 }
@@ -139,21 +145,21 @@ export async function getPackageJson(workspacePath: string) {
 }
 
 export const updatePrivateDirectoriesRequest = async ({
-  vsCodeToken,
+  vsCodeInstanceId,
   accessToken,
   privateDirectories,
   isProduction,
   userId,
-  orgId
+  orgId,
+  packageJsonParams
 }: any) => {
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  let packageJsonParams: any = '';
+  
   let versionControlsParams = {
     gitBranch: '',
     gitOrigin: ''
   };
-  if(privateDirectories.length){
-    packageJsonParams = await getPackageJson(workspacePath as any);
+  if(privateDirectories.length && packageJsonParams){
     versionControlsParams = await getVersionControlParams(workspacePath as string);
   } else {
     packageJsonParams = `{"name":"${vscode.workspace.name}","languages":[],"nx":{}}`;
@@ -183,7 +189,7 @@ export const updatePrivateDirectoriesRequest = async ({
       userId: userId,
       orgId: orgId,
       projectName: JSON.parse(packageJsonParams)?.name,
-      vsCodeInstanceId: vsCodeToken,
+      vsCodeInstanceId,
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
       versionControlsParams: versionControlsParams,

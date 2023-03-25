@@ -78,8 +78,8 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
     recipeId: recipeId,
     stepId: scaffoldId,
     vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
-    userId: context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string,
-    userOrgId: context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string,
+    userId: context.globalState.get(MEMENTO_RAZROO_USER_ID) as string,
+    userOrgId: context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string,
   };
 
   const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${orgId}/${pathId}/${recipeId}/${scaffoldId}`;

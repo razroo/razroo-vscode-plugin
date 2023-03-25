@@ -1,4 +1,3 @@
-import { getAuth0Url } from './utils/authentication/authentication';
 import AdmZip from 'adm-zip';
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
@@ -9,20 +8,24 @@ import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
   MEMENTO_RAZROO_ACCESS_TOKEN,
-  COMMAND_CANCEL_AUTH
+  COMMAND_CANCEL_AUTH,
+  COMMAND_TRY_TO_AUTH,
+  MEMENTO_SELECTED_PROJECTS,
+  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG
 } from './constants';
-import { createDisposableAuthServer } from './auth/local';
-import { Uri } from 'vscode';
-import { getPackageJson, subscribeToGenerateVsCodeDownloadCodeSub } from './utils/graphql.utils';
 import { EventEmitter } from 'stream';
-import { setWorkspaceState } from './utils/state.utils';
-import { getOrCreateAndUpdateIdToken } from './utils/token/token';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
 import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
+import { ProjectsWebview } from './projects/projects';
+import { getAllPackageJsons } from './utils/package-json/package-json';
+import { updateVsCode } from './update-vscode/update-vscode';
+import { getProjectConfigs } from './projects/project-configs';
+import { getWorkspaceFolders } from './utils/directory.utils';
+import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -38,12 +41,36 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
+  const projectsProvider = new ProjectsWebview(context);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      ProjectsWebview.viewType,
+      projectsProvider
+    )
+  );
 
   const showErrorMessage = vscode.window.showErrorMessage;
   const showInformationMessage = vscode.window.showInformationMessage;
   const showOpenDialog = vscode.window.showOpenDialog;
+  
+  const workspaceFolders = getWorkspaceFolders();
   const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
-  const packageJsonParams = await getPackageJson(workspacePath as any);
+  
+  const isProduction = isProductionFunc(context);
+  let projectConfigs: ProjectConfig[] = [];
+  if(workspaceFolders) {
+    for(let workspaceFolder of workspaceFolders) {
+      const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
+      const workspaceFolderName = workspaceFolder.name;
+      // use workspace folder name, to create state for project config
+      // will allow active state for that workspace folder to be pulled up
+      // whenever user is inside of that folder
+      context.workspaceState.update(workspaceFolderName, individualProjectConfig);
+      projectConfigs.push(individualProjectConfig);
+    }
+  }
+  const packageJsonParams = projectConfigs[0]?.packageJsonParams;
   const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
   const packageJsonPath = searchForPackageJson(workspacePath as any);
@@ -63,17 +90,6 @@ export async function activate(context: vscode.ExtensionContext) {
   // Use this if have access to razroo-frontend and uncomment line below
   // const isProduction = context.extensionMode === 1;
   // Open source members use this
-  const isProduction = isProductionFunc(context);
-  await tryToAuth(context, isProduction);
-  let disposable = vscode.commands.registerCommand(
-    'razroo-vscode-plugin.initialization',
-    () => {
-      vscode.window.showInformationMessage(
-        'Thanks for using the Razroo VSCode Plugin. It will help you write production code easier and faster.'
-      );
-    }
-  );
-
   
   let debouncedSnippetRequest;
   vscode.workspace.onDidChangeTextDocument(event => {
@@ -83,74 +99,45 @@ export async function activate(context: vscode.ExtensionContext) {
         debouncedSnippetRequest.cancel();
       }
       debouncedSnippetRequest = debounce(() => {
-        logCursorPosition(context, (activeEditor as any).selection, isProduction, packageJsonParamsParsed);
+        logCursorPosition(context, (activeEditor as any).selection, isProduction);
       }, 300);
       debouncedSnippetRequest();
     }
   }, null, context.subscriptions);
 
-  context.subscriptions.push(disposable);
+  vscode.window.onDidChangeActiveTextEditor((editor) => {
+    if(editor) {
+      const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
+      if (workspaceFolder) {
+        const workspaceFolderName = workspaceFolder.name;
+        const workspaceState = context.workspaceState.get(workspaceFolderName);
+        context.workspaceState.update(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG, workspaceState);
+      }
+    }
+  });
 
   const authEventEmitter = new EventEmitter();
-  const cancelAuthProgress = (progress: vscode.Progress<{
-    message?: string | undefined;
-    increment?: number | undefined;
-  }>) => {
-    progress.report({ increment: 100 });
-    vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', false);
-  };
 
   pushScaffoldCommands(context, vscode, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async () => {
-      vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationInProgress', true);
-      const loginUrl = getAuth0Url(isProduction);
+    async ({selectedProjects, projectConfigs}) => {
+      context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
+      const selectedProjectsArr: ProjectConfig[] = selectedProjects ? selectedProjects : [];
+      await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
+    }
+  );
 
-      vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Window,
-          cancellable: false,
-          title: 'Authentication in Razroo',
-        },
-        async (progress) => {
-          new Promise(async (res, rej) => {
-            let isInProgress = true;
-            authEventEmitter.on('cancel', () => {
-              isInProgress = false;
-              vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', true);
-              rej('Authentication canceled');
-            });
-            let disposeServer = (cancelAuthProgress, res, progress) => { };
-            try {
-              isInProgress && await vscode.commands.executeCommand('vscode.open', Uri.parse(loginUrl));
-              const { createServerPromise, disposeAndCancelAuth } = createDisposableAuthServer();
-              disposeServer = disposeAndCancelAuth;
-              const { accessToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
-              setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
-              const vsCodeInstanceId = await getOrCreateAndUpdateIdToken(context, userId);
-              if(vsCodeInstanceId === 'no-git-found') {
-                showInformationMessage('Please initialize a git repo to get started');
-              }
-              else {
-                isInProgress && await updatePrivateDirectoriesInVSCodeAuthentication(vsCodeInstanceId!, accessToken, isProduction, userId, orgId);
-                isInProgress && await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: vsCodeInstanceId, context, isProduction });
-                isInProgress && vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-                isInProgress && showInformationMessage('User successfully authenticated with Razroo.');
-              }
-            } catch (error) {
-              showErrorMessage(error as any);
-            } finally {
-              vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticationCancelling', false);
-              disposeServer(cancelAuthProgress, res, progress);
-            }
-          }).catch(async(err) => {
-            await onVSCodeClose(context, isProduction, cancelAuthProgress, progress);
-            await showInformationMessage(err);
-          });
-        }
-      );
+  const tryToAuthCommmand = vscode.commands.registerCommand(
+    COMMAND_TRY_TO_AUTH,
+    async() => {
+      try {
+        await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
+      } catch (error) {
+        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
     }
   );
 
@@ -158,17 +145,21 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_CANCEL_AUTH,
     async () => {
       authEventEmitter.emit('cancel');
-    });
+    });  
 
   const logout = vscode.commands.registerCommand(
     'extension.logout',
     () => {
       onVSCodeClose(context, isProduction)?.finally(() => {
-        showInformationMessage('Successfully Logged Out Of Razroo');
-        vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', false);
+        showInformationMessage('Un-Connected From Razroo');
+        projectsProvider?.view?.webview.postMessage({
+          command: "loggedOut"
+        });
       });
     }
   );
+
+  context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);
@@ -177,7 +168,7 @@ export async function activate(context: vscode.ExtensionContext) {
     'extension.getGenerateCode',
     async () => {
       // get token
-      const token = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+      const token = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
       if (!token) {
         console.error('Token is null');
         showErrorMessage('Session has expired. Please login again.');
