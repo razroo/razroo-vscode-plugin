@@ -62,23 +62,23 @@ export async function activate(context: vscode.ExtensionContext) {
   if(workspaceFolders) {
     for(let workspaceFolder of workspaceFolders) {
       const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
+      const packageJsonParams = individualProjectConfig.packageJsonParams;
       const workspaceFolderName = workspaceFolder.name;
       // use workspace folder name, to create state for project config
       // will allow active state for that workspace folder to be pulled up
       // whenever user is inside of that folder
+      await determineLanguagesUsed(packageJsonParams).then(async(languagesUsed) => {
+        languagesUsed.forEach(languageUsed => {
+          vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+        });
+      });
+
       context.workspaceState.update(workspaceFolderName, individualProjectConfig);
       projectConfigs.push(individualProjectConfig);
     }
   }
-  const packageJsonParams = projectConfigs[0]?.packageJsonParams;
-  const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
-
-  determineLanguagesUsed(packageJsonParamsParsed).then(async (languagesUsed) => {
-    languagesUsed.forEach(languageUsed => {
-      vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
-    });
-  });
+  pushScaffoldCommands(context, vscode, isProduction);
   
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
@@ -102,6 +102,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }, null, context.subscriptions);
 
+  // event used to determine workspace user is in
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if(editor) {
       const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
@@ -114,8 +115,6 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   const authEventEmitter = new EventEmitter();
-
-  pushScaffoldCommands(context, vscode, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
