@@ -3,7 +3,7 @@ import AdmZip from 'adm-zip';
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
+import { onVSCodeClose, tryToAuth } from './utils/utils';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
@@ -15,17 +15,17 @@ import {
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
-import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
+import { searchForPackageJson, readPackageJson } from 'package-json-manager';
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
-import { getAllPackageJsons } from './utils/package-json/package-json';
 import { updateVsCode } from './update-vscode/update-vscode';
 import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
 import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
+import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -73,16 +73,13 @@ export async function activate(context: vscode.ExtensionContext) {
   const packageJsonParams = projectConfigs[0]?.packageJsonParams;
   const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
-  const packageJsonPath = searchForPackageJson(workspacePath as any);
-  getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
-    determineLanguagesUsed(jsonMap).then(async (languagesUsed) => {
-      languagesUsed.forEach(languageUsed => {
-        vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
-      });
+
+  determineLanguagesUsed(packageJsonParamsParsed).then(async (languagesUsed) => {
+    languagesUsed.forEach(languageUsed => {
+      vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
     });
-  }).catch((err)=>{
-    console.log(err);
   });
+  
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );
