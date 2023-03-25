@@ -67,10 +67,11 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
   });
   
   const orgId = COMMUNITY;
-  const nameFilePath = getNameFilePathFromFullPath(vscode, path);
+  const nameFilePath = getNameFilePathFromFullPath(workspaceFolder, path);
   const name = getNameFromFullPath(path);
   const parsedPackageJsonParams = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams;
   
+  // this needs to be updated to work with projects
   const parameters = {
     nameFilePath: nameFilePath,
     name: name,
