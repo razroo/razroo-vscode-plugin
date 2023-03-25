@@ -78,7 +78,7 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
       nodeType: 'addFunction',
       name: 'pushScaffoldCommands',
       isExported: true,
-      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}],
       codeBlock: builtPushScaffoldCommandsStatement
     });
 
