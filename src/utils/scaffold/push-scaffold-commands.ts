@@ -3,42 +3,42 @@ import { createScaffold } from "./scaffold";
 function generateAngularComponent(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.component',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'component')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'component')
   );
 }
 
 function generateAngularAngularService(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularService',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-service')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-service')
   );
 }
 
 function generateAngularAngularGuard(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularGuard',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-guard')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-guard')
   );
 }
 
 function generateAngularTypescriptInterface(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.typescriptInterface',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'typescript-interface')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'typescript-interface')
   );
 }
 
 function generateAngularAngularPipe(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularPipe',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-pipe')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-pipe')
   );
 }
 
 function generateAngularAngularDirective(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularDirective',
-    async ({ path }) => createScaffold(vscode, 'angular-15.0.0', 'angular-core', path, context, isProduction, 'angular-directive')
+    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-directive')
   );
 }
 
@@ -112,6 +112,6 @@ function generateVuePiniaStore(vscode, context, isProduction) {
   );
 }
 
-export function pushScaffoldCommands(context, vscode, isProduction: boolean) {
-  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction), generateAngularAngularService(vscode, context, isProduction), generateAngularAngularGuard(vscode, context, isProduction), generateAngularTypescriptInterface(vscode, context, isProduction), generateAngularAngularPipe(vscode, context, isProduction), generateAngularAngularDirective(vscode, context, isProduction), generateNextjsNextjsComponent(vscode, context, isProduction), generateNgrxNgrxFeature(vscode, context, isProduction), generateReactReactComponent(vscode, context, isProduction), generateReactReactReduxSlice(vscode, context, isProduction), generateSvelteSvelteComponent(vscode, context, isProduction), generateSvelteSvelteModuleComponent(vscode, context, isProduction), generateSvelteSvelteEndpoint(vscode, context, isProduction), generateVueComponent(vscode, context, isProduction), generateVueView(vscode, context, isProduction), generateVuePiniaStore(vscode, context, isProduction));
+export function pushScaffoldCommands(context, vscode, isProduction: boolean, packageJsonParams) {
+  context.subscriptions.push(generateAngularComponent(vscode, context, isProduction), generateAngularAngularService(vscode, context, isProduction), generateAngularAngularGuard(vscode, context, isProduction), generateAngularTypescriptInterface(vscode, context, isProduction), generateAngularAngularPipe(vscode, context, isProduction), generateAngularAngularDirective(vscode, context, isProduction), generateNextjsNextjsComponent(vscode, context, isProduction), generateNgrxNgrxFeature(vscode, context, isProduction), generateReactReactComponent(vscode, context, isProduction), generateReactReactReduxSlice(vscode, context, isProduction), generateSvelteSvelteComponent(vscode, context, isProduction), generateSvelteSvelteModuleComponent(vscode, context, isProduction), generateSvelteSvelteEndpoint(vscode, context, isProduction), generateVueComponent(vscode, context, isProduction), generateVueView(vscode, context, isProduction), generateVuePiniaStore(vscode, context, isProduction))
 }

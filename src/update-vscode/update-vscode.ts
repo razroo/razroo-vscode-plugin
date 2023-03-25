@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { setWorkspaceState } from "../utils/state.utils";
 import { createDisposableAuthServer } from "../auth/local";
-import { onVSCodeClose, updatePrivateDirectoriesInVSCodeAuthentication } from "../utils/utils";
+import { updatePrivateDirectoriesInVSCodeAuthentication } from "../utils/utils";
 import { subscribeToGenerateVsCodeDownloadCodeSub } from "../utils/graphql.utils";
 import { getAuth0Url } from '../utils/authentication/authentication';
-import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from '../utils/token/token';
+import { createVSCodeIdToken } from '../utils/token/token';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 
 

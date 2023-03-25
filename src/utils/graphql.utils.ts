@@ -1,5 +1,3 @@
-import { VersionControlParams } from './../projects/interfaces/project-config.interfaces';
-import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
 import getBranch from 'git-branch';
@@ -8,13 +6,13 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import axios from 'axios';
-import { determineLanguagesUsed, getProjectDependencies, readPackageJson } from '@codemorph/core';
+import { getProjectDependencies, readPackageJson } from '@codemorph/core';
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
-import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from './token/token';
+import { createVSCodeIdToken } from './token/token';
 import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
