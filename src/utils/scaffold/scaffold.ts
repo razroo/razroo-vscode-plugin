@@ -1,7 +1,7 @@
 import { getNameFilePathFromFullPath, getNameFromFullPath } from '../../common-utils/scaffold/scaffold.utils';
 import { getVersionAndNameString } from "@codemorph/core";
 import { startCase, camelCase } from "lodash";
-import { COMMUNITY, DEV_APP_URL, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, PROD_APP_URL } from "../../constants";
+import { COMMUNITY, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID } from "../../constants";
 import { generateVsCodeDownloadCode } from '../../graphql/generate-code/generate-code.service';
 import { createVSCodeIdToken } from '../../utils/token/token';
 
@@ -35,7 +35,7 @@ export function buildScaffoldFunctionStatement(pathId: string, scaffoldId: strin
   
   return `return vscode.commands.registerCommand(
     'generate.${name}.${camelCase(scaffoldId)}',
-      async ({path}) => createScaffold(vscode, '${pathId}', '${recipeId}', path, context, isProduction, '${scaffoldId}', packageJsonParams)
+      async ({path}) => createScaffold(vscode, '${pathId}', '${recipeId}', path, context, isProduction, '${scaffoldId}')
     );`;
 }
 
