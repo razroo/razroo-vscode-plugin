@@ -1,6 +1,4 @@
-import gql from 'graphql-tag';
-
-export const GetUserOrganizations = gql`
+export const GetUserOrganizations = `
   query GetUserOrganizations($userId: ID!) {
     userOrganizations(userId: $userId) {
       displayName
