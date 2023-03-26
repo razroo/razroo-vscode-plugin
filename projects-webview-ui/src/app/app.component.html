@@ -11,8 +11,9 @@
   </vscode-dropdown>
 
   <vscode-button class="App__button" [disabled]="authIsLoading || !(selectedProjects?.length)" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
-
-  <!-- <div *ngIf="orgId && userId" class="App__org">
-    <p>You are logged into {{orgId}}</p>
-  </div> -->
+  <hr>
+  <div *ngIf="orgId && userId" class="App__org">
+    <p *ngIf="orgId !== userId"><i>You are logged into {{orgId | titlecase}}</i></p>
+    <p *ngIf="orgId === userId"><i>You are logged into your personal workspace.</i></p>
+  </div>
 </main>
