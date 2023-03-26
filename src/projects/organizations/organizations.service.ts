@@ -1,0 +1,33 @@
+import { MEMENTO_RAZROO_ACCESS_TOKEN } from './../../constants';
+import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
+import * as vscode from 'vscode';
+import axios from 'axios';
+import { GetPathScaffolds } from './scaffold.queries';
+import { GetUserOrganizations } from './organizations.queries';
+
+export const getUserOrganizations = async (
+    userId: string,
+    isProduction: boolean,
+    accessToken: string
+) => {
+    const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
+    const body = {
+      query: GetUserOrganizations,
+      variables: {
+        userId,
+      }
+    };
+    try {
+      const response = await axios.post(url, body, {
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'charset=utf-8',
+          Authorization: `${accessToken}`,
+        },
+      });
+      return response?.data?.data?.getUserOrganizations;
+    } catch (error) {    
+      console.log('error getUserOrganizations', error);
+      return error;
+    }
+  };
