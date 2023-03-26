@@ -21,11 +21,10 @@
       <p *ngIf="orgId === userId"><i>You are logged into your personal workspace</i></p>
     </label>
     <vscode-dropdown formControlName="orgDropdown" (opened)="loadOrganizations()" (change)="changeOrgDropdownValue($event)" id="org_dropdown">
-      <vscode-option>{{orgId === userId ? 'Personal Workspace' : orgId | titlecase}}</vscode-option>
+      <vscode-option [value]="orgId">{{orgId === userId ? 'Personal Workspace' : orgId | titlecase}}</vscode-option>
       <ng-container *ngFor="let organization of organizations">
-        <vscode-option>{{organization?.displayName}}</vscode-option>
+        <vscode-option [value]="organization?.orgId">{{organization?.displayName}}</vscode-option>
       </ng-container>
-
     </vscode-dropdown>
   </ng-container>
 </main>

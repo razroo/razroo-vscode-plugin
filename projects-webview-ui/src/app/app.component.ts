@@ -79,6 +79,10 @@ export class AppComponent implements OnInit {
           this.userId = message.userId;
           this.orgId = message.orgId;
           return;
+        case "setOrganizations":
+          this.organizations = message.organizations;
+          this.organizationsLoading = false;
+          return;
         case "sendAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
@@ -98,7 +102,12 @@ export class AppComponent implements OnInit {
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
-      selectedProjects: selectedProjects
+      selectedProjects: selectedProjects,
+      orgId: this.orgId
     });
+  }
+
+  changeOrgDropdownValue($event: any) {
+    this.orgId = $event.target.value;
   }
 }
