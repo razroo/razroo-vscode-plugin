@@ -22,8 +22,10 @@
     </label>
     <vscode-dropdown formControlName="orgDropdown" (change)="changeOrgDropdownValue($event)" class="App__dropdown" id="org_dropdown">
       <vscode-option [value]="orgId">{{orgId === userId ? 'Personal Workspace' : orgId | titlecase}}</vscode-option>
-      <ng-container *ngFor="let organization of organizations">
-        <vscode-option [value]="organization?.orgId">{{organization?.displayName ? organization?.displayName : organization.orgId}}</vscode-option>
+      <ng-container *ngFor="let organization of (orgId | zetaOrganizations : organizations)">
+        <vscode-option [value]="organization?.orgId">{{organization?.displayName
+          ? organization?.displayName
+          : (organization.orgId === organization.userId ? 'Personal Workspace' : organization.orgId)}}</vscode-option>
       </ng-container>
     </vscode-dropdown>
   </ng-container>
