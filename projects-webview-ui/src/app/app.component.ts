@@ -26,6 +26,7 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropd
 export class AppComponent implements OnInit {
   title = "hello-world";
   authIsLoading = false;
+  organizationsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
   projectConfigs: ProjectConfig[] = [];
@@ -33,6 +34,8 @@ export class AppComponent implements OnInit {
   userId?: string = undefined;
   orgId?: string = undefined;
   projectOptions = new FormControl('');
+  orgDropdown = new FormControl('');
+  organizations: any[] = [];
 
   toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
     const projectName = projectOption.packageJsonParams.name;
@@ -43,10 +46,6 @@ export class AppComponent implements OnInit {
       return projectOptionItem;
     });
     this.selectedProjects = this.projectConfigs.filter(projectOptionItem => projectOptionItem.packageJsonParams.selected === true);
-    console.log('this.selectedProjects');
-    console.log(this.selectedProjects);
-    console.log('this.projectConfigs');
-    console.log(this.projectConfigs);
   }
 
   // will take state of selectedProjects, and revert back to initial state
@@ -61,6 +60,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.authIsLoading = true;
+    this.organizationsLoading = true;
     vscode.postMessage({
       command: "initialAuthInfoRequest",
       description: 'get auth info for projects vscode webview panel'

@@ -11,8 +11,21 @@
   </vscode-dropdown>
 
   <vscode-button class="App__button" [disabled]="authIsLoading || !(selectedProjects?.length)" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
-  <div *ngIf="orgId && userId" class="App__org">
+  <!-- <div *ngIf="orgId && userId" class="App__org">
     <p *ngIf="orgId !== userId"><i>You are logged into {{orgId | titlecase}}</i></p>
     <p *ngIf="orgId === userId"><i>You are logged into your personal workspace</i></p>
-  </div>
+  </div> -->
+  <ng-container *ngIf="orgId && userId">
+    <label for="org_dropdown" class="App__org">
+      <p *ngIf="orgId !== userId"><i>You are logged into {{orgId | titlecase}}</i></p>
+      <p *ngIf="orgId === userId"><i>You are logged into your personal workspace</i></p>
+    </label>
+    <vscode-dropdown formControlName="orgDropdown" (opened)="loadOrganizations()" (change)="changeOrgDropdownValue($event)" id="org_dropdown">
+      <vscode-option>{{orgId === userId ? 'Personal Workspace' : orgId | titlecase}}</vscode-option>
+      <ng-container *ngFor="let organization of organizations">
+        <vscode-option>{{organization?.displayName}}</vscode-option>
+      </ng-container>
+
+    </vscode-dropdown>
+  </ng-container>
 </main>

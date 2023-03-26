@@ -1,8 +1,5 @@
-import { MEMENTO_RAZROO_ACCESS_TOKEN } from './../../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
-import * as vscode from 'vscode';
 import axios from 'axios';
-import { GetPathScaffolds } from './scaffold.queries';
 import { GetUserOrganizations } from './organizations.queries';
 
 export const getUserOrganizations = async (
@@ -14,7 +11,7 @@ export const getUserOrganizations = async (
     const body = {
       query: GetUserOrganizations,
       variables: {
-        userId,
+        userId
       }
     };
     try {
@@ -25,9 +22,9 @@ export const getUserOrganizations = async (
           Authorization: `${accessToken}`,
         },
       });
-      return response?.data?.data?.getUserOrganizations;
+      return response?.data?.data?.userOrganizations;
     } catch (error) {    
-      console.log('error getUserOrganizations', error);
+      console.log('error userOrganizations', error);
       return error;
     }
   };
