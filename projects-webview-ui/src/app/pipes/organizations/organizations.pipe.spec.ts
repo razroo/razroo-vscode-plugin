@@ -1,12 +1,8 @@
-import { IdToTitlePipe } from './id-to-title.pipe';
+import { OrganizationsPipe } from './organizations.pipe';
 
-describe('IdToTitlePipe', () => {
+describe('OrganizationsPipe', () => {
   it('create an instance', () => {
-    const pipe = new IdToTitlePipe();
+    const pipe = new OrganizationsPipe();
     expect(pipe).toBeTruthy();
   });
-  it('should parse properly', ()=> {
-    const pipe = new IdToTitlePipe();
-    expect(pipe.transform("data-table-component")).toEqual('Data Table Component')
-  })
 });
