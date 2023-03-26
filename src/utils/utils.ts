@@ -191,11 +191,11 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduct
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[]) => {
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[], orgIdParam?: string) => {
   const accessToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
-  const orgId = await context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
+  const orgId = orgIdParam ? orgIdParam : await context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
   if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
@@ -238,6 +238,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       userId,
       orgId
     });
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs});
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs, orgId: orgIdParam});
   }
 };

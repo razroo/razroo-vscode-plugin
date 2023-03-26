@@ -11,7 +11,8 @@ import {
   COMMAND_CANCEL_AUTH,
   COMMAND_TRY_TO_AUTH,
   MEMENTO_SELECTED_PROJECTS,
-  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG
+  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
+  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -137,6 +138,18 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const connectProjectsTryToAuthCommmand = vscode.commands.registerCommand(
+    COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
+    async({selectedProjects, orgId}) => {
+      try {
+        await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
+      } catch (error) {
+        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
+    }
+  );
+
   const cancelAuthentication = vscode.commands.registerCommand(
     COMMAND_CANCEL_AUTH,
     async () => {
@@ -156,6 +169,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(tryToAuthCommmand);
+  context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);

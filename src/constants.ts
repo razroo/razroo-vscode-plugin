@@ -15,6 +15,7 @@ export const MEMENTO_SELECTED_PROJECTS = 'RAZROO_SELECTED_PROJECTS';
 export const COMMAND_AUTH0_AUTH = 'extension.auth0Authentication';
 export const COMMAND_CANCEL_AUTH = 'extension.cancelAuthentication';
 export const COMMAND_TRY_TO_AUTH = 'extension.tryToAuth';
+export const COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH = 'extension.connectProjectsTryToAuth';
 
 export const AUTH0_URL = "id.razroo.com";
 export const AUTH0_CLIENT_ID = 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ';

@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
   selectedProjects?: any[] = [];
   userId?: string = undefined;
   orgId?: string = undefined;
+  tempOrgId?: string = undefined;
   projectOptions = new FormControl('');
   orgDropdown = new FormControl('');
   organizations: any[] = [];
@@ -103,11 +104,11 @@ export class AppComponent implements OnInit {
     vscode.postMessage({
       command: "connectProjects",
       selectedProjects: selectedProjects,
-      orgId: this.orgId
+      orgId: this.tempOrgId ? this.tempOrgId : this.orgId
     });
   }
 
   changeOrgDropdownValue($event: any) {
-    this.orgId = $event.target.value;
+    this.tempOrgId = $event.target.value;
   }
 }
