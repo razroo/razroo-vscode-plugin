@@ -76,19 +76,14 @@ export class AppComponent implements OnInit {
           this.isAuthenticated = true;
           this.selectedProjects = message.selectedProjects;
           this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
-          console.log('this.projectConfigs');
-          console.log(this.projectConfigs);
-
           this.userId = message.userId;
           this.orgId = message.orgId;
-          console.log('initAuthData message');
-          console.log(message);
           return;
         case "sendAuthData":
-          console.log('sendAuthData message');
-          console.log(message);
           this.authIsLoading = false;
           this.isAuthenticated = true;
+          this.orgId = message.orgId;
+          this.userId = message.userId;
           return;
         case "loggedOut":
           this.loggingOutLoading = false;
