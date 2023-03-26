@@ -1,7 +1,7 @@
 import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
 import { getNonce } from '../utils/webview-utils/getNonce';
-import { COMMAND_AUTH0_AUTH, COMMAND_TRY_TO_AUTH } from '../constants';
+import { COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, COMMAND_TRY_TO_AUTH } from '../constants';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
@@ -77,11 +77,11 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
     // Handle messages sent from the extension
     webview.onDidReceiveMessage(
       (message: any) => {
-        const {command, selectedProjects, text, data} = message;
+        const {command, selectedProjects, text, data, orgId} = message;
         
         switch (command) {
           case "connectProjects":
-            vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
+            vscode.commands.executeCommand(COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, {selectedProjects, orgId});
             return;
           case "initialAuthInfoRequest":
             vscode.commands.executeCommand(COMMAND_TRY_TO_AUTH);

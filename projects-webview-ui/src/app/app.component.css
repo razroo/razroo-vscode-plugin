@@ -42,4 +42,10 @@ main {
   color: var(--list-active-selection-foreground);
 }
 
+.App__organizations-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 

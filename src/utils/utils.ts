@@ -1,3 +1,4 @@
+import { getUserOrganizations } from '../projects/organizations/organizations.service';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
@@ -15,7 +16,7 @@ import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_C
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
-import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
+import { filterIgnoredDirs } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
 import path, { join, extname, normalize} from 'path';
@@ -190,11 +191,11 @@ async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduct
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[]) => {
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[], orgIdParam?: string) => {
   const accessToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
-  const orgId = await context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
+  const orgId = orgIdParam ? orgIdParam : await context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
   if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
@@ -221,6 +222,12 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
         orgId
       });
       showInformationMessage('User successfully connected to Razroo.');
+      const userOrganizations = await getUserOrganizations(userId, isProduction, accessToken)
+      await projectsProvider?.view?.webview.postMessage({
+        command: "setOrganizations",
+        organizations: userOrganizations
+      });
+      
     }
   } else {
     console.log('else block for orgId is called');
@@ -231,6 +238,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       userId,
       orgId
     });
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs});
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs, orgId: orgIdParam});
   }
 };

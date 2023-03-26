@@ -26,13 +26,17 @@ provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropd
 export class AppComponent implements OnInit {
   title = "hello-world";
   authIsLoading = false;
+  organizationsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
   projectConfigs: ProjectConfig[] = [];
   selectedProjects?: any[] = [];
   userId?: string = undefined;
   orgId?: string = undefined;
+  tempOrgId?: string = undefined;
   projectOptions = new FormControl('');
+  orgDropdown = new FormControl('');
+  organizations: any[] = [];
 
   toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
     const projectName = projectOption.packageJsonParams.name;
@@ -43,10 +47,6 @@ export class AppComponent implements OnInit {
       return projectOptionItem;
     });
     this.selectedProjects = this.projectConfigs.filter(projectOptionItem => projectOptionItem.packageJsonParams.selected === true);
-    console.log('this.selectedProjects');
-    console.log(this.selectedProjects);
-    console.log('this.projectConfigs');
-    console.log(this.projectConfigs);
   }
 
   // will take state of selectedProjects, and revert back to initial state
@@ -61,6 +61,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.authIsLoading = true;
+    this.organizationsLoading = true;
     vscode.postMessage({
       command: "initialAuthInfoRequest",
       description: 'get auth info for projects vscode webview panel'
@@ -78,6 +79,10 @@ export class AppComponent implements OnInit {
           this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
           this.userId = message.userId;
           this.orgId = message.orgId;
+          return;
+        case "setOrganizations":
+          this.organizations = message.organizations;
+          this.organizationsLoading = false;
           return;
         case "sendAuthData":
           this.authIsLoading = false;
@@ -98,7 +103,12 @@ export class AppComponent implements OnInit {
     this.authIsLoading = true;
     vscode.postMessage({
       command: "connectProjects",
-      selectedProjects: selectedProjects
+      selectedProjects: selectedProjects,
+      orgId: this.tempOrgId ? this.tempOrgId : this.orgId
     });
+  }
+
+  changeOrgDropdownValue($event: any) {
+    this.tempOrgId = $event.target.value;
   }
 }

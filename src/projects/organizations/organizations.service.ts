@@ -1,19 +1,17 @@
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
 import axios from 'axios';
-import { GetPathScaffolds } from './scaffold.queries';
+import { GetUserOrganizations } from './organizations.queries';
 
-export const getPathScaffolds = async (
-    pathOrgId: string,
-    pathId: string,
-    accessToken: string,
-    isProduction: boolean
+export const getUserOrganizations = async (
+    userId: string,
+    isProduction: boolean,
+    accessToken: string
 ) => {
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
-      query: GetPathScaffolds,
+      query: GetUserOrganizations,
       variables: {
-        pathOrgId,
-        pathId
+        userId
       }
     };
     try {
@@ -24,9 +22,9 @@ export const getPathScaffolds = async (
           Authorization: `${accessToken}`,
         },
       });
-      return response?.data?.data?.getPathScaffolds;
+      return response?.data?.data?.userOrganizations;
     } catch (error) {    
-      console.log('error generateVsCodeDownloadCode', error);
+      console.log('error userOrganizations', error);
       return error;
     }
   };
