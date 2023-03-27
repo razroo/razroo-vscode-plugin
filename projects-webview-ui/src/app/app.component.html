@@ -17,14 +17,13 @@
   </div> -->
   <ng-container *ngIf="orgId && userId">
     <label for="org_dropdown" class="App__org">
-      <p *ngIf="orgId !== userId"><i>You are logged into {{orgId | titlecase}}</i></p>
+      <p *ngIf="orgId !== userId"><i>You are logged into {{organizations.length ? (orgId | zetaOrganizations : organizations)[0].displayName : ''}}</i></p>
       <p *ngIf="orgId === userId"><i>You are logged into your personal workspace</i></p>
     </label>
     <vscode-dropdown formControlName="orgDropdown" (change)="changeOrgDropdownValue($event)" class="App__organizations-dropdown" id="org_dropdown">
-      <vscode-option [value]="orgId">{{orgId === userId ? 'Personal Workspace' : orgId | titlecase}}</vscode-option>
       <ng-container *ngFor="let organization of (orgId | zetaOrganizations : organizations)">
         <vscode-option [value]="organization?.orgId">{{organization?.displayName
-          ? organization?.displayName
+          ? (organization?.displayName | titlecase)
           : (organization.orgId === organization.userId ? 'Personal Workspace' : organization.orgId)}}</vscode-option>
       </ng-container>
     </vscode-dropdown>
