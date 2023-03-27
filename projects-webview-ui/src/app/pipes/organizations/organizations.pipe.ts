@@ -7,7 +7,7 @@ import { Organization } from '../../interfaces/organizations.interfaces';
 export class OrganizationsPipe implements PipeTransform {
 
   transform(activeOrgId: string, organizations: Organization[]): Organization[] {
-    return organizations ? organizations.map(organization => {
+    const updatedOrganizations = organizations ? organizations.map(organization => {
       if(organization.userId === organization.orgId) {
         return {
           ...organization,
@@ -16,7 +16,15 @@ export class OrganizationsPipe implements PipeTransform {
       } else {
         return organization;
       }
-    }).filter(organization => organization.orgId !== activeOrgId) : [];
+    }) : [];
+    const inactiveOrgs = updatedOrganizations.filter(organization => organization.orgId !== activeOrgId);
+    const activeOrg = updatedOrganizations.find(org => org.orgId === activeOrgId);
+
+    if (activeOrg) {
+      return [activeOrg, ...inactiveOrgs];
+    }
+
+    return inactiveOrgs;
   }
 
 }
