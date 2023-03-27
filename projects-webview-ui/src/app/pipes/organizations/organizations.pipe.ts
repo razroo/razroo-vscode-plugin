@@ -6,7 +6,7 @@ import { Organization } from '../../interfaces/organizations.interfaces';
 })
 export class OrganizationsPipe implements PipeTransform {
 
-  transform(activeOrgId: string, organizations: Organization[]): Organization[] {
+  transform(activeOrgId: string, organizations: Organization[]): Organization[] | [] {
     const updatedOrganizations = organizations ? organizations.map(organization => {
       if(organization.userId === organization.orgId) {
         return {
