@@ -1,6 +1,7 @@
+import { getUserOrganizations } from '../projects/organizations/organizations.service';
+import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import * as vscode from 'vscode';
 import AdmZip from 'adm-zip';
-import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import {
   removeVsCodeInstanceMutation,
@@ -11,17 +12,18 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
-import { filterIgnoredDirs, getWorkspaceFolders } from './directory.utils';
+import { filterIgnoredDirs } from './directory.utils';
 import { isTokenExpired } from './date/date.utils';
 import { integrationTestGeneratedFiles, unitTestGeneratedFiles } from './test.utils';
-import { join, extname, normalize} from 'path';
-import { determineFilePathParameter, determineType, effects, getAllDirectoriesFromVsCodeFolder, getVersionAndNameString, replaceCurlyBrace } from '@codemorph/core';
-import { containsInfrastructureCommandPath, openWorkspaceInNewCodeEditor, runRazrooCommand } from './command/command';
+import path, { join, extname, normalize} from 'path';
+import { determineFilePathParameter, effects, getVersionAndNameString, replaceCurlyBrace, getAllDirectoriesFromVsCodeFolder } from '@codemorph/core';
+import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
+import { createVSCodeIdToken } from './token/token';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -34,7 +36,8 @@ export const validateEmail = (email: string) => {
 export const saveFiles = async (
   data: any,
   context: vscode.ExtensionContext,
-  isProduction: boolean
+  isProduction: boolean,
+  path: string
 ) => {
   const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
   // parameters will always be a string <-- architected specifically this way
@@ -47,9 +50,7 @@ export const saveFiles = async (
 
   //Get files of S3
   const files = await getFileS3({ url });
-  const rootDirectory = vscode.workspace.workspaceFolders ? process.platform === 'win32' ? normalize(vscode.workspace.workspaceFolders[0].uri.path).slice(1) : normalize(vscode.workspace.workspaceFolders[0].uri.path) : '';
-  const folderSelectedInWorkspace = join(rootDirectory);
-  const folderRoot = `${folderSelectedInWorkspace}`;
+  const folderRoot = path;
 
   //#### TODO REFACTORING MAKE EDIT it's own thing right now inside code generation
   if (type === 'Edit' && updates) {
@@ -101,41 +102,48 @@ export const saveFiles = async (
 
     if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
     }
   
     if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
       let template = data.data.generateVsCodeDownloadCodeSub.template;
-      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
     }
   }
   
 };
 
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
-  vsCodeToken: string,
   accessToken: string,
   isProduction: boolean,
   userId: string,
-  orgId: string
+  orgId: string,
+  selectedProjects: ProjectConfig[]
 ) => {
-  const privateDirectories = await getPrivateDirs();
-  console.log("PRIV DIRECTORIES", privateDirectories);
+  for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    // needs to use this path for directories
+    const path = selectedProject.versionControlParams.path;
+    const privateDirectories = path ? await getPrivateDirs(path) : [];
 
-  return updatePrivateDirectoriesRequest({
-    vsCodeToken,
-    accessToken,
-    privateDirectories,
-    isProduction,
-    userId,
-    orgId
-  });
+    const packageJsonParamsStringified = typeof selectedProject.packageJsonParams === 'object' ? JSON.stringify(selectedProject.packageJsonParams) : selectedProject.packageJsonParams;
+    await updatePrivateDirectoriesRequest({
+      vsCodeInstanceId,
+      accessToken,
+      privateDirectories,
+      isProduction,
+      userId,
+      orgId,
+      packageJsonParams: packageJsonParamsStringified
+    });
+  }
 };
 
-const getPrivateDirs = async () => {
-  const workspaceFolders = getWorkspaceFolders();
+const getPrivateDirs = async(fullPath: string) => {
+  const name = path.basename(fullPath);
+  const VsCodeFolder = {path: fullPath, name};
   // uses short code for map
-  let dirs = workspaceFolders?.map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
+  let dirs = [VsCodeFolder].map(getAllDirectoriesFromVsCodeFolder)?.flat() || [];
   if (process.platform === 'win32') {
     dirs = dirs.map((v: string) => v.replace(/\\/g, '/'));
   }
@@ -148,18 +156,13 @@ const getPrivateDirs = async () => {
 
 export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: boolean, cancelAuthProgress?, progress?) => {
   const vsCodeInstanceId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  const userId: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_USER_ID);
-  const accessToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  const refreshToken: string | undefined = context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
+  const userId: string | undefined = context.globalState.get(MEMENTO_RAZROO_USER_ID);
+  const accessToken: string | undefined = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const refreshToken: string | undefined = context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
   if (vsCodeInstanceId && userId && accessToken && refreshToken) {
-    console.log('this is called as inside inside inside');
     return removeVsCodeInstanceMutation(accessToken, userId, vsCodeInstanceId, isProduction)
       .catch((error: any) => console.log('Remove VSCode Instance Error: ', error))
       .finally(() => {
-        context.workspaceState.update(MEMENTO_RAZROO_ID_VS_CODE_TOKEN, null);
-        context.workspaceState.update(MEMENTO_RAZROO_USER_ID, null);
-        context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, null);
-        context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, null);
         if(progress) {
           cancelAuthProgress(progress);
         }    
@@ -172,42 +175,69 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: bo
   }
 };
 
-async function refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction: boolean) {
+async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduction: boolean, projectsProvider, selectedProjects) {
   return auth0Client(isProduction).refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
     if (err) {
-      console.log("err: ", err);
-      return err;
+      vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
     }
 
-    await context.workspaceState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
-    await context.workspaceState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await updatePrivateDirectoriesInVSCodeAuthentication(token, userData.access_token, isProduction, userId, orgId);
-    await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
+    await context.globalState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
+    await context.globalState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
+    await updatePrivateDirectoriesInVSCodeAuthentication(userData.access_token, isProduction, userId, orgId, selectedProjects);
+    await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId });
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
     showInformationMessage('User successfully authenticated with Razroo.');
     return userData;
   });
 };
 
-export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean) => {
-  const accessToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  const refreshToken: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
-  const userId = await context.workspaceState.get(MEMENTO_RAZROO_USER_ID) as string;
-  const orgId = await context.workspaceState.get(MEMENTO_RAZROO_ORG_ID) as string;
-  const token: string | undefined = await context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN);
-  if (accessToken && refreshToken && userId && orgId && token) {
-
+export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[], orgIdParam?: string) => {
+  const accessToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
+  const refreshToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
+  const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const orgId = orgIdParam ? orgIdParam : await context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
+  const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
+  if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
-      await refreshAuth0Token(context, refreshToken, userId, orgId, token, isProduction);
+      await refreshAuth0Token(context, refreshToken, userId, orgId, isProduction, projectsProvider, selectedProjects);
+      await projectsProvider?.view?.webview.postMessage({
+        command: "initAuthData",
+        projectConfigs,
+        selectedProjects,
+        userId,
+        orgId,
+      });
     }
-
     else {
-      await updatePrivateDirectoriesInVSCodeAuthentication(token!, context.workspaceState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId);
-      await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId: token, context, isProduction });
+      if(selectedProjects) {
+        await updatePrivateDirectoriesInVSCodeAuthentication(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId, selectedProjects);
+        await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId});
+      }
       vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-      showInformationMessage('User successfully authenticated with Razroo.');
+      await projectsProvider?.view?.webview.postMessage({
+        command: "initAuthData",
+        projectConfigs,
+        selectedProjects,
+        userId,
+        orgId
+      });
+      showInformationMessage('User successfully connected to Razroo.');
+      const userOrganizations = await getUserOrganizations(userId, isProduction, accessToken)
+      await projectsProvider?.view?.webview.postMessage({
+        command: "setOrganizations",
+        organizations: userOrganizations
+      });
+      
     }
   } else {
-    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+    console.log('else block for orgId is called');
+    await projectsProvider?.view?.webview.postMessage({
+      command: "initAuthData",
+      projectConfigs,
+      selectedProjects,
+      userId,
+      orgId
+    });
+    vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects, projectConfigs, orgId: orgIdParam});
   }
 };

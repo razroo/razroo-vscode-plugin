@@ -1,12 +1,12 @@
 {
   "name": "razroo-vscode-plugin",
   "publisher": "Razroo",
-  "displayName": "razroo-vscode-plugin",
-  "description": "The complementary VSCode plugin for the Razroo application.",
-  "version": "2.3.2",
+  "displayName": "Razroo Codegen",
+  "description": "The Go To Premium Code Generation Tool For Production-Ready Applications",
+  "version": "2.4.7",
   "private": true,
   "engines": {
-    "vscode": "^1.57.0"
+    "vscode": "^1.73.0"
   },
   "icon": "media/razroo-icon.jpg",
   "main": "./dist/extension",
@@ -23,6 +23,9 @@
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
     "build-scaffolds": "ts-node scripts/build-scaffolds.ts",
+    "start:webview": "cd projects-webview-ui && npm run start",
+    "build:webview": "cd projects-webview-ui && npm run build && cd .. && cp -a projects-webview-ui/build/. dist/projects-webview-ui",
+    "build:webview:prod": "cd projects-webview-ui && npm run build --prod && cd .. && cp -a projects-webview-ui/build/. dist/projects-webview-ui",
     "esm": "esm",
     "webpack-watch": "webpack --mode development --watch",
     "package": "webpack --devtool hidden-source-map",
@@ -42,6 +45,10 @@
   ],
   "activationEvents": [
     "onStartupFinished"
+  ],
+  "extensionKind": [
+    "ui",
+    "workspace"
   ],
   "contributes": {
     "commands": [
@@ -222,8 +229,9 @@
     "views": {
       "razroo-bar": [
         {
-          "id": "razroo-authentication",
-          "name": "Authentication"
+          "type": "webview",
+          "id": "razroo.projects",
+          "name": "Razroo Projects"
         }
       ]
     },
@@ -278,7 +286,7 @@
     "@types/parse-git-config": "^3.0.1",
     "@types/request": "^2.48.7",
     "@types/uuid": "^8.3.1",
-    "@types/vscode": "^1.57.0",
+    "@types/vscode": "^1.73.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",
     "@vscode/test-electron": "^2.1.5",
@@ -309,6 +317,7 @@
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@codemorph/core": "^1.1.1",
+    "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
     "auth0": "^2.37.0",
@@ -326,7 +335,7 @@
     "globify-gitignore": "^0.2.1",
     "graphql": "^15.6.0",
     "graphql-tag": "2.11.0",
-    "ignore": "^5.2.0",
+    "ignore": "^5.2.4",
     "isomorphic-fetch": "^3.0.0",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",

@@ -1,0 +1,51 @@
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.App__select-overlay {
+  position: relative;
+}
+
+.App__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.App__dropdown {
+  display: flex;
+  margin-top: 8px;
+  flex-direction: column;
+  background-color: transparent;
+  width: 100%;
+}
+
+.App__button {
+  margin-top: 8px;
+  display: flex;
+  width: 100%;
+}
+
+:host([aria-selected="true"]):not(.App__dropdown-selected) {
+  background: transparent!important;
+  border: none!important;
+  color: transparent!important;
+}
+
+.App__dropdown-selected {
+  width: 100%;
+  background: var(--list-active-selection-background);
+  border: calc(var(--border-width) * 1px) solid var(--focus-border);
+  color: var(--list-active-selection-foreground);
+}
+
+.App__organizations-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+
