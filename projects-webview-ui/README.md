@@ -8,3 +8,10 @@ Types of content that can be contained here:
 - JavaScript files
 - CSS files
 - Assets / resources (i.e. images, illustrations, etc.)
+
+In order to build this project run 
+```
+npm run build:webview
+```
+
+^ from the root of the project
