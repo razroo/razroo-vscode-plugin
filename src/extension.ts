@@ -142,6 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
     COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
     async({selectedProjects, orgId}) => {
       try {
+        context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
       } catch (error) {
         console.log('COMMAND_TRY_TO_AUTH ERROR');
