@@ -57,6 +57,9 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     if(!orgId) {
       return;
     }
+    setTimeout(() => {
+      editor.setDecorations(decorationType, [], editor)
+    }, 5000);
     context.workspaceState.update(VSCODE_ACTIVE_LINE_NUMBER, lineNumber);
     context.workspaceState.update(VSCODE_ACTIVE_COLUMN_NUMBER, codeIndentationColumn);
     
