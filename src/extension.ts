@@ -3,7 +3,7 @@ import AdmZip from 'adm-zip';
 import * as vscode from 'vscode';
 import * as request from 'request';
 import * as http from 'http2';
-import { onVSCodeClose, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils/utils';
+import { onVSCodeClose, tryToAuth } from './utils/utils';
 import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
@@ -11,21 +11,22 @@ import {
   COMMAND_CANCEL_AUTH,
   COMMAND_TRY_TO_AUTH,
   MEMENTO_SELECTED_PROJECTS,
-  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG
+  ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
+  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
-import { determineLanguagesUsed, searchForPackageJson, readPackageJson } from 'package-json-manager';
+import { searchForPackageJson, readPackageJson } from 'package-json-manager';
 import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
 import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
-import { getAllPackageJsons } from './utils/package-json/package-json';
 import { updateVsCode } from './update-vscode/update-vscode';
 import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
 import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
+import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -62,27 +63,24 @@ export async function activate(context: vscode.ExtensionContext) {
   if(workspaceFolders) {
     for(let workspaceFolder of workspaceFolders) {
       const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
+      const packageJsonParams = individualProjectConfig.packageJsonParams;
       const workspaceFolderName = workspaceFolder.name;
       // use workspace folder name, to create state for project config
       // will allow active state for that workspace folder to be pulled up
       // whenever user is inside of that folder
+      await determineLanguagesUsed(packageJsonParams).then(async(languagesUsed) => {
+        languagesUsed.forEach(languageUsed => {
+          vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+        });
+      });
+
       context.workspaceState.update(workspaceFolderName, individualProjectConfig);
       projectConfigs.push(individualProjectConfig);
     }
   }
-  const packageJsonParams = projectConfigs[0]?.packageJsonParams;
-  const packageJsonParamsParsed = typeof packageJsonParams === 'string' ? JSON.parse(packageJsonParams) : packageJsonParams; 
 
-  const packageJsonPath = searchForPackageJson(workspacePath as any);
-  getProjectDependencies(packageJsonPath as any).then((jsonMap)=>{
-    determineLanguagesUsed(jsonMap).then(async (languagesUsed) => {
-      languagesUsed.forEach(languageUsed => {
-        vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
-      });
-    });
-  }).catch((err)=>{
-    console.log(err);
-  });
+  pushScaffoldCommands(context, vscode, isProduction);
+  
   context.subscriptions.push(
     vscode.commands.registerCommand('getContext', () => context)
   );
@@ -105,6 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   }, null, context.subscriptions);
 
+  // event used to determine workspace user is in
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if(editor) {
       const workspaceFolder = vscode.workspace.getWorkspaceFolder(editor.document.uri);
@@ -117,8 +116,6 @@ export async function activate(context: vscode.ExtensionContext) {
   });
 
   const authEventEmitter = new EventEmitter();
-
-  pushScaffoldCommands(context, vscode, isProduction, packageJsonParams);
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
@@ -134,6 +131,18 @@ export async function activate(context: vscode.ExtensionContext) {
     async() => {
       try {
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
+      } catch (error) {
+        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
+    }
+  );
+
+  const connectProjectsTryToAuthCommmand = vscode.commands.registerCommand(
+    COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
+    async({selectedProjects, orgId}) => {
+      try {
+        await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
       } catch (error) {
         console.log('COMMAND_TRY_TO_AUTH ERROR');
         console.error(error);
@@ -160,6 +169,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(tryToAuthCommmand);
+  context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);

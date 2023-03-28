@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { buildPushScaffoldCommandsStatement, buildScaffoldFunctionStatement, createScaffoldCommand, createScaffoldSubmenu } from '../src/utils/scaffold/scaffold';
 import { readFileSync, writeFileSync } from 'fs';
 import { getVersionAndNameString, morphCode } from '@codemorph/core';
+import { camelCase } from 'lodash';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -18,10 +19,11 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const accessToken = process.env.accessToken as string;
 const production = true;
 const packageJson = readFileSync('package.json').toString();
-import { camelCase } from 'lodash';
 const pushCommandScaffoldsTs = '';
 
 getPaths(COMMUNITY, accessToken, production).then(async paths => {
+  console.log('paths');
+  console.log(paths);
   const scaffoldSubmenu = [] as any;
   const scaffoldCommands = [{
     command: "extension.auth0Authentication",
@@ -40,6 +42,9 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
   // wait for all promises to resolve
   const allScaffolds = await Promise.all(getPathScaffoldsPromises);
 
+  console.log('allScaffolds');
+  console.log(allScaffolds);
+
   allScaffolds.forEach(async (scaffolds, index, arr) => {
       scaffolds && await scaffolds.forEach(scaffold => {
         const fullVersionedPathId = scaffold.pathId;
@@ -54,10 +59,10 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
         pushScaffoldCommandsEdits.push({
           nodeType: 'addFunction',
           name: pushScaffoldCommandName,
-          parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}, {name: 'packageJsonParams'}],
+          parameters: [{name: 'vscode'}, {name: 'context'}, {name: 'isProduction'}],
           codeBlock: pushScaffoldFunctionStatement
         });
-        pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction, packageJsonParams)`);
+        pushScafffoldCommands.push(`${pushScaffoldCommandName}(vscode, context, isProduction)`);
       });
   
     if(index === arr.length - 1) {
@@ -73,7 +78,7 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
       nodeType: 'addFunction',
       name: 'pushScaffoldCommands',
       isExported: true,
-      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}, {name: 'packageJsonParams'}],
+      parameters: [{name: 'context'}, {name: 'vscode'}, {name: 'isProduction', type: 'boolean'}],
       codeBlock: builtPushScaffoldCommandsStatement
     });
 

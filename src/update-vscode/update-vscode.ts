@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { setWorkspaceState } from "../utils/state.utils";
 import { createDisposableAuthServer } from "../auth/local";
-import { onVSCodeClose, updatePrivateDirectoriesInVSCodeAuthentication } from "../utils/utils";
+import { updatePrivateDirectoriesInVSCodeAuthentication } from "../utils/utils";
 import { subscribeToGenerateVsCodeDownloadCodeSub } from "../utils/graphql.utils";
 import { getAuth0Url } from '../utils/authentication/authentication';
-import { createVSCodeIdToken, getOrCreateAndUpdateIdToken } from '../utils/token/token';
+import { createVSCodeIdToken } from '../utils/token/token';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 
 
@@ -27,9 +27,15 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
               await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction, selectedProjects });    
             }
           }
+          vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
+          if(projectsProvider) { 
+            await projectsProvider?.view?.webview.postMessage({
+              command: "sendAuthData",
+              userId: userId,
+              orgId: orgId
+            });
+          }
         }
-
-        isInProgress && vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
         // if(vsCodeInstanceId === 'no-git-found') {
         //   showInformationMessage('Please initialize a git repo to get started');
         // }
@@ -39,12 +45,6 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
     } catch (error) {
         vscode.window.showErrorMessage(error as any);
     } finally {
-        if(projectsProvider){ 
-        await projectsProvider?.view?.webview.postMessage({
-          command: "sendAuthData",
-          
-        });
-        }
         disposeServer();
     }
 }
