@@ -56,7 +56,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const showOpenDialog = vscode.window.showOpenDialog;
   
   const workspaceFolders = getWorkspaceFolders();
-  const workspacePath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
   
   const isProduction = isProductionFunc(context);
   let projectConfigs: ProjectConfig[] = [];
@@ -174,6 +173,12 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);
+
+  // execute command for tryToAuth to re-connect previously connected projects
+  const selectedProjects = context.workspaceState.get(MEMENTO_SELECTED_PROJECTS);
+  if(selectedProjects) {
+    vscode.commands.executeCommand(COMMAND_TRY_TO_AUTH);
+  }
 
   const getGenerateCode = vscode.commands.registerCommand(
     'extension.getGenerateCode',
