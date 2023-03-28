@@ -68,8 +68,8 @@ export const saveFiles = async (
   }
   for await (const zipEntry of zipEntries) {
     const parametersParsed = JSON.parse(parameters);
-    const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName));
-    const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
+    const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName, true));
+    const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name, true);
 
     if (extname(fileName) === ".sh") {
       const commandToExecute = zipEntry.getData().toString("utf8");
