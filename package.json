@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "Razroo Codegen",
   "description": "The Go To Premium Code Generation Tool For Production-Ready Applications",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "private": true,
   "engines": {
     "vscode": "^1.73.0"
@@ -316,7 +316,7 @@
   },
   "dependencies": {
     "@babel/plugin-transform-runtime": "^7.16.8",
-    "@codemorph/core": "^1.1.4",
+    "@codemorph/core": "^1.1.5",
     "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
