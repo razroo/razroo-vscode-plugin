@@ -7,7 +7,8 @@ import {
   removeVsCodeInstanceMutation,
   subscribeToGenerateVsCodeDownloadCodeSub,
   updatePrivateDirectoriesRequest,
-  auth0Client
+  auth0Client,
+  setCommandStatus
 } from './graphql.utils';
 import {
   getFileS3,
@@ -72,6 +73,7 @@ export const saveFiles = async (
     const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
 
     if (extname(fileName) === ".sh") {
+      setCommandStatus(false);
       const commandToExecute = zipEntry.getData().toString("utf8");
       await runRazrooCommand(commandToExecute, parametersParsed,isProduction, template);
     }

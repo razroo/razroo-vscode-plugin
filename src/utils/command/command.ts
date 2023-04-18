@@ -1,3 +1,4 @@
+import { setCommandStatus } from '../../utils/graphql.utils';
 import { DEV_APP_URL, PROD_APP_URL } from '../../constants';
 import * as vscode from 'vscode';
 
@@ -45,6 +46,7 @@ async function executeCommandTask(task: vscode.Task, parametersParsed: any,isPro
     return new Promise<void>(resolve => {
         let disposable = vscode.tasks.onDidEndTask(async (e) => {
             if (e.execution === execution) {
+                setCommandStatus(true);
                 vscode.window.showInformationMessage(`Command has run successfully.`);
                 if(containsInfrastructureCommandPath(parametersParsed)) {
                   await openWorkspaceInNewCodeEditor(parametersParsed.fileName, parametersParsed.infrastructureCommandPath);

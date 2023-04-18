@@ -14,6 +14,15 @@ import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
 import { determineLanguagesWithVersionUsed } from 'package-json-manager';
+let commandIsCalled = true;
+
+export function setCommandStatus(commandStatus: boolean) {
+  commandIsCalled = commandStatus
+}
+
+export function getCommandStatus() {
+  commandIsCalled;
+}
 
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   context, 
@@ -65,16 +74,29 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
         `)
       });
 
-      const realtimeResults = async function realtimeResults(data: any) {
-        // Save the files in a new folder
-        const path = selectedProject.versionControlParams.path;
-        await saveFiles(data, context, isProduction, path);
-        await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
-      };
-
       const error = async function error(data: any) {
         //Save the files in a new folder
         await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, selectedProjects);
+      };
+
+      const realtimeResults = async function realtimeResults(data: any) {
+        // if a command is running, wait for it to complete until proceeding
+        await waitForCommand().then(async () => {
+          const path = selectedProject.versionControlParams.path;
+          await saveFiles(data, context, isProduction, path);
+          await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
+        });
+      };
+
+      const waitForCommand = async function waitForCommand() {
+        return new Promise<void>((resolve) => {
+          const intervalId = setInterval(() => {
+            if(commandIsCalled) {
+              clearInterval(intervalId);
+              resolve();
+            }
+          }, 1000);
+        });
       };
 
       generateVsCodeDownloadCodeSub$.subscribe({
