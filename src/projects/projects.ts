@@ -1,7 +1,7 @@
 import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
 import { getNonce } from '../utils/webview-utils/getNonce';
-import { COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, COMMAND_TRY_TO_AUTH } from '../constants';
+import { COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, COMMAND_TRY_TO_AUTH, COMMAND_LOG_OUT_USER } from '../constants';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
@@ -88,7 +88,10 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
             return;  
           case "unConnectProject":
             vscode.commands.executeCommand('extension.logout');
-            return;    
+            return; 
+          case "logoutUser":
+            vscode.commands.executeCommand(COMMAND_LOG_OUT_USER);
+            return;      
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
         }

@@ -12,7 +12,8 @@ import {
   COMMAND_TRY_TO_AUTH,
   MEMENTO_SELECTED_PROJECTS,
   ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
-  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH
+  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
+  COMMAND_LOG_OUT_USER
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -168,11 +169,19 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const logoutUser = vscode.commands.registerCommand(
+    COMMAND_LOG_OUT_USER,
+    () => {
+      console.log('log out user called');
+    }
+  );
+
   context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);
+  context.subscriptions.push(logoutUser);
 
   // execute command for tryToAuth to re-connect previously connected projects
   const selectedProjects = context.workspaceState.get(MEMENTO_SELECTED_PROJECTS);
