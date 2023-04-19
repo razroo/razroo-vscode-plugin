@@ -28,6 +28,9 @@ import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
 import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
+import { auth0Client } from './utils/graphql.utils';
+import { getAuth0LogoutUrl } from './utils/authentication/authentication';
+import { resetWorkspaceState } from './utils/state.utils';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -171,8 +174,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const logoutUser = vscode.commands.registerCommand(
     COMMAND_LOG_OUT_USER,
-    () => {
-      console.log('log out user called');
+    async () => {
+      const logoutUrl = getAuth0LogoutUrl(isProduction);
+      await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(logoutUrl));
+      resetWorkspaceState(context);
     }
   );
 
