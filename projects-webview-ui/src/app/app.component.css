@@ -53,6 +53,10 @@ main {
   margin-bottom: 16px;
 }
 
+.App__logout-text {
+  padding-right: 16px;
+}
+
 .App__user-logout-button {
   margin-left: auto;
 }
