@@ -12,7 +12,8 @@ import {
   COMMAND_TRY_TO_AUTH,
   MEMENTO_SELECTED_PROJECTS,
   ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
-  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH
+  COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
+  COMMAND_LOG_OUT_USER
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -27,6 +28,9 @@ import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
 import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
+import { auth0Client } from './utils/graphql.utils';
+import { getAuth0LogoutUrl } from './utils/authentication/authentication';
+import { resetWorkspaceState } from './utils/state.utils';
 const path = require('path');
 
 // function to determine if production environment or not
@@ -168,11 +172,21 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const logoutUser = vscode.commands.registerCommand(
+    COMMAND_LOG_OUT_USER,
+    async () => {
+      const logoutUrl = getAuth0LogoutUrl(isProduction);
+      await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(logoutUrl));
+      resetWorkspaceState(context);
+    }
+  );
+
   context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);
+  context.subscriptions.push(logoutUser);
 
   // execute command for tryToAuth to re-connect previously connected projects
   const selectedProjects = context.workspaceState.get(MEMENTO_SELECTED_PROJECTS);

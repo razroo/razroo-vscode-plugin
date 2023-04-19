@@ -111,4 +111,12 @@ export class AppComponent implements OnInit {
   changeOrgDropdownValue($event: any) {
     this.tempOrgId = $event.target.value;
   }
+
+  logout() {
+    vscode.postMessage({
+      command: "logoutUser",
+      description: 'log out of user so can log in with another user'
+    });
+    console.log('logout user');
+  }
 }
