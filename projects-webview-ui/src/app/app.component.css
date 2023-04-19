@@ -1,7 +1,6 @@
 main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: flex-start;
   height: 100%;
 }
@@ -46,6 +45,15 @@ main {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.App__user-login-container {
+  margin-top: auto;
+  display: flex;
+}
+
+.App__user-logout-button {
+  margin-left: auto;
 }
 
 

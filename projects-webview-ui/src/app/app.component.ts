@@ -111,4 +111,8 @@ export class AppComponent implements OnInit {
   changeOrgDropdownValue($event: any) {
     this.tempOrgId = $event.target.value;
   }
+
+  logout() {
+    console.log('logout user');
+  }
 }
