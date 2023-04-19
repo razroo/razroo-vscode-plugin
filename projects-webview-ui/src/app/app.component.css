@@ -50,6 +50,7 @@ main {
 .App__user-login-container {
   margin-top: auto;
   display: flex;
+  margin-bottom: 16px;
 }
 
 .App__user-logout-button {
