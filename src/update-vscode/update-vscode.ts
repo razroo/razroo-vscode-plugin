@@ -21,6 +21,7 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
         setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
         if(isInProgress) {
           if(selectedProjects) {
+            console.log('selected projects called');
             for(let selectedProject of selectedProjects) {
               const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
               await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, selectedProjects);

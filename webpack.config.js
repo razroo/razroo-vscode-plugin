@@ -11,13 +11,13 @@ const path = require('path');
 const merge = require('merge-options');
 const webpack = require('webpack');
 const { emitWarning } = require('process');
+const { NormalModuleReplacementPlugin } = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
 module.exports =  function withDefaults(extConfig) {
     const defaultConfig = {
         mode: 'none',
-        target: 'webworker', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
-        externalsPresets: { node: true },
+        target: 'node', // vscode extensions run in webworker context for VS Code web 📖 -> https://webpack.js.org/configuration/target/#target
         entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
         output: { // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
             path: path.resolve(__dirname, 'dist'),
@@ -25,7 +25,7 @@ module.exports =  function withDefaults(extConfig) {
             libraryTarget: "commonjs2",
             devtoolModuleFilenameTemplate: '../[resource-path]'
         },
-        devtool: 'source-map',
+        devtool: 'inline-source-map',
         node: {
           __dirname: false, // leave the __dirname behavior intact
         },
@@ -48,15 +48,6 @@ module.exports =  function withDefaults(extConfig) {
         module: {
             rules: [
                 {
-                    test: /\.m?js/,
-                    exclude: [
-                      /node_modules\/(?!graphql).*/
-                    ],
-                    resolve: {
-                        fullySpecified: false
-                    }
-                  },
-                {
                     test: /\.ts$/,
                     exclude: /node_modules/,
                     use: [{
@@ -78,6 +69,7 @@ module.exports =  function withDefaults(extConfig) {
                 process: 'process/browser', // provide a shim for the global `process` variable
                 window: 'global/window',
             }),
+            new NormalModuleReplacementPlugin(/^hexoid$/, require.resolve('hexoid/dist/index.js')),
         ],
     };
 
