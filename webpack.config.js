@@ -11,7 +11,6 @@ const path = require('path');
 const merge = require('merge-options');
 const webpack = require('webpack');
 const { emitWarning } = require('process');
-const { NormalModuleReplacementPlugin } = require('webpack');
 
 /**@type {import('webpack').Configuration}*/
 module.exports =  function withDefaults(extConfig) {
@@ -38,6 +37,9 @@ module.exports =  function withDefaults(extConfig) {
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
             preferRelative: true,
             extensions: ['.js', '.ts'],
+            alias: {
+              hexoid: 'hexoid/dist/index.js'
+            },
             fallback: {
               path: require.resolve('path-browserify'),
               // Webpack 5 no longer polyfills Node.js core modules automatically.
@@ -68,8 +70,7 @@ module.exports =  function withDefaults(extConfig) {
             new webpack.ProvidePlugin({
                 process: 'process/browser', // provide a shim for the global `process` variable
                 window: 'global/window',
-            }),
-            new NormalModuleReplacementPlugin(/^hexoid$/, require.resolve('hexoid/dist/index.js')),
+            })
         ],
     };
 
