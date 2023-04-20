@@ -17,7 +17,7 @@ export function isEmptyWorkspace(): boolean {
 }
 
 const readGitIgnoreFile = async (dir = '') => {
-  const gitignorePath = path.join(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any + '/' + dir, '.gitignore');
+  const gitignorePath = vscode.workspace.workspaceFolders ? path.join(vscode.workspace.workspaceFolders[0].uri.fsPath as any + '/' + dir, '.gitignore') : '';
   try {
     const gitignoreContent = fs.readFileSync(gitignorePath, 'utf-8');
     return {

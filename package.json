@@ -345,7 +345,6 @@
     "package-json-manager": "^1.1.1",
     "parse-git-config": "^3.0.0",
     "parse-gitignore": "^2.0.0",
-    "path": "^0.12.7",
     "request": "^2.88.2",
     "resolve": "^1.21.0",
     "subscriptions-transport-ws": "^0.11.0",
