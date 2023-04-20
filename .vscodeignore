@@ -3,3 +3,7 @@ src/**
 package-json.lock
 tsconfig.json
 webpack.config.js
+.git/
+node_modules/
+.github/
+.gitignore
