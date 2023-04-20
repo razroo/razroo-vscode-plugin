@@ -10,8 +10,6 @@
 const path = require('path');
 const merge = require('merge-options');
 const webpack = require('webpack');
-const ResolveTypeScriptPlugin = require("resolve-typescript-plugin");
-const nodeExternals = require('webpack-node-externals');
 const { emitWarning } = require('process');
 
 /**@type {import('webpack').Configuration}*/
@@ -29,7 +27,6 @@ module.exports =  function withDefaults(extConfig) {
         },
         devtool: 'cheap-source-map',
         externals: [
-            nodeExternals({}),
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
             {bufferutil: "bufferutil", prettier: "prettier", axios: "axios"},
@@ -37,12 +34,7 @@ module.exports =  function withDefaults(extConfig) {
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
             preferRelative: true,
-            extensions: ['.js', '.ts', '.json'],
-            plugins: [
-                new ResolveTypeScriptPlugin({
-                    includeNodeModules: false
-                })
-            ]
+            extensions: ['.js', '.ts'],
         },
         module: {
             rules: [
@@ -75,17 +67,6 @@ module.exports =  function withDefaults(extConfig) {
                         }
                     }]
                 },
-                {
-                    test: /\.m?js/,
-                    use: {
-                      loader: 'babel-loader',
-                      options: {
-                        presets: ['@babel/preset-env'],
-                        plugins: ['@babel/plugin-transform-runtime'],
-                        sourceType: "unambiguous",
-                      },
-                    }
-                  },
         ]
         },
         performance: {
