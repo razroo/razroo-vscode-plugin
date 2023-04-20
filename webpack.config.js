@@ -25,7 +25,10 @@ module.exports =  function withDefaults(extConfig) {
             libraryTarget: "commonjs2",
             devtoolModuleFilenameTemplate: '../[resource-path]'
         },
-        devtool: 'cheap-source-map',
+        devtool: 'source-map',
+        node: {
+          __dirname: false, // leave the __dirname behavior intact
+        },
         externals: [
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
@@ -35,17 +38,15 @@ module.exports =  function withDefaults(extConfig) {
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
             preferRelative: true,
             extensions: ['.js', '.ts'],
+            fallback: {
+            path: require.resolve('path-browserify'),
+              // Webpack 5 no longer polyfills Node.js core modules automatically.
+              // see https://webpack.js.org/configuration/resolve/#resolvefallback
+              // for the list of Node.js core module polyfills.
+            }
         },
         module: {
             rules: [
-                {
-                    test: /\.node/,
-                    use: [
-                      {
-                        loader: 'url-loader'
-                      }
-                    ]
-                },
                 {
                     test: /\.m?js/,
                     exclude: [
