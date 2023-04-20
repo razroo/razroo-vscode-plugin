@@ -4,6 +4,8 @@
 
 (global as any).WebSocket = require('ws');
 // require('es6-promise').polyfill();
+// commented out isomorphic fetch 
+// https://github.com/matthew-andrews/isomorphic-fetch/issues/125
 // require('isomorphic-fetch');
 
 // Require exports file with endpoint and auth info
