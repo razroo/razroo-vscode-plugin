@@ -17,9 +17,6 @@ import {
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
-import { searchForPackageJson, readPackageJson } from 'package-json-manager';
-import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
-import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
