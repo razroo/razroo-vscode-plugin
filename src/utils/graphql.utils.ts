@@ -1,23 +1,18 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import getBranch from 'git-branch';
 import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import axios from 'axios';
-import { getProjectDependencies, readPackageJson } from '@codemorph/core';
 import * as vscode from 'vscode';
-import { join } from 'path';
-import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
-import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 let commandIsCalled = true;
 
 export function setCommandStatus(commandStatus: boolean) {
-  commandIsCalled = commandStatus
+  commandIsCalled = commandStatus;
 }
 
 export function getCommandStatus() {
@@ -140,28 +135,13 @@ async function generateVsCodeDownloadCodeSubError(data: any, context, isProducti
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
-  const gitBranch = await getBranch(workspacePath);
+  // TODO - Re add this functionality when working as expected
+  // const gitBranch = await getBranch(workspacePath);
 
   return {
     gitOrigin,
-    gitBranch,
+    gitBranch: '',
   };
-}
-
-export async function getPackageJson(workspacePath: string) {
-  const packageJsonFilePath = join(workspacePath, 'package.json');
-  const packageJson = await readPackageJson(packageJsonFilePath);
-  const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
-  const transformedProjectDependencies = await determineLanguagesWithVersionUsed(projectDependenciesMap);
-  const nx = await readNxJson(workspacePath);
-
-  const newlyTransformedJson = {
-    name: packageJson ? packageJson.name : '',
-    version: packageJson ? packageJson.version : '0.0.0',
-    languages: transformedProjectDependencies,
-    nx: nx
-  };
-  return JSON.stringify(newlyTransformedJson);
 }
 
 export const updatePrivateDirectoriesRequest = async ({

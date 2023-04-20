@@ -2,18 +2,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ignore from 'ignore';
 import parseGitConfig from 'parse-git-config';
-import getBranch from 'git-branch';
+// import getBranch from 'git-branch';
 import { ProjectConfig } from './interfaces/project-config.interfaces';
 import { combinePackageJsons, PackageJson } from '../utils/package-json/package-json';
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
-  const gitBranch = await getBranch(workspacePath);
+  // const gitBranch = await getBranch(workspacePath);
   const path = workspacePath;
 
   return {
     gitOrigin,
-    gitBranch,
+    gitBranch: '',
     path
   };
 }

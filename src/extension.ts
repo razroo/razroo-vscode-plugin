@@ -17,9 +17,6 @@ import {
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
-import { searchForPackageJson, readPackageJson } from 'package-json-manager';
-import { PackageJson, PackageTreeNode } from 'package-json-manager/dist/core/package-json';
-import { dirname } from 'path';
 import { logCursorPosition } from './snippets/log-position';
 import {debounce} from 'lodash';
 import { ProjectsWebview } from './projects/projects';
@@ -305,36 +302,3 @@ export async function deactivate() {
   vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
   await onVSCodeClose(context, isProduction);
 };
-
-async function getProjectDependencies(dir: string): Promise<Map<string, PackageTreeNode>> {
-  const pkg = await readPackageJson(path.join(dir, 'package.json'));
-  if (!pkg) {
-    throw new Error('Could not find package.json');
-  }
-
-  const results = new Map<string, PackageTreeNode>();
-  for (const [name, version] of getAllDependencies(pkg)) {
-    const packageJsonPath = searchForPackageJson(dir);
-    if (!packageJsonPath) {
-      continue;
-    }
-
-    results.set(name, {
-      name,
-      version,
-      path: dirname(packageJsonPath),
-      package: await readPackageJson(packageJsonPath),
-    });
-  }
-
-  return results;
-}
-
-function getAllDependencies(pkg: PackageJson): Set<[string, string]> {
-  return new Set([
-    ...Object.entries(pkg.dependencies || []),
-    ...Object.entries(pkg.devDependencies || []),
-    ...Object.entries(pkg.peerDependencies || []),
-    ...Object.entries(pkg.optionalDependencies || []),
-  ]);
-}
