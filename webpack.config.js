@@ -75,6 +75,7 @@ module.exports =  function withDefaults(extConfig) {
         plugins: [
             new webpack.ProvidePlugin({
                 process: 'process/browser', // provide a shim for the global `process` variable
+                window: 'global/window',
             }),
         ],
     };
