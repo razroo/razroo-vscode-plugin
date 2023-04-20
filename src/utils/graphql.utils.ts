@@ -1,6 +1,5 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import getBranch from 'git-branch';
 import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
@@ -17,7 +16,7 @@ import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 let commandIsCalled = true;
 
 export function setCommandStatus(commandStatus: boolean) {
-  commandIsCalled = commandStatus
+  commandIsCalled = commandStatus;
 }
 
 export function getCommandStatus() {
@@ -140,11 +139,12 @@ async function generateVsCodeDownloadCodeSubError(data: any, context, isProducti
 
 export async function getVersionControlParams(workspacePath: string) {
   const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
-  const gitBranch = await getBranch(workspacePath);
+  // TODO - Re add this functionality when working as expected
+  // const gitBranch = await getBranch(workspacePath);
 
   return {
     gitOrigin,
-    gitBranch,
+    gitBranch: '',
   };
 }
 
