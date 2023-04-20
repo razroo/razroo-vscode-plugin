@@ -321,7 +321,7 @@
     "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.5",
-    "auth0": "^2.37.0",
+    "auth0": "^3.3.0",
     "aws-appsync": "^4.1.9",
     "aws-appsync-subscription-link": "^3.1.2",
     "aws-sdk": "^2.1362.0",
@@ -354,5 +354,17 @@
     "superagent-proxy": "^3.0.0",
     "uuid": "^9.0.0",
     "ws": "^8.2.0"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "fs.realpath": false,
+    "mkdirp": false,
+    "dir-glob": false,
+    "graceful-fs": false,
+    "fast-glob": false,
+    "source-map-support": false,
+    "glob-parent": false,
+    "glob": false
   }
 }
