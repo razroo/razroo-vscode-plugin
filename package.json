@@ -342,7 +342,7 @@
     "lodash": "^4.17.21",
     "merge-options": "^3.0.4",
     "open": "^8.2.1",
-    "package-json-manager": "^1.1.1",
+    "package-json-manager": "^1.1.6",
     "parse-git-config": "^3.0.0",
     "parse-gitignore": "^2.0.0",
     "request": "^2.88.2",
