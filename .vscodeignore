@@ -3,4 +3,5 @@ src/**
 package-json.lock
 tsconfig.json
 webpack.config.js
-node_modules/
+node_modules
+.git
