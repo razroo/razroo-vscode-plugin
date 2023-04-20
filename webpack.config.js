@@ -39,7 +39,7 @@ module.exports =  function withDefaults(extConfig) {
             preferRelative: true,
             extensions: ['.js', '.ts'],
             fallback: {
-            path: require.resolve('path-browserify'),
+              path: require.resolve('path-browserify'),
               // Webpack 5 no longer polyfills Node.js core modules automatically.
               // see https://webpack.js.org/configuration/resolve/#resolvefallback
               // for the list of Node.js core module polyfills.

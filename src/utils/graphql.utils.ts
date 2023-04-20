@@ -5,14 +5,10 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import axios from 'axios';
-import { getProjectDependencies, readPackageJson } from '@codemorph/core';
 import * as vscode from 'vscode';
-import { join } from 'path';
-import { readNxJson } from './nx.utils';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
-import { determineLanguagesWithVersionUsed } from 'package-json-manager';
 let commandIsCalled = true;
 
 export function setCommandStatus(commandStatus: boolean) {
@@ -146,22 +142,6 @@ export async function getVersionControlParams(workspacePath: string) {
     gitOrigin,
     gitBranch: '',
   };
-}
-
-export async function getPackageJson(workspacePath: string) {
-  const packageJsonFilePath = join(workspacePath, 'package.json');
-  const packageJson = await readPackageJson(packageJsonFilePath);
-  const projectDependenciesMap = await getProjectDependencies(vscode.workspace.workspaceFolders?.[0].uri.fsPath as any);
-  const transformedProjectDependencies = await determineLanguagesWithVersionUsed(projectDependenciesMap);
-  const nx = await readNxJson(workspacePath);
-
-  const newlyTransformedJson = {
-    name: packageJson ? packageJson.name : '',
-    version: packageJson ? packageJson.version : '0.0.0',
-    languages: transformedProjectDependencies,
-    nx: nx
-  };
-  return JSON.stringify(newlyTransformedJson);
 }
 
 export const updatePrivateDirectoriesRequest = async ({
