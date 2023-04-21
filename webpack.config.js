@@ -64,7 +64,7 @@ module.exports =  function withDefaults(extConfig) {
         ]
         },
         performance: {
-            hints: "warning",
+          hints: "warning",
         },
         plugins: [
             new webpack.ProvidePlugin({
