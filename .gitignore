@@ -5,7 +5,6 @@ node_modules
 out
 *.vsix
 dist
-yarn.lock
 .env
 package-lock.json
 .DS_Store

@@ -31,7 +31,6 @@ module.exports =  function withDefaults(extConfig) {
         externals: [
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-            {axios: "axios"},
         ],
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
@@ -64,12 +63,7 @@ module.exports =  function withDefaults(extConfig) {
                     test: /\.ts$/,
                     exclude: /node_modules/,
                     use: [{
-                        loader: 'ts-loader',
-                        options: {
-                            compilerOptions: {
-                                "module": "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-                            }
-                        }
+                        loader: 'ts-loader'
                     }]
                 },
         ]
@@ -78,14 +72,10 @@ module.exports =  function withDefaults(extConfig) {
           hints: "warning",
         },
         plugins: [
-            new webpack.ProvidePlugin({
-                process: 'process/browser', // provide a shim for the global `process` variable
-                window: 'global/window',
-            }),
-            new webpack.IgnorePlugin({
-              resourceRegExp: /original-fs/,
-              contextRegExp: /adm-zip/,
-            }),
+          new webpack.IgnorePlugin({
+            resourceRegExp: /original-fs/,
+            contextRegExp: /adm-zip/,
+          }),
         ],
     };
 

@@ -1,9 +1,9 @@
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 import { GetPathScaffolds } from './scaffold.queries';
 
 export const getPathScaffolds = async (
-    pathOrgId: string,
+    pathOrgId: string, 
     pathId: string,
     accessToken: string,
     isProduction: boolean

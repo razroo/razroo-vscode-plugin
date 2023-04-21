@@ -1,5 +1,6 @@
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
+
 import { GetUserOrganizations } from './organizations.queries';
 
 export const getUserOrganizations = async (
