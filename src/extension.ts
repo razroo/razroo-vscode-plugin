@@ -1,4 +1,4 @@
-import AdmZip from 'adm-zip';
+import AdmZip from "adm-zip";
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
 import * as request from 'request';
@@ -25,10 +25,8 @@ import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
 import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
-import { auth0Client } from './utils/graphql.utils';
 import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
-const path = require('path');
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {

@@ -70,7 +70,11 @@ module.exports =  function withDefaults(extConfig) {
             new webpack.ProvidePlugin({
                 process: 'process/browser', // provide a shim for the global `process` variable
                 window: 'global/window',
-            })
+            }),
+            new webpack.IgnorePlugin({
+              resourceRegExp: /original-fs/,
+              contextRegExp: /adm-zip/,
+            }),
         ],
     };
 

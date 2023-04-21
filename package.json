@@ -316,6 +316,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-appsync": "^3.316.0",
+    "@aws-sdk/signature-v4-crt": "^3.310.0",
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@codemorph/core": "^1.2.1",
     "@types/git-branch": "^2.0.2",
