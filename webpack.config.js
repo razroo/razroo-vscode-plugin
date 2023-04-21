@@ -32,7 +32,6 @@ module.exports =  function withDefaults(extConfig) {
         externals: [
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-            {'@nodelib/fs.scandir': 'commonjs @nodelib/fs.scandir'}
         ],
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
@@ -41,7 +40,8 @@ module.exports =  function withDefaults(extConfig) {
             alias: {
               hexoid: 'hexoid/dist/index.js',
               semver: path.resolve(__dirname, "node_modules/semver"),
-              optimism: path.resolve(__dirname, "node_modules/optimism")
+              optimism: path.resolve(__dirname, "node_modules/optimism"),
+              '@nodelib/fs.scandir': path.resolve(__dirname, "node_modules/@nodelib/fs.scandir")
             },
             fallback: {
               path: require.resolve('path-browserify'),
