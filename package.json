@@ -313,6 +313,7 @@
     "@aws-sdk/signature-v4-crt": "^3.310.0",
     "@babel/plugin-transform-runtime": "^7.16.8",
     "@codemorph/core": "^1.2.1",
+    "@nodelib/fs.scandir": "^2.1.5",
     "@types/axios": "^0.14.0",
     "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
