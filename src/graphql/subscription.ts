@@ -2,10 +2,7 @@
  * This shows how to use standard Apollo client on Node.js
  */
 (global as any).WebSocket = require('ws');
-require('es6-promise').polyfill();
 // https://github.com/matthew-andrews/isomorphic-fetch/issues/125
-require('cross-fetch');
-
 // Require exports file with endpoint and auth info
 import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants';
 

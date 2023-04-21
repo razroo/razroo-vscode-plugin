@@ -27,10 +27,12 @@ module.exports =  function withDefaults(extConfig) {
         devtool: 'inline-source-map',
         node: {
           __dirname: false, // leave the __dirname behavior intact
+          global: true,
         },
         externals: [
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+            {'@nodelib/fs.scandir': 'commonjs @nodelib/fs.scandir'}
         ],
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
@@ -38,7 +40,8 @@ module.exports =  function withDefaults(extConfig) {
             extensions: ['.js', '.ts'],
             alias: {
               hexoid: 'hexoid/dist/index.js',
-              semver: path.resolve(__dirname, "node_modules/semver")
+              semver: path.resolve(__dirname, "node_modules/semver"),
+              optimism: path.resolve(__dirname, "node_modules/optimism")
             },
             fallback: {
               path: require.resolve('path-browserify'),
@@ -66,12 +69,16 @@ module.exports =  function withDefaults(extConfig) {
                         loader: 'ts-loader'
                     }]
                 },
-        ]
+          ]
         },
         performance: {
           hints: "warning",
         },
         plugins: [
+          new webpack.ProvidePlugin({
+            window: 'global/window',
+            fetch: 'node-fetch'
+          }),
           new webpack.IgnorePlugin({
             resourceRegExp: /original-fs/,
             contextRegExp: /adm-zip/,
