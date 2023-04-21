@@ -38,7 +38,8 @@ module.exports =  function withDefaults(extConfig) {
             preferRelative: true,
             extensions: ['.js', '.ts'],
             alias: {
-              hexoid: 'hexoid/dist/index.js'
+              hexoid: 'hexoid/dist/index.js',
+              semver: path.resolve(__dirname, "node_modules/semver")
             },
             fallback: {
               path: require.resolve('path-browserify'),
