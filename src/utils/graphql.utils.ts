@@ -4,11 +4,11 @@ import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
-import axios from 'axios';
 import * as vscode from 'vscode';
 import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
+import axios from 'axios';
 let commandIsCalled = true;
 
 export function setCommandStatus(commandStatus: boolean) {

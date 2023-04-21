@@ -42,6 +42,16 @@ module.exports =  function withDefaults(extConfig) {
             },
             fallback: {
               path: require.resolve('path-browserify'),
+              fs: false,
+              os: false,
+              "fs.realpath": false,
+              mkdirp: false,
+              "dir-glob": false,
+              "graceful-fs": false,
+              "fast-glob": false,
+              "source-map-support": false,
+              "glob-parent": false,
+              glob: false
               // Webpack 5 no longer polyfills Node.js core modules automatically.
               // see https://webpack.js.org/configuration/resolve/#resolvefallback
               // for the list of Node.js core module polyfills.
@@ -53,12 +63,7 @@ module.exports =  function withDefaults(extConfig) {
                     test: /\.ts$/,
                     exclude: /node_modules/,
                     use: [{
-                        loader: 'ts-loader',
-                        options: {
-                            compilerOptions: {
-                                "module": "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-                            }
-                        }
+                        loader: 'ts-loader'
                     }]
                 },
         ]
@@ -67,14 +72,10 @@ module.exports =  function withDefaults(extConfig) {
           hints: "warning",
         },
         plugins: [
-            new webpack.ProvidePlugin({
-                process: 'process/browser', // provide a shim for the global `process` variable
-                window: 'global/window',
-            }),
-            new webpack.IgnorePlugin({
-              resourceRegExp: /original-fs/,
-              contextRegExp: /adm-zip/,
-            }),
+          new webpack.IgnorePlugin({
+            resourceRegExp: /original-fs/,
+            contextRegExp: /adm-zip/,
+          }),
         ],
     };
 
