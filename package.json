@@ -317,6 +317,7 @@
     "@types/git-branch": "^2.0.2",
     "@types/jsonwebtoken": "^8.5.5",
     "adm-zip": "^0.5.10",
+    "apollo-cache-inmemory": "^1.6.6",
     "auth0": "^3.3.0",
     "aws-appsync": "^4.1.9",
     "aws-appsync-subscription-link": "^3.1.2",
@@ -340,8 +341,8 @@
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "merge-options": "^3.0.4",
+    "node-fetch": "^3.3.1",
     "open": "^8.2.1",
-    "optimism": "^0.16.2",
     "package-json-manager": "^1.1.6",
     "parse-git-config": "^3.0.0",
     "parse-gitignore": "^2.0.0",
@@ -352,17 +353,5 @@
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.0",
     "ws": "^8.2.0"
-  },
-  "browser": {
-    "fs": false,
-    "os": false,
-    "fs.realpath": false,
-    "mkdirp": false,
-    "dir-glob": false,
-    "graceful-fs": false,
-    "fast-glob": false,
-    "source-map-support": false,
-    "glob-parent": false,
-    "glob": false
   }
 }
