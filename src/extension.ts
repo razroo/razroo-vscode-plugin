@@ -1,13 +1,8 @@
-import AdmZip from "adm-zip";
 // The module 'vscode' contains the VS Code extensibility API
 import * as vscode from 'vscode';
-import * as request from 'request';
-import * as http from 'http2';
 import { onVSCodeClose, tryToAuth } from './utils/utils';
-import { URL_PROD_GRAPHQL, URL_GRAPHQL } from './graphql/awsConstants';
 import {
   COMMAND_AUTH0_AUTH,
-  MEMENTO_RAZROO_ACCESS_TOKEN,
   COMMAND_CANCEL_AUTH,
   COMMAND_TRY_TO_AUTH,
   MEMENTO_SELECTED_PROJECTS,
@@ -188,107 +183,6 @@ export async function activate(context: vscode.ExtensionContext) {
   if(selectedProjects) {
     vscode.commands.executeCommand(COMMAND_TRY_TO_AUTH);
   }
-
-  const getGenerateCode = vscode.commands.registerCommand(
-    'extension.getGenerateCode',
-    async () => {
-      // get token
-      const token = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-      if (!token) {
-        console.error('Token is null');
-        showErrorMessage('Session has expired. Please login again.');
-        vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
-        return;
-      }
-      // generate prompt
-      const templateId = await vscode.window.showInputBox({
-        title: 'Your templateId',
-        placeHolder: 'Your templateId',
-        prompt: 'Please type in the templateId',
-      });
-      console.log('templateId: ' + templateId);
-
-      const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
-      const body = {
-        query: `query generateCode{\r\n      generateCode(generateCodeParameters: {templateId: \"${templateId}\"}) {\r\n    template {\r\n      author\r\n      description\r\n      id\r\n      lastUpdated\r\n      name\r\n      parameters\r\n      stepper\r\n      type\r\n    }\r\n    downloadUrl\r\n    parameters\r\n  }\r\n}`,
-        variables: {},
-      };
-      request.post(
-        {
-          url,
-          body: JSON.stringify(body),
-          headers: {
-            Authorization: token,
-            'Content-Type': 'application/json',
-          },
-          gzip: true,
-        },
-        async (error, response, body) => {
-          // console.log("error: ",error);
-          if (
-            response.statusCode === http.constants.HTTP_STATUS_FORBIDDEN ||
-            response.statusCode === http.constants.HTTP_STATUS_UNAUTHORIZED
-          ) {
-            showErrorMessage('Session has expired. Please login again.');
-            vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
-            return;
-          }
-          if (error) {
-            await showErrorMessage(
-              'Something went wrong. Please contact support.'
-            );
-            return;
-          }
-
-          const bodyObject = JSON.parse(body);
-
-          request.get(
-            { url: bodyObject.data.generateCode.downloadUrl, encoding: null },
-            async (err, res, body) => {
-              var zip = new AdmZip(body);
-              const defaultUri = vscode.workspace.workspaceFolders
-                ? vscode.workspace.workspaceFolders[0].uri
-                : null;
-
-              let options = defaultUri
-                ? {
-                  canSelectFiles: false,
-                  canSelectFolders: true,
-                  canSelectMany: false,
-                  defaultUri,
-                }
-                : {
-                  canSelectFiles: false,
-                  canSelectFolders: true,
-                  canSelectMany: false,
-                };
-
-              showOpenDialog(options).then(
-                (value: vscode.Uri[] | undefined) => {
-                  if (!value) {
-                    // console.log("User did not select a folder");
-                    showInformationMessage('Please select a folder');
-                    return;
-                  }
-                  const dir = value[0];
-                  try {
-                    // console.log("Dir: ", dir.fsPath);
-                    zip.extractAllTo(dir.fsPath, false);
-                  } catch (error) {
-                    // let the user know that the download faile, check folder permission, or ask support.
-                    showErrorMessage(
-                      'We had problems writting in that folder, please check for permissions'
-                    );
-                  }
-                }
-              );
-            }
-          );
-        }
-      );
-    }
-  );
-  context.subscriptions.push(getGenerateCode);
 
   vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', true);
 }
