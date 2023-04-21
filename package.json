@@ -357,5 +357,17 @@
     "utf-8-validate": "^6.0.3",
     "uuid": "^9.0.0",
     "ws": "^8.2.0"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "fs.realpath": false,
+    "mkdirp": false,
+    "dir-glob": false,
+    "graceful-fs": false,
+    "fast-glob": false,
+    "source-map-support": false,
+    "glob-parent": false,
+    "glob": false
   }
 }

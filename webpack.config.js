@@ -31,6 +31,7 @@ module.exports =  function withDefaults(extConfig) {
         externals: [
             {"vscode-extension-telemetry": 'commonjs vscode-extension-telemetry'}, // commonly used
             {vscode: "commonjs vscode"}, // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+            {bufferutil: "bufferutil", prettier: "prettier", axios: "axios"},
         ],
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
@@ -42,6 +43,16 @@ module.exports =  function withDefaults(extConfig) {
             },
             fallback: {
               path: require.resolve('path-browserify'),
+              fs: false,
+              os: false,
+              "fs.realpath": false,
+              mkdirp: false,
+              "dir-glob": false,
+              "graceful-fs": false,
+              "fast-glob": false,
+              "source-map-support": false,
+              "glob-parent": false,
+              glob: false
               // Webpack 5 no longer polyfills Node.js core modules automatically.
               // see https://webpack.js.org/configuration/resolve/#resolvefallback
               // for the list of Node.js core module polyfills.
