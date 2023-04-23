@@ -117,6 +117,5 @@ export class AppComponent implements OnInit {
       command: "logoutUser",
       description: 'log out of user so can log in with another user'
     });
-    console.log('logout user');
   }
 }

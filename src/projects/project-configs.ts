@@ -7,7 +7,14 @@ import { ProjectConfig } from './interfaces/project-config.interfaces';
 import { combinePackageJsons, PackageJson } from '../utils/package-json/package-json';
 
 export async function getVersionControlParams(workspacePath: string) {
-  const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
+  let gitOrigin: any;
+  try {
+    // Check if the .git directory exists
+    await fs.promises.access(`${workspacePath}/.git`);
+    gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
+  } catch(error) {
+    return undefined as any;
+  }
   // const gitBranch = await getBranch(workspacePath);
   const path = workspacePath;
 
@@ -24,6 +31,9 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   let ignorePatterns: string[] = [];
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
+  if(!versionControlParams) {
+    return undefined as any;
+  }
 
   const packageJsonPath = path.join(dir, 'package.json');
   let packageJsonParams: PackageJson | object = {};
@@ -74,11 +84,7 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
     }
     return combinedPackageJsonParams;
   }
-
   // END NEW LOGIC
-
-  console.log('packageJsonParams');
-  console.log(packageJsonParams);
 
   return {
     versionControlParams,
@@ -97,6 +103,9 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 // Check if file is ignored
 async function isGitIgnored(gitIgnorePath: string, fullFilePath: string): Promise<boolean> {
+  if (!fs.existsSync(gitIgnorePath)) {
+    return false;
+  }
   const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf-8');
   const patterns = gitIgnoreContent.split('\n').filter((pattern) => pattern.trim() !== '');
   return patterns.some((pattern) => {

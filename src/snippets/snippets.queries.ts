@@ -43,7 +43,7 @@ export async function getSnippetTemplates(search: string, orgId: string,
       });
       return response?.data?.data?.templates;
     } catch (error) {    
-      console.log('error updatePrivateDirectoriesRequest', error);
+      console.log('error getSnippetTemplates', error);
       return error;
     }
   };
