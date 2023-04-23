@@ -7,7 +7,14 @@ import { ProjectConfig } from './interfaces/project-config.interfaces';
 import { combinePackageJsons, PackageJson } from '../utils/package-json/package-json';
 
 export async function getVersionControlParams(workspacePath: string) {
-  const gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
+  let gitOrigin: any;
+  try {
+    // Check if the .git directory exists
+    await fs.promises.access(`${workspacePath}/.git`);
+    gitOrigin = await parseGitConfig({ cwd: workspacePath, path: '.git/config' }).then(gitConfig => gitConfig?.['remote "origin"']?.url);
+  } catch(error) {
+    return undefined as any;
+  }
   // const gitBranch = await getBranch(workspacePath);
   const path = workspacePath;
 
@@ -77,11 +84,7 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
     }
     return combinedPackageJsonParams;
   }
-
   // END NEW LOGIC
-
-  console.log('packageJsonParams');
-  console.log(packageJsonParams);
 
   return {
     versionControlParams,

@@ -78,7 +78,9 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       context.workspaceState.update(workspaceFolderName, individualProjectConfig);
-      projectConfigs.push(individualProjectConfig);
+      if(individualProjectConfig) {
+        projectConfigs.push(individualProjectConfig);
+      }
     }
   }
 
