@@ -24,6 +24,9 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   let ignorePatterns: string[] = [];
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
+  if(!versionControlParams) {
+    return undefined as any;
+  }
 
   const packageJsonPath = path.join(dir, 'package.json');
   let packageJsonParams: PackageJson | object = {};
@@ -97,6 +100,9 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 // Check if file is ignored
 async function isGitIgnored(gitIgnorePath: string, fullFilePath: string): Promise<boolean> {
+  if (!fs.existsSync(gitIgnorePath)) {
+    return false;
+  }
   const gitIgnoreContent = fs.readFileSync(gitIgnorePath, 'utf-8');
   const patterns = gitIgnoreContent.split('\n').filter((pattern) => pattern.trim() !== '');
   return patterns.some((pattern) => {

@@ -61,16 +61,21 @@ export async function activate(context: vscode.ExtensionContext) {
   if(workspaceFolders) {
     for(let workspaceFolder of workspaceFolders) {
       const individualProjectConfig = await getProjectConfigs(workspaceFolder.path);
-      const packageJsonParams = individualProjectConfig.packageJsonParams;
+      let packageJsonParams = undefined;
+      if(individualProjectConfig) {
+        packageJsonParams = individualProjectConfig.packageJsonParams;  
+      }
       const workspaceFolderName = workspaceFolder.name;
       // use workspace folder name, to create state for project config
       // will allow active state for that workspace folder to be pulled up
       // whenever user is inside of that folder
-      await determineLanguagesUsed(packageJsonParams).then(async(languagesUsed) => {
-        languagesUsed.forEach(languageUsed => {
-          vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+      if(packageJsonParams) {
+        await determineLanguagesUsed(packageJsonParams).then(async(languagesUsed) => {
+          languagesUsed.forEach(languageUsed => {
+            vscode.commands.executeCommand('setContext', `razroo-vscode-plugin-language:${languageUsed}`, true);
+          });
         });
-      });
+      }
 
       context.workspaceState.update(workspaceFolderName, individualProjectConfig);
       projectConfigs.push(individualProjectConfig);
