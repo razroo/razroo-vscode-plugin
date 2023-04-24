@@ -2619,10 +2619,10 @@
   resolved "https://registry.yarnpkg.com/@types/async/-/async-2.0.50.tgz#117540e026d64e1846093abbd5adc7e27fda7bcb"
   integrity sha512-VMhZMMQgV1zsR+lX/0IBfAk+8Eb7dPVMWiQGFAt3qjo5x7Ml6b77jUo0e1C3ToD+XRDXqtrfw+6AB0uUsPEr3Q==
 
-"@types/auth0@^2.34.9":
-  version "2.35.11"
-  resolved "https://registry.yarnpkg.com/@types/auth0/-/auth0-2.35.11.tgz#5e81087d389b30397fd59b35cf74fce704ac253c"
-  integrity sha512-DYoaaZUCN2m16ItLnpfCXibM5iz93rn8jos9vAATO7NlY7Hoz24s11Jd4K1IY53KGn1TogrhwMiDfm5I0H4AzQ==
+"@types/auth0@^3.3.0":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@types/auth0/-/auth0-3.3.1.tgz#2586a417091a30ca7f516ba1b3de0c5ac72244f5"
+  integrity sha512-jUGOLIiZ8tE4ZYwVH+fSRfg4MT13nC1xbNq+wHhTQVRzEZhckRnAGEoGntRKvXs4MGxS8hQq846c/dLLTipg5g==
 
 "@types/axios@^0.14.0":
   version "0.14.0"
