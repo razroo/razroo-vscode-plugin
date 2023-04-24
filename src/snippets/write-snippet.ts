@@ -8,12 +8,10 @@ import { existingFileNames, replaceTagParameters } from '@codemorph/core';
 export function writeCodeSnippet(context: vscode.ExtensionContext, zipEntry: AdmZip.IZipEntry, template: any, isProduction: boolean) {
   // Get the active text editor
   const editor = vscode.window.activeTextEditor as any;
-  const filePath = editor.document.uri.fsPath;
   const snippetFileText = zipEntry.getData().toString("utf8");
-  const modifiedCodeSnippet = modifyCodeSnippet(snippetFileText, filePath);
   const lineNumber = context.workspaceState.get(VSCODE_ACTIVE_LINE_NUMBER) as number;
   const columnNumber = context.workspaceState.get(VSCODE_ACTIVE_COLUMN_NUMBER) as number;
-  const indentedSnippetFileText = indentString(modifiedCodeSnippet, columnNumber);
+  const indentedSnippetFileText = indentString(snippetFileText, columnNumber);
   const edit = new vscode.TextEdit(
     new vscode.Range(lineNumber - 1, 0, lineNumber, 0),
     indentedSnippetFileText
@@ -33,7 +31,7 @@ function modifyCodeSnippet(codeSnippet: string, filePath: string) {
   return replacedTagParametersCode;
 }
 
-function getFileNameFromPath(path: string): string {
+export function getFileNameFromPath(path: string): string {
   const pathComponents = path.split('/');
   const fileNameWithExt = pathComponents[pathComponents.length - 1];
   const fileName = fileNameWithExt.split('.')[0];

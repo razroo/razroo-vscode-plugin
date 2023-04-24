@@ -5,6 +5,8 @@ import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-co
 import { codeSnippetGeneratingNotification } from './snippets-notifications';
 import { createVSCodeIdToken } from '../utils/token/token';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
+import { getFileNameFromPath } from './write-snippet';
+import { normalize } from 'path';
 
 // Define a custom text decoration
 const decorationType = vscode.window.createTextEditorDecorationType({
@@ -68,6 +70,11 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     }
     const trimmedSearchText = removeSsFromSearchResult(searchText);
     const snippetOptions = await getSnippetTemplates(trimmedSearchText, orgId as string, path, isProduction, accessToken);
+    // START - Get File Name
+    const filePath = editor.document.fileName;
+    const normalizedFilePath = normalize(filePath);
+    const fileName = getFileNameFromPath(normalizedFilePath);
+    // END - Get File Name
     const quickPickOptions: vscode.QuickPickItem[] = await snippetOptions ? snippetOptions.map(snippetOption => {
       return {
         orgId: snippetOption.orgId,
@@ -86,7 +93,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       const nonFilePathParameters = (selectedOption as any).parameters.filter(parameter => parameter.paramType !== 'filePath');
       const parameters = await collectInputBoxValues(nonFilePathParameters);
       codeSnippetGeneratingNotification();
-      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, parameters);
+      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, parameters, fileName);
       generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
       });
     }
@@ -129,7 +136,7 @@ async function showInputBox(nonFilePathParameters: any, index: number, parameter
 }
 
 function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
-    pathId: string, recipeId: string, stepId: string, parameters: any) {
+    pathId: string, recipeId: string, stepId: string, parameters: any, fileName?: string) {
 
   return {
     projectName: '',
@@ -138,6 +145,7 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
     pathId: pathId,
     recipeId: recipeId,
     stepId: stepId,
+    fileName: fileName,
     vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
     userId: context.globalState.get(MEMENTO_RAZROO_USER_ID) as string,
     userOrgId: context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string,
