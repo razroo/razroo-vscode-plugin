@@ -35,7 +35,6 @@ module.exports =  function withDefaults(extConfig) {
         ],
         resolve: { // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
             mainFields: ['browser', 'module', 'main'], // look for `browser` entry point in imported node modules
-            preferRelative: true,
             extensions: [ '.ts', '.js'],
             alias: {
               hexoid: 'hexoid/dist/index.js',
