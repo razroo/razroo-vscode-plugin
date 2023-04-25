@@ -38,7 +38,6 @@ module.exports =  function withDefaults(extConfig) {
             extensions: [ '.ts', '.js'],
             alias: {
               hexoid: 'hexoid/dist/index.js',
-              semver: path.resolve(__dirname, "node_modules/semver"),
               optimism: path.resolve(__dirname, "node_modules/optimism"),
               '@nodelib/fs.scandir': path.resolve(__dirname, "node_modules/@nodelib/fs.scandir")
             },
@@ -61,6 +60,17 @@ module.exports =  function withDefaults(extConfig) {
         },
         module: {
             rules: [
+              {
+                test: path.resolve(
+                  __dirname,
+                  'node_modules/auth0-deploy-cli/lib/index.js'
+                ),
+                loader: 'string-replace-loader',
+                options: {
+                  search: '#!/usr/bin/env node',
+                  replace: '',
+                },
+              },
                 {
                     test: /\.ts$/,
                     exclude: /node_modules/,
