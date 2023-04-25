@@ -38,7 +38,6 @@ module.exports =  function withDefaults(extConfig) {
             extensions: [ '.ts', '.js'],
             alias: {
               hexoid: 'hexoid/dist/index.js',
-              semver: path.resolve(__dirname, "node_modules/semver"),
               optimism: path.resolve(__dirname, "node_modules/optimism"),
               '@nodelib/fs.scandir': path.resolve(__dirname, "node_modules/@nodelib/fs.scandir")
             },
