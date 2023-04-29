@@ -6,6 +6,8 @@ import {saveTestOutputMutation} from './graphql.utils';
 const showInformationMessage = vscode.window.showInformationMessage;
 
 export async function unitTestGeneratedFiles(entryName: string, folderName: string, template: any, accessToken, isProduction){
+    // entryName will always be unit test
+    // spec logic put in place just to make sure nothing bad happens
     if (entryName.includes(".spec")) {
         const unitTestFilePath = path.join(folderName, entryName);
         const execution = new vscode.ShellExecution(`npm run test -- ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
