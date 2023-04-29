@@ -48,6 +48,10 @@ export const saveFiles = async (
   const template = data.data.generateVsCodeDownloadCodeSub.template;
   const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
   const filesToGenerate = data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate ? JSON.parse(data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate) : {};
+  const runUnitTests = data.data.generateVsCodeDownloadCodeSub.runUnitTests;
+  // unitTestFileName - for use with running unit tests. Allows to extract unit test name and use once all files generated
+  let unitTestFileName = '';
+  const runIntegrationTests = data.data.generateVsCodeDownloadCodeSub.runIntegrationTests;
 
   //Get files of S3
   const files = await getFileS3({ url });
@@ -67,7 +71,8 @@ export const saveFiles = async (
     writeCodeSnippet(context, zipEntries[0], template, isProduction);
     return;
   }
-  for await (const zipEntry of zipEntries) {
+
+  for await (const [index, zipEntry] of zipEntries.entries()) {
     const parametersParsed = JSON.parse(parameters);
     const fileNameandPath = normalize(replaceCurlyBrace(parametersParsed, zipEntry.entryName, true));
     const fileName = replaceCurlyBrace(parametersParsed, zipEntry.name);
@@ -87,32 +92,41 @@ export const saveFiles = async (
         const coreProgrammingLanguage = getVersionAndNameString(pathId).name;
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
         effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
-        const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
-        const openLinkCommand = {
-          title: 'Open in Razroo',
-          command: 'extension.openLink'
-        };
-        showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
-          if(selection && selection.command === 'extension.openLink') {
-            vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
+        if (fileNameandPath.includes(".spec")) {
+          unitTestFileName = fileNameandPath;
+        }
+        if (index === zipEntries.length - 1) {
+          const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
+
+          const openLinkCommand = {
+            title: 'Open in Razroo',
+            command: 'extension.openLink'
           };
-        });
+
+          showInformationMessage(razrooStepURL,openLinkCommand).then(selection=>{
+            if(selection && selection.command === 'extension.openLink') {
+              vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
+            };
+          });
+
+          if(runUnitTests) {
+            setTimeout(async () => {
+              let template = data.data.generateVsCodeDownloadCodeSub.template;
+              await unitTestGeneratedFiles(unitTestFileName, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+            }, 1000);
+          }
+        
+          if(runIntegrationTests) {
+            let template = data.data.generateVsCodeDownloadCodeSub.template;
+            await integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+          }
+        }
+        
       } catch (error) {
         console.log('extractEntryTo', error);
       }
     }
-
-    if(data.data.generateVsCodeDownloadCodeSub.runUnitTests) {
-      let template = data.data.generateVsCodeDownloadCodeSub.template;
-      await unitTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
-    }
-  
-    if(data.data.generateVsCodeDownloadCodeSub.runIntegrationTests) {
-      let template = data.data.generateVsCodeDownloadCodeSub.template;
-      integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
-    }
   }
-  
 };
 
 export const updatePrivateDirectoriesInVSCodeAuthentication = async (
