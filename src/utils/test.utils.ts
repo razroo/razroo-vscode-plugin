@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import {saveTestOutputMutation} from './graphql.utils';
+import { findConfigPath } from '../unit-tests/jest-config';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -10,7 +11,8 @@ export async function unitTestGeneratedFiles(entryName: string, folderName: stri
     // spec logic put in place just to make sure nothing bad happens
     if (entryName.includes(".spec")) {
         const unitTestFilePath = path.join(folderName, entryName);
-        const execution = new vscode.ShellExecution(`npm run test -- ${unitTestFilePath} --json --outputFile=razroo-unit-test-output.json`);
+        const jestConfigPath = findConfigPath(unitTestFilePath);
+        const execution = new vscode.ShellExecution(`npm run test -- ${unitTestFilePath} -c ${jestConfigPath} --json --outputFile=razroo-unit-test-output.json`);
         const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
         // These two functions in tandem allow us to figure out when task completed
         const buildTasks = getBuildTasks();
