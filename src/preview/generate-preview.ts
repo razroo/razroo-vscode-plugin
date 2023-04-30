@@ -9,7 +9,10 @@ const showInformationMessage = vscode.window.showInformationMessage;
 export async function generatePreviewFiles(workspaceFolder: string, accessToken: string, isProduction: boolean){
     // entryName will always be unit test
     // spec logic put in place just to make sure nothing bad happens
-    const execution = new vscode.ShellExecution(`npm run build`);
+    const distFolder = path.join(workspaceFolder, 'dist');
+    const isWindows = process.platform === 'win32';
+    const rmCommand = isWindows ? 'rimraf' : 'rm -rf';
+    const execution = new vscode.ShellExecution(`${rmCommand} ${distFolder}; cd ${workspaceFolder}; npm run build`);
     const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
     // These two functions in tandem allow us to figure out when task completed
     const buildTasks = getBuildTasks();
