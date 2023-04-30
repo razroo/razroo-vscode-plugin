@@ -27,6 +27,7 @@ async function executeBuildTask(task: vscode.Task, accessToken, isProduction) {
                 // saveTestOutputMutation(accessToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
                 //     console.log('data from mutation: ', data?.data?.saveTestOutput);
                 // });
+                // await readFilesInDistFolder()
                 disposable.dispose();
                 resolve();
             }
@@ -34,23 +35,16 @@ async function executeBuildTask(task: vscode.Task, accessToken, isProduction) {
     });
 }
 
-function readFilesInDistFolder(distFolderPath) {
-  fs.readdir(distFolderPath, (err, files) => {
-    if (err) {
-      console.error(`Error reading files in folder: ${err}`);
-      return;
-    }
+async function readFilesInDistFolder(folderPath: string): Promise<void> {
+  try {
+    const files = await fs.promises.readdir(folderPath);
 
-    files.forEach((file) => {
-      fs.readFile(`${distFolderPath}/${file}`, 'utf8', (err, data) => {
-      if (err) {
-          console.error(`Error reading file ${file}: ${err}`);
-          return;
-      }
-
+    for (const file of files) {
+      const data = await fs.promises.readFile(`${folderPath}/${file}`, 'utf8');
       console.log(`Contents of ${file}:`);
       console.log(data);
-      });
-    });
-  });
+    }
+  } catch (err) {
+    console.error(`Error reading files in folder: ${err}`);
+  }
 }
