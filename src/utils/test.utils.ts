@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import {saveTestOutputMutation} from './graphql.utils';
 import { findConfigPath } from '../unit-tests/jest-config';
+import { cleanWorkspace, getBuildTasks } from './terminal-utils/terminal-utils';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -53,17 +54,3 @@ async function executeBuildTask(task: vscode.Task, fileName, testType, template,
     });
 }
 
-async function cleanWorkspace() {
-    const execution = new vscode.ShellExecution(`git clean -d -f`);
-    const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-    vscode.tasks.executeTask(task);
-    showInformationMessage(`Razroo Workspace has been reset.`);
-}
-
-async function getBuildTasks() {
-    return new Promise<vscode.Task[]>(resolve => {
-        vscode.tasks.fetchTasks().then((tasks) => {
-            resolve(tasks.filter((task) => task.group === vscode.TaskGroup.Build));
-        });
-    });
-}
