@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { cleanWorkspace, getBuildTasks } from '../utils/terminal-utils/terminal-utils';
 
 const showInformationMessage = vscode.window.showInformationMessage;
@@ -31,4 +32,25 @@ async function executeBuildTask(task: vscode.Task, accessToken, isProduction) {
             }
         });
     });
+}
+
+function readFilesInDistFolder(distFolderPath) {
+  fs.readdir(distFolderPath, (err, files) => {
+    if (err) {
+      console.error(`Error reading files in folder: ${err}`);
+      return;
+    }
+
+    files.forEach((file) => {
+      fs.readFile(`${distFolderPath}/${file}`, 'utf8', (err, data) => {
+      if (err) {
+          console.error(`Error reading file ${file}: ${err}`);
+          return;
+      }
+
+      console.log(`Contents of ${file}:`);
+      console.log(data);
+      });
+    });
+  });
 }
