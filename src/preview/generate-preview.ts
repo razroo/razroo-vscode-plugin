@@ -46,11 +46,10 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
 async function readFilesInDistFolder(folderPath: string): Promise<void> {
   try {
     const files = await fs.promises.readdir(folderPath);
-    console.log('files');
-    console.log(files);
-
     for (const file of files) {
-      // const data = await fs.promises.readFile(`${folderPath}/${file}`, 'utf8');
+      const fileContent = await fs.promises.readFile(`${folderPath}/${file}`, 'utf8');
+      const fileName = file;
+      const fileType = path.extname(file);
       // console.log(`Contents of ${file}:`);
       // console.log(data);
     }
