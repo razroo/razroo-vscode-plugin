@@ -52,6 +52,7 @@ export const saveFiles = async (
   // unitTestFileName - for use with running unit tests. Allows to extract unit test name and use once all files generated
   let unitTestFileName = '';
   const runIntegrationTests = data.data.generateVsCodeDownloadCodeSub.runIntegrationTests;
+  const runPreviewGeneration = data.data.generateVsCodeDownloadCodeSub.runPreviewGeneration;
 
   //Get files of S3
   const files = await getFileS3({ url });
@@ -114,6 +115,13 @@ export const saveFiles = async (
               let template = data.data.generateVsCodeDownloadCodeSub.template;
               await unitTestGeneratedFiles(unitTestFileName, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
             }, 1000);
+          }
+
+          if(runPreviewGeneration) {
+            // setTimeout(async () => {
+              let template = data.data.generateVsCodeDownloadCodeSub.template;
+              console.log('run preview generation called');
+            // }, 1000);
           }
         
           if(runIntegrationTests) {
