@@ -25,6 +25,7 @@ import { determineFilePathParameter, effects, getVersionAndNameString, replaceCu
 import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
+import { generatePreviewFiles } from '../preview/generate-preview';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -118,10 +119,9 @@ export const saveFiles = async (
           }
 
           if(runPreviewGeneration) {
-            // setTimeout(async () => {
-              let template = data.data.generateVsCodeDownloadCodeSub.template;
-              console.log('run preview generation called');
-            // }, 1000);
+            let template = data.data.generateVsCodeDownloadCodeSub.template;
+            await generatePreviewFiles(unitTestFileName, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+            console.log('run preview generation called');
           }
         
           if(runIntegrationTests) {
