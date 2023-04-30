@@ -20,7 +20,6 @@ export async function uploadPreviewFile(userOrgId: string, templateOrgId: string
             recipeId: $recipeId, stepId: $stepId) {
               filePath
             }
-          }
         }`,
       variables: {
         userOrgId,
@@ -42,7 +41,7 @@ export async function uploadPreviewFile(userOrgId: string, templateOrgId: string
         },
       });
       return response?.data?.data?.uploadPreviewFile;
-    } catch (error) {    
+    } catch (error) {
       console.log('error uploadPreviewFile', error);
       return error;
     }
