@@ -3,10 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { cleanWorkspace, getBuildTasks } from '../utils/terminal-utils/terminal-utils';
 import { getDistFolder } from './get-dist';
+import { PreviewStateObject } from './preview.interface';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
-export async function generatePreviewFiles(workspaceFolder: string, accessToken: string, isProduction: boolean){
+export async function generatePreviewFiles(workspaceFolder: string, accessToken: string, isProduction: boolean, previewStateObject: PreviewStateObject) {
     // entryName will always be unit test
     // spec logic put in place just to make sure nothing bad happens
     const distFolder = path.join(workspaceFolder, 'dist');
@@ -16,10 +17,10 @@ export async function generatePreviewFiles(workspaceFolder: string, accessToken:
     const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
     // These two functions in tandem allow us to figure out when task completed
     const buildTasks = getBuildTasks();
-    await executeBuildTask(task, accessToken, isProduction, workspaceFolder);
+    await executeBuildTask(task, accessToken, isProduction, workspaceFolder, previewStateObject);
 }
 
-async function executeBuildTask(task: vscode.Task, accessToken: string, isProduction: boolean, workspaceFolder: string) {
+async function executeBuildTask(task: vscode.Task, accessToken: string, isProduction: boolean, workspaceFolder: string, previewStateObject: PreviewStateObject) {
     const execution = await vscode.tasks.executeTask(task);
 
     return new Promise<void>(resolve => {
@@ -33,7 +34,7 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
                 // });
                 const distFolder = getDistFolder(workspaceFolder);
                 if(distFolder) {
-                  await readFilesInDistFolder(distFolder);
+                  await readFilesInDistFolder(distFolder, previewStateObject);
                 }
                 
                 disposable.dispose();
@@ -43,7 +44,9 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
     });
 }
 
-async function readFilesInDistFolder(folderPath: string): Promise<void> {
+async function readFilesInDistFolder(folderPath: string, previewStateObject: PreviewStateObject): Promise<void> {
+  console.log('previewStateObject');
+  console.log(previewStateObject);
   try {
     const files = await fs.promises.readdir(folderPath);
     for (const file of files) {

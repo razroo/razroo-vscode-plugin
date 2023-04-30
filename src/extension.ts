@@ -13,7 +13,8 @@ import {
   MEMENTO_SELECTED_PROJECTS,
   ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
   COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
-  COMMAND_LOG_OUT_USER
+  COMMAND_LOG_OUT_USER,
+  RAZROO_PREVIEW_STATE
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -188,10 +189,9 @@ export async function activate(context: vscode.ExtensionContext) {
   let buildPreviewAndUploadDisposable = vscode.commands.registerCommand('extension.buildPreviewAndUpload', async() => {
     const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
     const workspaceFolder = projectConfig?.versionControlParams?.path;
-    console.log('workspaceFolder');
-    console.log(workspaceFolder);
+    const previewStateObject = await context.workspaceState.get(RAZROO_PREVIEW_STATE);
     const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-    await generatePreviewFiles(workspaceFolder, accessToken, isProduction);
+    await generatePreviewFiles(workspaceFolder, accessToken, isProduction, previewStateObject);
   });
 
 
