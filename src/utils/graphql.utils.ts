@@ -42,6 +42,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
               parameters
               runUnitTests
               runIntegrationTests
+              runPreviewGeneration
               template {
                 orgId
                 pathId
