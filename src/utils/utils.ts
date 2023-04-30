@@ -13,7 +13,7 @@ import {
 import {
   getFileS3,
 } from './request.utils';
-import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS } from '../constants';
+import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS, RAZROO_PREVIEW_STATE } from '../constants';
 // import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
@@ -120,6 +120,16 @@ export const saveFiles = async (
           if(runIntegrationTests) {
             let template = data.data.generateVsCodeDownloadCodeSub.template;
             await integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+          }
+
+          if(runPreviewGeneration) {
+            const previewStateObject = {
+              templateOrgId: template.orgId,
+              pathId: template.pathId,
+              recipeId: template.recipeId,
+              stepId: template.id,
+            };
+            await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
           }
         }
         

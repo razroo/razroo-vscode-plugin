@@ -13,7 +13,9 @@ import {
   MEMENTO_SELECTED_PROJECTS,
   ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG,
   COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
-  COMMAND_LOG_OUT_USER
+  COMMAND_LOG_OUT_USER,
+  RAZROO_PREVIEW_STATE,
+  MEMENTO_RAZROO_ORG_ID
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -28,6 +30,7 @@ import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
 import { generatePreviewFiles } from './preview/generate-preview';
+import { PreviewStateObject } from './preview/preview.interface';
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -188,10 +191,10 @@ export async function activate(context: vscode.ExtensionContext) {
   let buildPreviewAndUploadDisposable = vscode.commands.registerCommand('extension.buildPreviewAndUpload', async() => {
     const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
     const workspaceFolder = projectConfig?.versionControlParams?.path;
-    console.log('workspaceFolder');
-    console.log(workspaceFolder);
+    const previewStateObject = await context.workspaceState.get(RAZROO_PREVIEW_STATE) as PreviewStateObject;
     const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-    await generatePreviewFiles(workspaceFolder, accessToken, isProduction);
+    const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
+    await generatePreviewFiles(workspaceFolder, accessToken, isProduction, previewStateObject, userOrgId);
   });
 
 
