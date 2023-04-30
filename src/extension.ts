@@ -27,7 +27,7 @@ import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
-import { generatePreviewFiles } from "preview/generate-preview";
+import { generatePreviewFiles } from './preview/generate-preview';
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
