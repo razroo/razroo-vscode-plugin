@@ -27,6 +27,7 @@ import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
+import { generatePreviewFiles } from "preview/generate-preview";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -183,12 +184,26 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  let buildPreviewAndUploadDisposable = vscode.commands.registerCommand('extension.buildPreviewAndUpload', async() => {
+    // Code to build preview and upload
+    const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
+    await generatePreviewFiles(accessToken, isProduction);
+  });
+
+
+  let menu = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  menu.text = "$(rocket) Build Preview and Upload";
+  menu.command = 'extension.buildPreviewAndUpload';
+  menu.show();
+
   context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
   context.subscriptions.push(cancelAuthentication);
   context.subscriptions.push(logout);
   context.subscriptions.push(logoutUser);
+  context.subscriptions.push(buildPreviewAndUploadDisposable);
+
 
   // execute command for tryToAuth to re-connect previously connected projects
   const selectedProjects = context.workspaceState.get(MEMENTO_SELECTED_PROJECTS);
