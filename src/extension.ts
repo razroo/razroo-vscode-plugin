@@ -23,7 +23,7 @@ import { ProjectsWebview } from './projects/projects';
 import { updateVsCode } from './update-vscode/update-vscode';
 import { getProjectConfigs } from './projects/project-configs';
 import { getWorkspaceFolders } from './utils/directory.utils';
-import { ProjectConfig } from './projects/interfaces/project-config.interfaces';
+import { ProjectConfig, VersionControlParams } from './projects/interfaces/project-config.interfaces';
 import { determineLanguagesUsed } from './scaffolds/determine-languages-used';
 import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
@@ -184,10 +184,14 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  // Code to build preview and upload
   let buildPreviewAndUploadDisposable = vscode.commands.registerCommand('extension.buildPreviewAndUpload', async() => {
-    // Code to build preview and upload
+    const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
+    const workspaceFolder = projectConfig?.versionControlParams?.path;
+    console.log('workspaceFolder');
+    console.log(workspaceFolder);
     const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-    await generatePreviewFiles(accessToken, isProduction);
+    await generatePreviewFiles(workspaceFolder, accessToken, isProduction);
   });
 
 
