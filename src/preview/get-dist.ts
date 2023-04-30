@@ -2,26 +2,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export function getDistFolder(workspaceFolder: string): string | null {
-  const distPath = path.join(workspaceFolder, 'dist');
-  const distExists = fs.existsSync(distPath);
-
-  if (!distExists) {
-    console.error('The dist folder does not exist.');
-    return null;
-  }
-
-  const files = fs.readdirSync(distPath);
-
-  for (const file of files) {
-    const filePath = path.join(distPath, file);
-    const stats = fs.statSync(filePath);
-
-    if (stats.isDirectory() && fs.readdirSync(filePath).length > 0) {
-      console.log(`Using ${filePath} as the root folder.`);
-      return filePath;
+  let currentPath = path.join(workspaceFolder, 'dist');
+  
+  while (true) {
+    const files = fs.readdirSync(currentPath);
+    const file = files.find((file) => fs.statSync(path.join(currentPath, file)).isFile());
+    if (file) {
+      return currentPath;
     }
+    const subfolders = files.filter((file) => fs.statSync(path.join(currentPath, file)).isDirectory());
+    if (subfolders.length === 0) {
+      return null;
+    }
+    currentPath = path.join(currentPath, subfolders[0]);
   }
-
-  console.error('No folder with files found in the dist folder.');
-  return null;
-}
+}  

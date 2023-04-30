@@ -47,9 +47,9 @@ async function readFilesInDistFolder(folderPath: string): Promise<void> {
     console.log(files);
 
     for (const file of files) {
-      const data = await fs.promises.readFile(`${folderPath}/${file}`, 'utf8');
-      console.log(`Contents of ${file}:`);
-      console.log(data);
+      // const data = await fs.promises.readFile(`${folderPath}/${file}`, 'utf8');
+      // console.log(`Contents of ${file}:`);
+      // console.log(data);
     }
   } catch (err) {
     console.error(`Error reading files in folder: ${err}`);
