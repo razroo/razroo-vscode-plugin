@@ -92,11 +92,11 @@ export const saveFiles = async (
         const pathId = template.baseCommunityPath ? template.baseCommunityPath : template.pathId; 
         const coreProgrammingLanguage = getVersionAndNameString(pathId).name;
         const filePathParameter = determineFilePathParameter(zipEntry.entryName, templateParameters);
-        effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
         if (fileNameandPath.includes(".spec")) {
           unitTestFileName = fileNameandPath;
         }
         if (index === zipEntries.length - 1) {
+          effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
           const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
 
           const openLinkCommand = {
