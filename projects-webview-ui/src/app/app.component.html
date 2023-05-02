@@ -1,13 +1,14 @@
 <main class="App__main">
   <div class="App__projects-container" *ngIf="projectConfigs.length; else noGitConfigs">
     <label for="projects-dropdown">Select project(s) to connect to Razroo</label>
-    <vscode-dropdown [style]="'height: ' + ((((projectConfigs.length + 1) * 18) >= 200) ? 200 : (projectConfigs.length * 18) + 8) + 'px'"
+    <vscode-dropdown [style]="'height: ' + ((((projectConfigs.length + 1) * 18) >= 200) ? 200 : (projectConfigs.length * 30) + 8) + 'px'"
       class="App__dropdown" id="projects-dropdown" multiple open>
       <ng-container *ngFor="let projectOption of projectConfigs">
         <div>
-          <vscode-option [class]="(projectOption | isProjectSelected : selectedProjects) ? 'App__dropdown-selected' : ''" (click)="toggleProjectOption(projectOption, projectConfigs)">{{projectOption?.packageJsonParams?.name | idToTitle}}</vscode-option>
+          <vscode-option [class]="(projectOption | isProjectSelected : selectedProjects) ? 'App__dropdown-selected' : ''" (click)="toggleProjectOption(projectOption, projectConfigs)">
+            <vscode-checkbox [checked]="(projectOption | isProjectSelected : selectedProjects)">{{projectOption?.packageJsonParams?.name | idToTitle}}</vscode-checkbox>
+          </vscode-option>
         </div>
-  
       </ng-container>
     </vscode-dropdown>
   
