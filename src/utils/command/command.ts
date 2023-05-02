@@ -5,8 +5,6 @@ import * as vscode from 'vscode';
 export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any) {  
   const execution = new vscode.ShellExecution(commandToExecute);
   const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-  await vscode.tasks.executeTask(task);
-  const commandTasks = getCommandTasks();
   await executeCommandTask(task, parametersParsed, isProduction, template);
 }
 
@@ -21,16 +19,9 @@ export async function openWorkspaceInNewCodeEditor(fileName: string, infrastruct
   await vscode.tasks.executeTask(task);  
 }
 
-async function getCommandTasks() {
-  return new Promise<vscode.Task[]>(resolve => {
-    vscode.tasks.fetchTasks().then((tasks) => {
-      resolve(tasks.filter((task) => task.group === vscode.TaskGroup.Build));
-    });
-  });
-}
-
 async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any) {
     const execution = await vscode.tasks.executeTask(task);
+
     const {orgId, pathId, recipeId, id } = template;
     const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${orgId}/${pathId}/${recipeId}/${id}`;
     const openLinkCommand = {
