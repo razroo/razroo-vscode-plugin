@@ -5,7 +5,9 @@
       class="App__dropdown" id="projects-dropdown" multiple open>
       <ng-container *ngFor="let projectOption of projectConfigs">
         <div>
-          <vscode-option [class]="(projectOption | isProjectSelected : selectedProjects) ? 'App__dropdown-selected' : ''" (click)="toggleProjectOption(projectOption, projectConfigs)">{{projectOption?.packageJsonParams?.name | idToTitle}}</vscode-option>
+          <vscode-option [class]="(projectOption | isProjectSelected : selectedProjects) ? 'App__dropdown-selected' : ''" (click)="toggleProjectOption(projectOption, projectConfigs)">
+            <vscode-checkbox>{{projectOption?.packageJsonParams?.name | idToTitle}}</vscode-checkbox>
+          </vscode-option>
         </div>
   
       </ng-container>
