@@ -14,6 +14,10 @@ main {
   flex-direction: column;
 }
 
+.App__vscode-option {
+  width: 100%;
+}
+
 .App__dropdown {
   display: flex;
   margin-top: 8px;
@@ -45,6 +49,30 @@ main {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.App__projects-header-text {
+  white-space: nowrap;
+}
+
+.App__checkbox-control-container {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--design-unit) * 4px + 2px);
+  height: calc(var(--design-unit) * 4px + 2px);
+}
+
+.App__checkbox-control {
+  position: absolute;
+  display: inline-block;
+  margin-top: 4px;
+  width: calc(var(--design-unit) * 4px + 2px);
+  height: calc(var(--design-unit) * 4px + 2px);
+  box-sizing: border-box;
+  border-radius: calc(var(--checkbox-corner-radius) * 1px);
+  border: calc(var(--border-width) * 1px) solid var(--checkbox-border);
+  background: var(--checkbox-background);
+  outline: none;
 }
 
 .App__user-login-container {
