@@ -30,6 +30,7 @@
   </div>
 
   <ng-template #noGitConfigs>
+    <ng-container *ngIf="!authIsLoading">
     <div class="App__projects-container">
       <pre class="ascii-art">
 _______   ________  ________  ________  ________     
@@ -42,6 +43,7 @@ _______   ________  ________  ________  ________
       </pre>
       Will need atleast one project that uses Git in your VSCode Workspace to use Razroo Projects.
     </div>
+    </ng-container>
   </ng-template>
 
   <div class="App__user-login-container">
