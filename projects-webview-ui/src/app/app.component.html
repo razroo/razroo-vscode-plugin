@@ -30,6 +30,9 @@
   </div>
 
   <ng-template #noGitConfigs>
+    <ng-container *ngIf="authIsLoading">
+      <div>Razroo is loading...</div>
+    </ng-container>
     <ng-container *ngIf="!authIsLoading">
     <div class="App__projects-container">
       <pre class="ascii-art">
