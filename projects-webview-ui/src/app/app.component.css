@@ -14,6 +14,10 @@ main {
   flex-direction: column;
 }
 
+.App__vscode-option {
+  width: 100%;
+}
+
 .App__dropdown {
   display: flex;
   margin-top: 8px;
