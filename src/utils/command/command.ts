@@ -3,7 +3,7 @@ import { DEV_APP_URL, PROD_APP_URL } from '../../constants';
 import * as vscode from 'vscode';
 
 export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any) {  
-  const execution = new vscode.ShellExecution(commandToExecute);
+  const execution = new vscode.ShellExecution(commandToExecute + ' >> terminal-output.txt');
   const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
   await executeCommandTask(task, parametersParsed, isProduction, template);
 }
