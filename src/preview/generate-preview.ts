@@ -45,11 +45,29 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
     });
 }
 
+async function readAndUploadTerminalFile(folderPath: string, previewStateObject: PreviewStateObject, userOrgId: string, isProduction: boolean, accessToken: string): Promise<void> {
+  try {
+    const fileName = 'output-terminal.txt';
+    const filePath = path.join(folderPath, fileName);
+    console.log('filePath');
+    console.log(filePath);
+    const terminalContent = (await fs.promises.readFile(filePath, 'utf8'));
+    await uploadPreviewFile(userOrgId, previewStateObject.templateOrgId, terminalContent, 
+      fileName, '.txt', previewStateObject.pathId, 
+      previewStateObject.recipeId, previewStateObject.stepId, 
+      isProduction, accessToken);
+  } catch (err) {
+    console.error(`Error reading terminal file: ${err}`);
+  }
+  
+}
+
 async function readFilesInDistFolder(folderPath: string, previewStateObject: PreviewStateObject, userOrgId: string, isProduction: boolean, accessToken: string): Promise<void> {
   try {
     const files = await fs.promises.readdir(folderPath);
     for (const file of files) {
-      const fileContent = (await fs.promises.readFile(`${folderPath}/${file}`, 'utf8'));
+      const filePath = path.join(folderPath, file);
+      const fileContent = (await fs.promises.readFile(filePath, 'utf8'));
       const fileName = file;
       const fileType = path.extname(file);
       await uploadPreviewFile(userOrgId, previewStateObject.templateOrgId, fileContent, 
