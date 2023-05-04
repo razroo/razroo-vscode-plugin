@@ -3,6 +3,7 @@ import { DEV_APP_URL, PROD_APP_URL } from '../../constants';
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { readFileSync } from 'fs';
+import { uploadPreviewFile } from '../../preview/preview.mutations';
 
 export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean, folderRoot: string) {  
   let execution;
@@ -52,6 +53,10 @@ async function executeCommandTask(task: vscode.Task, parametersParsed: any,isPro
                 } else if(runPreviewGeneration) {
                   const commandOutputFile = join(folderRoot, 'terminal-output.txt');
                   let commandOutputFileText = readFileSync(commandOutputFile, 'utf-8');
+                  await uploadPreviewFile(userOrgId, template.orgId, commandOutputFileText, 
+                    'terminal-output.txt', '.txt', template.pathId, 
+                    template.recipeId, template.stepId, 
+                    isProduction, accessToken);
                   console.log('commandOutputFileText');
                   console.log(commandOutputFileText);
                 }
