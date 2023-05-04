@@ -128,6 +128,7 @@ export const saveFiles = async (
               pathId: template.pathId,
               recipeId: template.recipeId,
               stepId: template.id,
+              type: template.type
             };
             await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
           }
