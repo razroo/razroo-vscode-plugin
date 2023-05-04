@@ -81,7 +81,7 @@ export const saveFiles = async (
     if (extname(fileName) === ".sh") {
       setCommandStatus(false);
       const commandToExecute = zipEntry.getData().toString("utf8");
-      await runRazrooCommand(commandToExecute, parametersParsed,isProduction, template, runPreviewGeneration);
+      await runRazrooCommand(commandToExecute, parametersParsed,isProduction, template, runPreviewGeneration, folderRoot);
     }
 
     if (type !== 'edit' && extname(fileName) !== ".sh") {
