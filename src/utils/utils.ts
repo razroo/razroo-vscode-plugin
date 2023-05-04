@@ -68,6 +68,18 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
 
+  if(runPreviewGeneration) {
+    const previewStateObject = {
+      templateOrgId: template.orgId,
+      pathId: template.pathId,
+      recipeId: template.recipeId,
+      stepId: template.id,
+      type: template.type
+    };
+    
+    await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
+  }
+
   if (type === 'Snippet') {
     writeCodeSnippet(context, zipEntries[0], template, isProduction);
     return;
@@ -121,19 +133,7 @@ export const saveFiles = async (
             let template = data.data.generateVsCodeDownloadCodeSub.template;
             await integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
           }
-
-          if(runPreviewGeneration) {
-            const previewStateObject = {
-              templateOrgId: template.orgId,
-              pathId: template.pathId,
-              recipeId: template.recipeId,
-              stepId: template.id,
-              type: template.type
-            };
-            await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
-          }
         }
-        
       } catch (error) {
         console.log('extractEntryTo', error);
       }
