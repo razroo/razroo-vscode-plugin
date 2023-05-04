@@ -3,4 +3,5 @@ export interface PreviewStateObject {
   pathId: string;
   recipeId: string;
   stepId: string;
+  type: string;
 }
