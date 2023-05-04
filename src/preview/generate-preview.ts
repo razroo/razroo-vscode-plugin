@@ -33,11 +33,15 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
                 // saveTestOutputMutation(accessToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
                 //     console.log('data from mutation: ', data?.data?.saveTestOutput);
                 // });
-                const distFolder = getDistFolder(workspaceFolder);
-                if(distFolder) {
-                  await readFilesInDistFolder(distFolder, previewStateObject, userOrgId, isProduction, accessToken);
+                if(previewStateObject && previewStateObject.type === 'Command') {
+                  await readAndUploadTerminalFile(workspaceFolder, previewStateObject, userOrgId, isProduction, accessToken);
+                } else {
+                  const distFolder = getDistFolder(workspaceFolder);
+                  if(distFolder) {
+                    await readFilesInDistFolder(distFolder, previewStateObject, userOrgId, isProduction, accessToken);
+                  }
                 }
-                
+
                 disposable.dispose();
                 resolve();
             }
