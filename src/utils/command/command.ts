@@ -10,7 +10,7 @@ export async function runRazrooCommand(commandToExecute: string, parametersParse
     execution = new vscode.ShellExecution(commandToExecute);
   }
   const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-  await executeCommandTask(task, parametersParsed, isProduction, template);
+  await executeCommandTask(task, parametersParsed, isProduction, template, runPreviewGeneration);
 }
 
 export function containsInfrastructureCommandPath(parametersParsed: any): boolean {
@@ -24,7 +24,7 @@ export async function openWorkspaceInNewCodeEditor(fileName: string, infrastruct
   await vscode.tasks.executeTask(task);  
 }
 
-async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any) {
+async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean) {
     const execution = await vscode.tasks.executeTask(task);
 
     const {orgId, pathId, recipeId, id } = template;
@@ -47,6 +47,9 @@ async function executeCommandTask(task: vscode.Task, parametersParsed: any,isPro
                 if(containsInfrastructureCommandPath(parametersParsed)) {
                   await openWorkspaceInNewCodeEditor(parametersParsed.fileName, parametersParsed.infrastructureCommandPath);
                   resolve();
+                } else if(runPreviewGeneration) {
+                  console.log('runPreviewGeneration is called');
+                  console.log(runPreviewGeneration);
                 }
                 else {
                   resolve();
