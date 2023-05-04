@@ -58,8 +58,9 @@ async function executeCommandTask(task: vscode.Task, parametersParsed: any,isPro
                   let commandOutputFileText = readFileSync(commandOutputFile, 'utf-8');
                   await uploadPreviewFile(userOrgId, template.orgId, commandOutputFileText, 
                     'terminal-output.txt', '.txt', template.pathId, 
-                    template.recipeId, template.stepId, 
+                    template.recipeId, template.id, 
                     isProduction, accessToken);
+                  vscode.window.showInformationMessage('Preview for command has been uploaded');
                 }
                 else {
                   resolve();
