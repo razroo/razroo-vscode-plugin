@@ -1,19 +1,22 @@
 import { setCommandStatus } from '../../utils/graphql.utils';
-import { DEV_APP_URL, PROD_APP_URL } from '../../constants';
+import { DEV_APP_URL, MEMENTO_RAZROO_ACCESS_TOKEN, PROD_APP_URL } from '../../constants';
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import { uploadPreviewFile } from '../../preview/preview.mutations';
+import { MEMENTO_RAZROO_ORG_ID } from '../../constants';
 
-export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean, folderRoot: string) {  
+export async function runRazrooCommand(commandToExecute: string, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean, folderRoot: string, context: any) {  
   let execution;
+  const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID);
+  const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   if(runPreviewGeneration) {
     execution = new vscode.ShellExecution(commandToExecute + ' >> terminal-output.txt');
   } else {
     execution = new vscode.ShellExecution(commandToExecute);
   }
   const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-  await executeCommandTask(task, parametersParsed, isProduction, template, runPreviewGeneration, folderRoot);
+  await executeCommandTask(task, parametersParsed, isProduction, template, runPreviewGeneration, folderRoot, userOrgId, accessToken);
 }
 
 export function containsInfrastructureCommandPath(parametersParsed: any): boolean {
@@ -27,7 +30,7 @@ export async function openWorkspaceInNewCodeEditor(fileName: string, infrastruct
   await vscode.tasks.executeTask(task);  
 }
 
-async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean, folderRoot: string) {
+async function executeCommandTask(task: vscode.Task, parametersParsed: any,isProduction: any, template: any, runPreviewGeneration: boolean, folderRoot: string, userOrgId: string, accessToken: string) {
     const execution = await vscode.tasks.executeTask(task);
 
     const {orgId, pathId, recipeId, id } = template;
@@ -57,8 +60,6 @@ async function executeCommandTask(task: vscode.Task, parametersParsed: any,isPro
                     'terminal-output.txt', '.txt', template.pathId, 
                     template.recipeId, template.stepId, 
                     isProduction, accessToken);
-                  console.log('commandOutputFileText');
-                  console.log(commandOutputFileText);
                 }
                 else {
                   resolve();
