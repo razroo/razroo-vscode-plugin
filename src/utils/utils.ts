@@ -256,7 +256,7 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       });
       showInformationMessage('User successfully connected to Razroo.');
       context.globalState.update(MEMENTO_RAZROO_ORG_ID, orgId);
-      const userOrganizations = await getUserOrganizations(userId, isProduction, accessToken);
+      const userOrganizations = await getUserOrganizations(userId, isProduction, context);
       await projectsProvider?.view?.webview.postMessage({
         command: "setOrganizations",
         organizations: userOrganizations
