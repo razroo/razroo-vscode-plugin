@@ -69,7 +69,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       return;
     }
     const trimmedSearchText = removeSsFromSearchResult(searchText);
-    const snippetOptions = await getSnippetTemplates(trimmedSearchText, orgId as string, path, isProduction, accessToken);
+    const snippetOptions = await getSnippetTemplates(trimmedSearchText, orgId as string, path, isProduction, context);
     // START - Get File Name
     const filePath = editor.document.fileName;
     const normalizedFilePath = normalize(filePath);
