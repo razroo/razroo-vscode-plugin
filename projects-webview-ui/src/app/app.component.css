@@ -94,4 +94,8 @@ main {
   font-size: 8px;
 }
 
+.ascii-art--error {
+  color: #FF0000;
+}
+
 
