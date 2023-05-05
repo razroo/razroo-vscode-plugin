@@ -28,7 +28,7 @@ async function refreshAccessToken(context, isProduction: boolean) {
       await context.globalState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
       await context.globalState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
       await vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
-      return userData;
+      return userData.access_token;
     });
   };
 
