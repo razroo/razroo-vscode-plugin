@@ -18,11 +18,12 @@ export const getUserOrganizations = async (
       }
     };
     try {
+      const accessToken = await getAccessToken(context, isProduction);
       const response = await axios.post(url, body, {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'charset=utf-8',
-          Authorization: getAccessToken(context, isProduction),
+          Authorization: `${accessToken}`
         },
       });
       return response?.data?.data?.userOrganizations;
