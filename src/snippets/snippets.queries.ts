@@ -1,8 +1,10 @@
+import * as vscode from 'vscode';
+import { getAccessToken } from "../graphql/expired";
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from "../graphql/awsConstants";
 import axios from 'axios';
 
 export async function getSnippetTemplates(search: string, orgId: string, 
-    path: string, isProduction: boolean, accessToken: string) {
+    path: string, isProduction: boolean, context: vscode.ExtensionContext) {
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
       query: `query templates($search: String, $orgId: String, $path: String) {
@@ -34,6 +36,7 @@ export async function getSnippetTemplates(search: string, orgId: string,
       }
     };
     try {
+      const accessToken = await getAccessToken(context, isProduction);
       const response = await axios.post(url, body, {
         headers: {
           'Content-Type': 'application/json',
