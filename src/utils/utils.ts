@@ -34,6 +34,7 @@ export const validateEmail = (email: string) => {
   return res.test(String(email).toLowerCase()) ? undefined : email;
 };
 
+let menu = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 export const saveFiles = async (
   data: any,
   context: vscode.ExtensionContext,
@@ -68,18 +69,6 @@ export const saveFiles = async (
   var zip = new AdmZip(files);
   const zipEntries = zip.getEntries();
 
-  if(runPreviewGeneration) {
-    const previewStateObject = {
-      templateOrgId: template.orgId,
-      pathId: template.pathId,
-      recipeId: template.recipeId,
-      stepId: template.id,
-      type: template.type
-    };
-    
-    await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
-  }
-
   if (type === 'Snippet') {
     writeCodeSnippet(context, zipEntries[0], template, isProduction);
     return;
@@ -93,6 +82,23 @@ export const saveFiles = async (
     if (extname(fileName) === ".sh") {
       setCommandStatus(false);
       const commandToExecute = zipEntry.getData().toString("utf8");
+      if(runPreviewGeneration) {
+        const previewStateObject = {
+          templateOrgId: template.orgId,
+          pathId: template.pathId,
+          recipeId: template.recipeId,
+          stepId: template.id,
+          type: template.type,
+          title: template.title,
+        };
+        menu.text = `$(rocket) Build Preview and Upload ${template.title}`;
+        menu.command = 'extension.buildPreviewAndUpload';
+        menu.show();
+        
+        await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
+      } else {
+        menu.hide();
+      }
       await runRazrooCommand(commandToExecute, parametersParsed,isProduction, template, runPreviewGeneration, folderRoot, context);
     }
 
@@ -121,6 +127,24 @@ export const saveFiles = async (
               vscode.env.openExternal(vscode.Uri.parse(`${razrooStepURL}`));
             };
           });
+
+          if(runPreviewGeneration) {
+            const previewStateObject = {
+              templateOrgId: template.orgId,
+              pathId: template.pathId,
+              recipeId: template.recipeId,
+              stepId: template.id,
+              type: template.type,
+              title: template.title,
+            };
+            menu.text = `$(rocket) Build Preview and Upload ${template.title}`;
+            menu.command = 'extension.buildPreviewAndUpload';
+            menu.show();
+            
+            await context.workspaceState.update(RAZROO_PREVIEW_STATE, previewStateObject);
+          } else {
+            menu.hide();
+          }
 
           if(runUnitTests) {
             setTimeout(async () => {
@@ -263,7 +287,6 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
       });
     }
   } else {
-    console.log('else block for orgId is called');
     await projectsProvider?.view?.webview.postMessage({
       command: "initAuthData",
       projectConfigs,
