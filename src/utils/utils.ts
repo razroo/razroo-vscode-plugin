@@ -13,7 +13,6 @@ import {
   getFileS3,
 } from './request.utils';
 import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS, RAZROO_PREVIEW_STATE } from '../constants';
-// import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
 import { filterIgnoredDirs } from './directory.utils';
@@ -24,7 +23,7 @@ import { determineFilePathParameter, effects, getVersionAndNameString, replaceCu
 import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
-import { refreshAccessToken } from 'graphql/expired';
+import { refreshAccessToken } from '../graphql/expired';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
