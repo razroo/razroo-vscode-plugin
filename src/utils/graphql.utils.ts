@@ -49,6 +49,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
                 recipeId
                 id
                 type
+                title
                 updates
                 filesToGenerate
                 baseCommunityPath

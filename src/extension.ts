@@ -197,12 +197,6 @@ export async function activate(context: vscode.ExtensionContext) {
     await generatePreviewFiles(workspaceFolder, accessToken, isProduction, previewStateObject, userOrgId);
   });
 
-
-  let menu = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-  menu.text = "$(rocket) Build Preview and Upload";
-  menu.command = 'extension.buildPreviewAndUpload';
-  menu.show();
-
   context.subscriptions.push(tryToAuthCommmand);
   context.subscriptions.push(connectProjectsTryToAuthCommmand);
   context.subscriptions.push(auth0Authentication);
