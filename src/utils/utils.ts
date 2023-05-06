@@ -7,14 +7,12 @@ import {
   removeVsCodeInstanceMutation,
   subscribeToGenerateVsCodeDownloadCodeSub,
   updatePrivateDirectoriesRequest,
-  auth0Client,
   setCommandStatus
 } from './graphql.utils';
 import {
   getFileS3,
 } from './request.utils';
 import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, PROD_APP_URL, DEV_APP_URL, MEMENTO_SELECTED_PROJECTS, RAZROO_PREVIEW_STATE } from '../constants';
-// import parseGitignore from 'parse-gitignore';
 import process from 'process';
 import { editFiles } from './edit.utils';
 import { filterIgnoredDirs } from './directory.utils';
@@ -25,6 +23,7 @@ import { determineFilePathParameter, effects, getVersionAndNameString, replaceCu
 import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
+import { refreshAccessToken } from '../graphql/expired';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -232,22 +231,6 @@ export const onVSCodeClose = (context: vscode.ExtensionContext, isProduction: bo
   }
 };
 
-async function refreshAuth0Token(context, refreshToken, userId, orgId, isProduction: boolean, projectsProvider, selectedProjects) {
-  return auth0Client(isProduction).refreshToken({ refresh_token: refreshToken }, async function (err, userData) {
-    if (err) {
-      vscode.commands.executeCommand(COMMAND_AUTH0_AUTH, {selectedProjects});
-    }
-
-    await context.globalState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
-    await context.globalState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await updatePrivateDirectoriesInVSCodeAuthentication(userData.access_token, isProduction, userId, orgId, selectedProjects);
-    await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId });
-    vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-    showInformationMessage('User successfully authenticated with Razroo.');
-    return userData;
-  });
-};
-
 export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: boolean, projectsProvider, projectConfigs: ProjectConfig[], orgIdParam?: string) => {
   const accessToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
   const refreshToken: string | undefined = await context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN);
@@ -256,36 +239,27 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
   if (accessToken && refreshToken && userId && orgId) {
     if(isTokenExpired(accessToken)) {
-      await refreshAuth0Token(context, refreshToken, userId, orgId, isProduction, projectsProvider, selectedProjects);
-      await projectsProvider?.view?.webview.postMessage({
-        command: "initAuthData",
-        projectConfigs,
-        selectedProjects,
-        userId,
-        orgId,
-      });
+      const newAccessToken = await refreshAccessToken(context, isProduction);
     }
-    else {
-      if(selectedProjects) {
-        await updatePrivateDirectoriesInVSCodeAuthentication(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId, selectedProjects);
-        await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId});
-      }
-      vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
-      await projectsProvider?.view?.webview.postMessage({
-        command: "initAuthData",
-        projectConfigs,
-        selectedProjects,
-        userId,
-        orgId
-      });
-      showInformationMessage('User successfully connected to Razroo.');
-      context.globalState.update(MEMENTO_RAZROO_ORG_ID, orgId);
-      const userOrganizations = await getUserOrganizations(userId, isProduction, context);
-      await projectsProvider?.view?.webview.postMessage({
-        command: "setOrganizations",
-        organizations: userOrganizations
-      });
+    if(selectedProjects) {
+      await updatePrivateDirectoriesInVSCodeAuthentication(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction, userId, orgId, selectedProjects);
+      await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, projectsProvider, selectedProjects, userId});
     }
+    vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
+    await projectsProvider?.view?.webview.postMessage({
+      command: "initAuthData",
+      projectConfigs,
+      selectedProjects,
+      userId,
+      orgId
+    });
+    showInformationMessage('User successfully connected to Razroo.');
+    context.globalState.update(MEMENTO_RAZROO_ORG_ID, orgId);
+    const userOrganizations = await getUserOrganizations(userId, isProduction, context);
+    await projectsProvider?.view?.webview.postMessage({
+      command: "setOrganizations",
+      organizations: userOrganizations
+    });
   } else {
     await projectsProvider?.view?.webview.postMessage({
       command: "initAuthData",

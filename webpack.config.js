@@ -8,9 +8,7 @@
 'use strict';
 
 const path = require('path');
-const merge = require('merge-options');
 const webpack = require('webpack');
-const { emitWarning } = require('process');
 
 /**@type {import('webpack').Configuration}*/
 module.exports =  function withDefaults(extConfig) {
@@ -60,17 +58,6 @@ module.exports =  function withDefaults(extConfig) {
         },
         module: {
             rules: [
-              {
-                test: path.resolve(
-                  __dirname,
-                  'node_modules/auth0-deploy-cli/lib/index.js'
-                ),
-                loader: 'string-replace-loader',
-                options: {
-                  search: '#!/usr/bin/env node',
-                  replace: '',
-                },
-              },
                 {
                     test: /\.ts$/,
                     exclude: /node_modules/,

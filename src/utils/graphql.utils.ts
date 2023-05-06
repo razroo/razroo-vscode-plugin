@@ -1,14 +1,13 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import { AUTH0_URL, DEV_AUTH0_URL, AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID } from '../constants';
+import { AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, AUTH0_DOMAIN, DEV_AUTH0_URL, AUTH0_AUDIENCE } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
 import * as vscode from 'vscode';
-import { AuthenticationClient } from 'auth0';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 let commandIsCalled = true;
 
 export function setCommandStatus(commandStatus: boolean) {
@@ -273,9 +272,33 @@ export const saveTestOutputMutation = (accessToken: string, isProduction: boolea
     });
 };
 
-export const auth0Client = (isProduction: boolean) => {
-  return new AuthenticationClient({
-    domain: isProduction ? AUTH0_URL : DEV_AUTH0_URL,
-    clientId: isProduction ? AUTH0_CLIENT_ID : AUTH0_DEV_CLIENT_ID
-  });
-};
+export async function refreshAuth0Token(refreshToken: string, isProduction: boolean) {
+  const options = {
+    method: "POST",
+    url: isProduction ? `https://${AUTH0_DOMAIN}/oauth/token` : `https://${DEV_AUTH0_URL}/oauth/token` ,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    headers: { "content-type": "application/x-www-form-urlencoded" },
+    data: new URLSearchParams({
+      grant_type: "refresh_token",
+      client_id: isProduction ? AUTH0_CLIENT_ID : AUTH0_DEV_CLIENT_ID,
+      refresh_token: refreshToken as string,
+      audience: AUTH0_AUDIENCE as string,
+    }),
+  };
+  const response = await axios.request(options as AxiosRequestConfig);
+  try {
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      (response.data);
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      console.log(e.message);
+      throw e;
+    }
+    else {
+      throw e;
+    }
+  }
+}
