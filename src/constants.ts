@@ -21,6 +21,7 @@ export const COMMAND_LOG_OUT_USER = 'extension.logoutUser';
 export const AUTH0_URL = "id.razroo.com";
 export const AUTH0_CLIENT_ID = 'A0tLRYYfyGGtwyC4odVh50jmUZKW8bVJ';
 export const AUTH0_DOMAIN = 'dev-18od1d2m.us.auth0.com';
+export const AUTH0_AUDIENCE = 'https://dev-18od1d2m.us.auth0.com/api/v2/';
 
 export const DEV_AUTH0_URL = "dev.id.razroo.com";
 export const AUTH0_DEV_CLIENT_ID = 'Ar7y21NCpC8KhP9bHN1iBVTctXRYgNTY';
