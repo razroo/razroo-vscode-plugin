@@ -3,7 +3,7 @@
   "publisher": "Razroo",
   "displayName": "Razroo Codegen",
   "description": "The Go To Premium Code Generation Tool For Production-Ready Applications",
-  "version": "2.9.2",
+  "version": "2.9.3",
   "private": true,
   "engines": {
     "vscode": "^1.73.0"
