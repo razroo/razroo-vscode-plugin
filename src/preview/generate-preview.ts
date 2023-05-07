@@ -14,11 +14,16 @@ export async function generatePreviewFiles(workspaceFolder: string, accessToken:
     const distFolder = path.join(workspaceFolder, 'dist');
     const isWindows = process.platform === 'win32';
     const rmCommand = isWindows ? 'rimraf' : 'rm -rf';
-    const execution = new vscode.ShellExecution(`${rmCommand} ${distFolder}; cd ${workspaceFolder}; npm run build`);
-    const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
-    // These two functions in tandem allow us to figure out when task completed
-    const buildTasks = getBuildTasks();
-    await executeBuildTask(task, accessToken, isProduction, workspaceFolder, previewStateObject, userOrgId);
+    if(previewStateObject && previewStateObject.type === 'Command') {
+      await readAndUploadTerminalFile(workspaceFolder, previewStateObject, userOrgId, isProduction, accessToken);
+      showInformationMessage(`Generate command preview has run successfully.`);
+    } else {
+      const execution = new vscode.ShellExecution(`${rmCommand} ${distFolder}; cd ${workspaceFolder}; npm run build`);
+      const task = new vscode.Task({ type: "shell" }, vscode.TaskScope.Workspace, 'Razroo Terminal', 'Razroo', execution);
+      // These two functions in tandem allow us to figure out when task completed
+      const buildTasks = getBuildTasks();
+      await executeBuildTask(task, accessToken, isProduction, workspaceFolder, previewStateObject, userOrgId);
+    }   
 }
 
 async function executeBuildTask(task: vscode.Task, accessToken: string, isProduction: boolean, workspaceFolder: string, previewStateObject: PreviewStateObject, userOrgId: string) {
@@ -33,13 +38,10 @@ async function executeBuildTask(task: vscode.Task, accessToken: string, isProduc
                 // saveTestOutputMutation(accessToken, isProduction, testType, testOutputContent, template.orgId, template.pathId, template.recipeId, template.id ).then((data:any)=>{
                 //     console.log('data from mutation: ', data?.data?.saveTestOutput);
                 // });
-                if(previewStateObject && previewStateObject.type === 'Command') {
-                  await readAndUploadTerminalFile(workspaceFolder, previewStateObject, userOrgId, isProduction, accessToken);
-                } else {
-                  const distFolder = getDistFolder(workspaceFolder);
-                  if(distFolder) {
-                    await readFilesInDistFolder(distFolder, previewStateObject, userOrgId, isProduction, accessToken);
-                  }
+                
+                const distFolder = getDistFolder(workspaceFolder);
+                if(distFolder) {
+                  await readFilesInDistFolder(distFolder, previewStateObject, userOrgId, isProduction, accessToken);
                 }
 
                 disposable.dispose();
