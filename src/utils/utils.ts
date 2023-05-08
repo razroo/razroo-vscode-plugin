@@ -113,7 +113,11 @@ export const saveFiles = async (
           unitTestFileName = fileNameandPath;
         }
         if (index === zipEntries.length - 1) {
-          effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
+          try {
+            effects(fullPathOfFile, filePathParameter, coreProgrammingLanguage, parameters);
+          } catch (error) {
+            console.error(`Error in effect: ${error}`);
+          }
           const razrooStepURL = `${isProduction ? PROD_APP_URL : DEV_APP_URL}/${template.orgId}/${template.pathId}/${template.recipeId}/${template.id}`;
 
           const openLinkCommand = {
