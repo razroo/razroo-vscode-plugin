@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import { AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, AUTH0_DOMAIN, DEV_AUTH0_URL, AUTH0_AUDIENCE } from '../constants';
+import { AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, AUTH0_DOMAIN, DEV_AUTH0_URL, AUTH0_AUDIENCE, AUTH0_URL } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
 import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
@@ -275,7 +275,7 @@ export const saveTestOutputMutation = (accessToken: string, isProduction: boolea
 export async function refreshAuth0Token(refreshToken: string, isProduction: boolean) {
   const options = {
     method: "POST",
-    url: isProduction ? `https://${AUTH0_DOMAIN}/oauth/token` : `https://${DEV_AUTH0_URL}/oauth/token` ,
+    url: isProduction ? `https://${AUTH0_URL}/oauth/token` : `https://${DEV_AUTH0_URL}/oauth/token` ,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     headers: { "content-type": "application/x-www-form-urlencoded" },
     data: new URLSearchParams({
