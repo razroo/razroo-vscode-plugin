@@ -31,6 +31,10 @@ import { getAuth0LogoutUrl } from './utils/authentication/authentication';
 import { resetWorkspaceState } from './utils/state.utils';
 import { generatePreviewFiles } from './preview/generate-preview';
 import { PreviewStateObject } from './preview/preview.interface';
+import { createVSCodeIdToken } from "./utils/token/token";
+import { MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_REFRESH_TOKEN } from "./constants";
+import { getAccessToken } from "./graphql/expired";
+import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -321,5 +325,13 @@ export async function deactivate() {
   const context = await vscode.commands.executeCommand('getContext') as vscode.ExtensionContext;
   const isProduction = isProductionFunc(context);
   vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
-  await onVSCodeClose(context, isProduction);
+  const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
+  const accessToken = await getAccessToken(context, isProduction);
+  
+  for(let selectedProject of selectedProjects) {
+    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    return await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
+  }
+  return {};
 };
