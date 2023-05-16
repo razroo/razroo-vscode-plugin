@@ -153,12 +153,13 @@ export const updatePrivateDirectoriesRequest = async ({
   userId,
   orgId,
   packageJsonParams,
-  versionControlParams
+  versionControlParams,
+  absoluteFolderRoot
 }: any) => {
   const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
   const body = {
-    query: `mutation updateVSCodeAuthentication($userId: String!, $orgId: String!, $projectName: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: VersionControlsParamsInput) {
-        updateVSCodeAuthentication(userId: $userId, orgId: $orgId, projectName: $projectName, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams) {
+    query: `mutation updateVSCodeAuthentication($userId: String!, $orgId: String!, $projectName: String!, $vsCodeInstanceId: String!, $privateDirectories: String, $packageJsonParams: AWSJSON, $versionControlsParams: VersionControlsParamsInput, $absoluteFolderRoot: String) {
+        updateVSCodeAuthentication(userId: $userId, orgId: $orgId, projectName: $projectName, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams, absoluteFolderRoot: $absoluteFolderRoot) {
           privateDirectories
           orgId
           projectName
@@ -170,6 +171,7 @@ export const updatePrivateDirectoriesRequest = async ({
               defaultProject
             }
           }
+          absoluteFolderRoot
           versionControlsParams {
             gitOrigin
             gitBranch
@@ -184,6 +186,7 @@ export const updatePrivateDirectoriesRequest = async ({
       privateDirectories: `${privateDirectories}`,
       packageJsonParams: packageJsonParams,
       versionControlsParams: versionControlParams,
+      absoluteFolderRoot
     }
   };
   try {
