@@ -21,7 +21,10 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             const app = express();
             app.use(cors());
             app.use(express.json());
-            app.post('/callback', (req, res) => {
+            app.post('/callback/', (req, res) => {
+              res.header('Access-Control-Allow-Origin', '*');
+              res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+              res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
                 if (!done) {
                     const { accessToken, refreshToken, userId, orgId, error } = req.body;
                     // Have it error out if idtoken, refreshtoken, userId and orgId do not exists
