@@ -40,7 +40,7 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
                 }
             });
 
-            server = app.listen(8350);
+            server = app.listen(8350, '127.0.0.1');
         } catch (error: any) {
             reject(error);
         }
