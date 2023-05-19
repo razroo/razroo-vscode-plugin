@@ -21,7 +21,7 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
             const app = express();
             app.use(cors());
             app.use(express.json());
-            app.post('/callback/', (req, res) => {
+            app.post('/callback', (req, res) => {
               res.header('Access-Control-Allow-Origin', '*');
               res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
               res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -40,7 +40,7 @@ export const createDisposableAuthServer = (timeout: number = AUTH_TIMEOUT_MS) =>
                 }
             });
 
-            server = app.listen(8350, '127.0.0.1');
+            server = app.listen(8350);
         } catch (error: any) {
             reject(error);
         }
