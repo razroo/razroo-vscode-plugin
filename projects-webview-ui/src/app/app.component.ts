@@ -86,6 +86,8 @@ export class AppComponent implements OnInit {
           return;
         case "sendAuthData":
           this.authIsLoading = false;
+          this.organizations = message.organizations;
+          this.organizationsLoading = false;
           this.isAuthenticated = true;
           this.orgId = message.orgId;
           this.userId = message.userId;
