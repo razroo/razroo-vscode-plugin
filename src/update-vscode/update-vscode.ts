@@ -6,6 +6,7 @@ import { subscribeToGenerateVsCodeDownloadCodeSub } from "../utils/graphql.utils
 import { getAuth0Url } from '../utils/authentication/authentication';
 import { createVSCodeIdToken } from '../utils/token/token';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
+import { getUserOrganizations } from '../projects/organizations/organizations.service';
 
 
 export async function updateVsCode(context: vscode.ExtensionContext, isProduction: boolean, selectedProjects: ProjectConfig[], projectsProvider: any) {
@@ -29,9 +30,12 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
             }
           }
           vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
-          if(projectsProvider) { 
+          if(projectsProvider) {
+            const userOrganizations = await getUserOrganizations(userId, isProduction, context);
             await projectsProvider?.view?.webview.postMessage({
               command: "sendAuthData",
+              organizations: userOrganizations,
+              selectedProjects: selectedProjects,
               userId: userId,
               orgId: orgId
             });
