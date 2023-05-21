@@ -1,17 +1,19 @@
 import { MEMENTO_RAZROO_ORG_ID } from './../constants';
-import client from '../graphql/subscription';
+import { authDataClient } from '../graphql/subscription';
 import gql from 'graphql-tag';
 
-export async function subscribeToSendAuthData(context, isProduction: boolean, uuid: string) {
+export const subscribeToSendAuthData = async ({
+  context, isProduction, uuid
+}: any) => {
   //Subscribe with appsync client
-  client(undefined as any, isProduction)
+  authDataClient(isProduction)
     .hydrated()
-    .then((client) => {
+    .then(async function (client) {
+      console.log('then is called');
       //Now subscribe to results
       const sendAuthDataSub$ = client.subscribe({
-        query: gql(`
-        subscription SendAuthDataSub {
-          sendAuthDataSub(uuid: "${uuid}") {
+        query: gql(`subscription sendAuthDataSub($uuid: String!) {
+            sendAuthDataSub(uuid: $uuid) {
               accessToken
               orgId
               refreshToken
@@ -19,7 +21,10 @@ export async function subscribeToSendAuthData(context, isProduction: boolean, uu
               uuid
             }
           }
-        `)
+        `),
+        variables: {
+          uuid: uuid
+        }
       });
 
       const error = async function error(data: any) {
@@ -29,8 +34,16 @@ export async function subscribeToSendAuthData(context, isProduction: boolean, uu
 
       const realtimeResults = async function realtimeResults(data: any) {
         // if a command is running, wait for it to complete until proceeding
+        const sendAuthData = data;
         console.log('success');
-        console.log(data);
+        console.log(sendAuthData);
+      };
+
+      const complete = async function realtimeResults(data: any) {
+        // if a command is running, wait for it to complete until proceeding
+        const sendAuthData = data;
+        console.log('success');
+        console.log(sendAuthData);
       };
 
 
@@ -39,9 +52,11 @@ export async function subscribeToSendAuthData(context, isProduction: boolean, uu
         complete: console.log,
         error: error,
       });
-    }).catch(async function (error) {
+    }).catch((error) => {
       // This function will be called if the client function returns a rejected Promise.
+      console.error('rejected promise');
       console.error(error);
 
     });
-  }
+};
+

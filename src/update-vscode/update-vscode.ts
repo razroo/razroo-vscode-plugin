@@ -8,15 +8,17 @@ import { createVSCodeIdToken } from '../utils/token/token';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
 import { getUserOrganizations } from '../projects/organizations/organizations.service';
 import { v4 as uuidv4 } from 'uuid';
+import { subscribeToSendAuthData } from '../auth/auth-data';
 
 export async function updateVsCode(context: vscode.ExtensionContext, isProduction: boolean, selectedProjects: ProjectConfig[], projectsProvider: any) {
     const loginUrl = getAuth0Url(isProduction);
     
     let isInProgress = true;
     let disposeServer;
+    const uuid = uuidv4();
+    const urlWithUuid = `${loginUrl}/${uuid}`;
+    await subscribeToSendAuthData({context, isProduction, uuid});
     try {
-        const uuid = uuidv4();
-        const urlWithUuid = `${loginUrl}/${uuid}`;
         isInProgress && await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlWithUuid));
         const { createServerPromise, dispose } = createDisposableAuthServer();
         disposeServer = dispose;
@@ -42,12 +44,6 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
             });
           }
         }
-        // if(vsCodeInstanceId === 'no-git-found') {
-        //   showInformationMessage('Please initialize a git repo to get started');
-        // }
-        // else {
-        
-        // }
     } catch (error) {
         vscode.window.showErrorMessage(error as any);
     } finally {
