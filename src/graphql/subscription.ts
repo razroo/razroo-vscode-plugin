@@ -5,11 +5,9 @@
 // https://github.com/matthew-andrews/isomorphic-fetch/issues/125
 // Require exports file with endpoint and auth info
 import { URL_GRAPHQL, REGION, URL_PROD_GRAPHQL } from './awsConstants';
-
 // Require AppSync module
 import { AWSAppSyncClient, AUTH_TYPE } from 'aws-appsync';
-
-
+import { DEV_AWS_API_KEY, PROD_AWS_API_KEY } from '../constants';
 
 // Set up Apollo client
 function client(accessToken: string, isProduction: boolean) {
@@ -35,7 +33,7 @@ export function authDataClient(isProduction: boolean) {
     region: REGION,
     auth: {
       type,
-      apiKey: 'da2-pineeux4cnaobnb5udeum2o5de'
+      apiKey: isProduction ? PROD_AWS_API_KEY : DEV_AWS_API_KEY
     },
     disableOffline: true
   });
