@@ -17,10 +17,9 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
     let disposeServer;
     const uuid = uuidv4();
     const urlWithUuid = `${loginUrl}/${uuid}`;
-    await subscribeToSendAuthData({context, isProduction, uuid});
     try {
         isInProgress && await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlWithUuid));
-        const { createServerPromise, dispose } = createDisposableAuthServer();
+        const { createServerPromise, dispose } = createDisposableAuthServer(isProduction, uuid);
         disposeServer = dispose;
         const { accessToken = '', refreshToken = '', userId = '', orgId = '' } = isInProgress ? await createServerPromise : {};
         setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);

@@ -3,7 +3,7 @@ import { authDataClient } from '../graphql/subscription';
 import gql from 'graphql-tag';
 
 export const subscribeToSendAuthData = async ({
-  context, isProduction, uuid
+  isProduction, uuid, resolve
 }: any) => {
   //Subscribe with appsync client
   authDataClient(isProduction)
@@ -34,9 +34,10 @@ export const subscribeToSendAuthData = async ({
 
       const realtimeResults = async function realtimeResults(data: any) {
         // if a command is running, wait for it to complete until proceeding
-        const sendAuthData = data;
+        const sendAuthData = data.data.sendAuthDataSub;
         console.log('success');
         console.log(sendAuthData);
+        resolve({...sendAuthData});
       };
 
       const complete = async function realtimeResults(data: any) {
