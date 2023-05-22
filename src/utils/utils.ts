@@ -24,6 +24,7 @@ import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
 import { refreshAccessToken } from '../graphql/expired';
+import { switchToActiveBranch } from '../preview/switch-branch';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -132,6 +133,7 @@ export const saveFiles = async (
           });
 
           if(runPreviewGeneration) {
+            await switchToActiveBranch(template.orgId, template.pathId, template.recipeId, template.id);
             const previewStateObject = {
               templateOrgId: template.orgId,
               pathId: template.pathId,
