@@ -28,8 +28,6 @@ export async function disconnectVsCodeInstance(accessToken: string, userId: stri
           Authorization: `${accessToken}`,
         },
       });
-      console.debug('response');
-      console.debug(response);
       return response?.data?.data?.removeVSCodeInstance;
     } catch (error) {
       console.log('error removeVSCodeInstance', error);
