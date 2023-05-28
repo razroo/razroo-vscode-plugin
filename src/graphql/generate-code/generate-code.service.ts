@@ -4,13 +4,13 @@ import { GenerateCodeParameters } from './../../interfaces/generate-code.interfa
 import { GenerateVsCodeDownloadCode } from "./generate-code.mutations";
 import * as vscode from 'vscode';
 import axios from 'axios';
+import { getAccessToken } from '../../graphql/expired';
 
 export const generateVsCodeDownloadCode = async (
     generateVsCodeDownloadCodeParameters: GenerateCodeParameters,
     context: vscode.ExtensionContext,
     isProduction: boolean
 ) => {
-    const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
     const url = isProduction === true ? URL_PROD_GRAPHQL : URL_GRAPHQL;
     const body = {
       query: GenerateVsCodeDownloadCode,
@@ -19,6 +19,7 @@ export const generateVsCodeDownloadCode = async (
       }
     };
     try {
+      const accessToken = await getAccessToken(context, isProduction);
       const response = await axios.post(url, body, {
         headers: {
           'Content-Type': 'application/json',
