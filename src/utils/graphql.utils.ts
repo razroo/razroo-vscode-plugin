@@ -162,6 +162,7 @@ export const updatePrivateDirectoriesRequest = async ({
         updateVSCodeAuthentication(userId: $userId, orgId: $orgId, projectName: $projectName, vsCodeInstanceId: $vsCodeInstanceId, privateDirectories: $privateDirectories, packageJsonParams: $packageJsonParams, versionControlsParams: $versionControlsParams, absoluteFolderRoot: $absoluteFolderRoot) {
           privateDirectories
           orgId
+          userId
           projectName
           vsCodeInstanceId
           packageJsonParams {
