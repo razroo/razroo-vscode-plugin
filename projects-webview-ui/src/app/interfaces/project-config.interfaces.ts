@@ -1,5 +1,5 @@
 export interface ProjectConfig {
-  packageJsonParams?: any;
+  packageJsonParams: any;
   versionControlParams?: VersionControlParams;
 }
 
