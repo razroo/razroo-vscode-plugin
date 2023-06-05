@@ -8,8 +8,6 @@ export class IsProjectSelectedPipe implements PipeTransform {
   transform(projectOption: ProjectConfig, selectedProjects?: ProjectConfig[]): unknown {
     if(projectOption && selectedProjects) {
       const condition = selectedProjects.some(option => option.packageJsonParams?.name === projectOption.packageJsonParams.name);
-      console.log('condition');
-      console.log(condition);
       return condition;
     }
     else {

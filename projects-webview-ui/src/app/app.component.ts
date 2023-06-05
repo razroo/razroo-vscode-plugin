@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
   loggingOutLoading = false;
   projectConfigs: ProjectConfig[] = [];
   selectedProjects?: any[] = [];
+  originalSelectedProjects?: any[] = [];
   userId?: string = undefined;
   orgId?: string = undefined;
   tempOrgId?: string = undefined;
@@ -75,6 +76,7 @@ export class AppComponent implements OnInit {
         case "initAuthData":
           this.authIsLoading = false;
           this.isAuthenticated = true;
+          this.originalSelectedProjects = message.selectedProjects;
           this.selectedProjects = message.selectedProjects;
           this.projectConfigs = this.initToggleSelectedProjects(message.projectConfigs, message.selectedProjects);
           this.userId = message.userId;
@@ -103,6 +105,7 @@ export class AppComponent implements OnInit {
 
   connectProjects(selectedProjects?: ProjectConfig[]) {
     this.authIsLoading = true;
+    this.originalSelectedProjects = this.selectedProjects;
     vscode.postMessage({
       command: "connectProjects",
       selectedProjects: selectedProjects,
