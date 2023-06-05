@@ -13,7 +13,7 @@
       </ng-container>
     </vscode-dropdown>
   
-    <vscode-button class="App__button" [disabled]="authIsLoading || !(selectedProjects?.length)" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
+    <vscode-button class="App__button" [disabled]="authIsLoading || (!(selectedProjects?.length) && !(originalSelectedProjects?.length))" (click)="connectProjects(selectedProjects)">{{authIsLoading ? 'Connecting...' : 'Connect'}}</vscode-button>
     <ng-container *ngIf="orgId && userId">
       <label for="org_dropdown" class="App__org">
         <p *ngIf="orgId !== userId"><i>You are <a href="http://razroo.com" target="_blank">logged into {{organizations.length ? (orgId | zetaOrganizations : organizations)[0].displayName : ''}}</a></i></p>
