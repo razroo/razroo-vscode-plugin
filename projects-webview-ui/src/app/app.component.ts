@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
   loggingOutLoading = false;
   projectConfigs: ProjectConfig[] = [];
   selectedProjects?: any[] = [];
-  originalSelectedProjects?: any[] = [];
+  originalSelectedProjects?: ProjectConfig[] = [];
   userId?: string = undefined;
   orgId?: string = undefined;
   tempOrgId?: string = undefined;
@@ -106,6 +106,9 @@ export class AppComponent implements OnInit {
   connectProjects(selectedProjects?: ProjectConfig[]) {
     this.authIsLoading = true;
     // order here is important
+    const disconnectedProjects = this.disconnectedProjects(selectedProjects);
+    console.log('disconnectedProjects');
+    console.log(disconnectedProjects);
     this.originalSelectedProjects = this.selectedProjects;
     vscode.postMessage({
       command: "connectProjects",
