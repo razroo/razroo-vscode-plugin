@@ -107,12 +107,11 @@ export class AppComponent implements OnInit {
     this.authIsLoading = true;
     // order here is important
     const disconnectedProjects = this.disconnectedProjects(selectedProjects);
-    console.log('disconnectedProjects');
-    console.log(disconnectedProjects);
     this.originalSelectedProjects = this.selectedProjects;
     vscode.postMessage({
       command: "connectProjects",
       selectedProjects: selectedProjects,
+      disconnectedProjects: disconnectedProjects,
       orgId: this.tempOrgId ? this.tempOrgId : this.orgId
     });
   }
@@ -122,7 +121,7 @@ export class AppComponent implements OnInit {
     if(!selectedProjects || !originalProjects) {
       return [];
     }
-    return originalProjects.filter(originalProject => !selectedProjects.some(selectedProject => originalProject.id === selectedProject.id));
+    return originalProjects.filter(originalProject => !selectedProjects.some(selectedProject => originalProject?.versionControlParams?.gitOrigin === selectedProject?.versionControlParams?.gitOrigin));
   }
 
   changeOrgDropdownValue($event: any) {

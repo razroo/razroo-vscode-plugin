@@ -77,11 +77,11 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
     // Handle messages sent from the extension
     webview.onDidReceiveMessage(
       (message: any) => {
-        const {command, selectedProjects, text, data, orgId} = message;
+        const {command, selectedProjects, disconnectedProjects, text, data, orgId} = message;
         
         switch (command) {
           case "connectProjects":
-            vscode.commands.executeCommand(COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, {selectedProjects, orgId});
+            vscode.commands.executeCommand(COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, {selectedProjects, disconnectedProjects, orgId});
             return;
           case "initialAuthInfoRequest":
             vscode.commands.executeCommand(COMMAND_TRY_TO_AUTH);
