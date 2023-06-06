@@ -105,12 +105,21 @@ export class AppComponent implements OnInit {
 
   connectProjects(selectedProjects?: ProjectConfig[]) {
     this.authIsLoading = true;
+    // order here is important
     this.originalSelectedProjects = this.selectedProjects;
     vscode.postMessage({
       command: "connectProjects",
       selectedProjects: selectedProjects,
       orgId: this.tempOrgId ? this.tempOrgId : this.orgId
     });
+  }
+
+  disconnectedProjects(selectedProjects?: ProjectConfig[]) {
+    const originalProjects = this.originalSelectedProjects;
+    if(!selectedProjects || !originalProjects) {
+      return [];
+    }
+    return originalProjects.filter(originalProject => !selectedProjects.some(selectedProject => originalProject.id === selectedProject.id));
   }
 
   changeOrgDropdownValue($event: any) {
