@@ -153,9 +153,19 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const connectProjectsTryToAuthCommmand = vscode.commands.registerCommand(
     COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
-    async({selectedProjects, orgId}) => {
+    async({selectedProjects, disconnectedProjects, orgId}) => {
       try {
         context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
+        
+        // disconnects projects before they are connected
+        if(disconnectedProjects && disconnectedProjects.length) {
+          for(let disconnectedProject of disconnectedProjects) {
+            const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+            const accessToken = await getAccessToken(context, isProduction);
+            const vsCodeInstanceId = createVSCodeIdToken(userId, disconnectedProject.versionControlParams);
+            return await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
+          }
+        }
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
       } catch (error) {
         console.log('COMMAND_TRY_TO_AUTH ERROR');
