@@ -82,6 +82,10 @@ export class AppComponent implements OnInit {
           this.userId = message.userId;
           this.orgId = message.orgId;
           return;
+        case "projectsDisconnected":
+          this.selectedProjects = message.selectedProjects;
+          this.authIsLoading = false;
+          return;
         case "setOrganizations":
           this.organizations = message.organizations;
           this.organizationsLoading = false;
@@ -96,7 +100,6 @@ export class AppComponent implements OnInit {
           return;
         case "loggedOut":
           this.loggingOutLoading = false;
-          this.isAuthenticated = false;
           this.authIsLoading = false;
           return;
       }

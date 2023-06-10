@@ -163,7 +163,14 @@ export async function activate(context: vscode.ExtensionContext) {
             const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
             const accessToken = await getAccessToken(context, isProduction);
             const vsCodeInstanceId = createVSCodeIdToken(userId, disconnectedProject.versionControlParams);
-            return await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
+            await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
+          }
+          if(!selectedProjects && !selectedProjects.length) {
+            // there are selected projects so event emitter will happen here
+            await projectsProvider?.view?.webview.postMessage({
+              command: "projectsDisconnected",
+              selectedProjects
+            });
           }
         }
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
