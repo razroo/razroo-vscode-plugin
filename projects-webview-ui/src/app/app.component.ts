@@ -35,9 +35,19 @@ export class AppComponent implements OnInit {
   userId?: string = undefined;
   orgId?: string = undefined;
   tempOrgId?: string = undefined;
+  tempStarterId?: string = undefined;
   projectOptions = new FormControl('');
+  startersDropdown = new FormControl('');
   orgDropdown = new FormControl('');
   organizations: any[] = [];
+  razrooStarters: any[] = [
+    {
+      id: 'angular',
+      batchId: 'starter',
+      orgId: 'community',
+      title: 'Angular'
+    }
+  ];
 
   toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
     const projectName = projectOption.packageJsonParams.name;
@@ -129,6 +139,10 @@ export class AppComponent implements OnInit {
 
   changeOrgDropdownValue($event: any) {
     this.tempOrgId = $event.target.value;
+  }
+
+  changeStarterDropdownValue($event: any) {
+    this.tempStarterId = $event.target.value;
   }
 
   logout() {

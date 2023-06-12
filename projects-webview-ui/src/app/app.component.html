@@ -46,6 +46,15 @@ _______   ________  ________  ________  ________
       </pre>
       Will need atleast one project that uses Git in your VSCode Workspace to use Razroo Projects.
     </div>
+    <hr class="starters-hr">
+    <div class="App__new-project">
+      <div>Use Razroo to create a new project</div>
+      <vscode-dropdown formControlName="startersDropdown" (change)="changeStarterDropdownValue($event)" class="App__organizations-dropdown" class="starters_dropdown">
+        <ng-container *ngFor="let starter of razrooStarters">
+          <vscode-option [value]="starter">{{starter?.title}}</vscode-option>
+        </ng-container>
+      </vscode-dropdown>
+    </div>
     </ng-container>
   </ng-template>
 
