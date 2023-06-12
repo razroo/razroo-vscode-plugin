@@ -102,6 +102,11 @@ main {
   margin-top: 8px;
 }
 
+.starter-project-input {
+  width: 100%;
+  margin-top: 8px;
+}
+
 .starters_dropdown {
   display: flex;
   flex-direction: column;

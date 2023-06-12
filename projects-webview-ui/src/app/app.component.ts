@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption, vsCodeCheckbox } from "@vscode/webview-ui-toolkit";
+import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption, vsCodeCheckbox, vsCodeTextField } from "@vscode/webview-ui-toolkit";
 import { ProjectConfig } from "./interfaces/project-config.interfaces";
 import { vscode } from "./utilities/vscode";
 import {FormControl} from '@angular/forms';
@@ -7,7 +7,7 @@ import {FormControl} from '@angular/forms';
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
 // syntax below.
-provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropdown(), vsCodeCheckbox());
+provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropdown(), vsCodeCheckbox(), vsCodeTextField());
 
 // To register more toolkit components, simply import the component
 // registration function and call it from within the register
