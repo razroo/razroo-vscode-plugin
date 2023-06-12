@@ -91,11 +91,32 @@ main {
 
 .ascii-art {
   font-family: monospace;
-  font-size: 8px;
+  font-size: 6px;
 }
 
 .ascii-art--error {
   color: #FF0000;
+}
+
+.App__new-project {
+  margin-top: 8px;
+}
+
+.starter-project-input {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.starters_dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.starters-hr {
+  width: 100%;
+  margin-top: 16px;
 }
 
 

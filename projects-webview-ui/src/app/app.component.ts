@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption, vsCodeCheckbox } from "@vscode/webview-ui-toolkit";
+import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption, vsCodeCheckbox, vsCodeTextField } from "@vscode/webview-ui-toolkit";
 import { ProjectConfig } from "./interfaces/project-config.interfaces";
 import { vscode } from "./utilities/vscode";
 import {FormControl} from '@angular/forms';
@@ -7,7 +7,7 @@ import {FormControl} from '@angular/forms';
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
 // syntax below.
-provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropdown(), vsCodeCheckbox());
+provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeOption(), vsCodeDropdown(), vsCodeCheckbox(), vsCodeTextField());
 
 // To register more toolkit components, simply import the component
 // registration function and call it from within the register
@@ -35,9 +35,19 @@ export class AppComponent implements OnInit {
   userId?: string = undefined;
   orgId?: string = undefined;
   tempOrgId?: string = undefined;
+  tempStarterId?: string = undefined;
   projectOptions = new FormControl('');
+  startersDropdown = new FormControl('');
   orgDropdown = new FormControl('');
   organizations: any[] = [];
+  razrooStarters: any[] = [
+    {
+      id: 'angular',
+      batchId: 'starter',
+      orgId: 'community',
+      title: 'Angular'
+    }
+  ];
 
   toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
     const projectName = projectOption.packageJsonParams.name;
@@ -129,6 +139,14 @@ export class AppComponent implements OnInit {
 
   changeOrgDropdownValue($event: any) {
     this.tempOrgId = $event.target.value;
+  }
+
+  changeStarterDropdownValue($event: any) {
+    this.tempStarterId = $event.target.value;
+  }
+
+  createProject() {
+    console.log('create project called');
   }
 
   logout() {
