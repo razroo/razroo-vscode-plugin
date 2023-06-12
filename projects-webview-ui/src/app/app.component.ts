@@ -145,6 +145,10 @@ export class AppComponent implements OnInit {
     this.tempStarterId = $event.target.value;
   }
 
+  createProject() {
+    console.log('create project called');
+  }
+
   logout() {
     vscode.postMessage({
       command: "logoutUser",
