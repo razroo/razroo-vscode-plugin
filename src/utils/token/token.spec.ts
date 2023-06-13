@@ -23,4 +23,12 @@ describe('createVSCodeIdToken',() => {
     const expected = 'chill-mcchill-123_razroo-angular-starter';
     expect(result).toEqual(expected);
   });
+
+  it('should return EMPTY if not personal workspace and not git origin', () => {
+    const versionControlParamsAlt = {} as any;
+    const orgIdAlt = 'razroo';
+    const result = createVSCodeIdToken(userId, orgIdAlt, versionControlParamsAlt, packageJsonParams);
+    const expected = 'EMPTY';
+    expect(result).toEqual(expected);
+  });
 });

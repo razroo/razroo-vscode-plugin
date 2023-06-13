@@ -7,7 +7,7 @@ export function createVSCodeIdToken(userId: string, orgId: string, versionContro
   const gitOrigin = versionControlParams.gitOrigin;
   if(!gitOrigin) {
     if(userId === orgId) {
-      return `${userId}_${kebabCase(packageJsonParams.name)}`;
+      return packageJsonParams.name ? `${userId}_${kebabCase(packageJsonParams.name)}` : EMPTY;
     } else {
       return EMPTY;
     }
