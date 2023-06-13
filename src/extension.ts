@@ -15,7 +15,8 @@ import {
   COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
   COMMAND_LOG_OUT_USER,
   RAZROO_PREVIEW_STATE,
-  MEMENTO_RAZROO_ORG_ID
+  MEMENTO_RAZROO_ORG_ID,
+  COMMAND_CREATE_PROJECT
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -35,6 +36,7 @@ import { createVSCodeIdToken } from "./utils/token/token";
 import { MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_REFRESH_TOKEN } from "./constants";
 import { getAccessToken } from "./graphql/expired";
 import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
+import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -146,6 +148,33 @@ export async function activate(context: vscode.ExtensionContext) {
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs);
       } catch (error) {
         console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
+    }
+  );
+
+  const createProject = vscode.commands.registerCommand(
+    COMMAND_CREATE_PROJECT,
+    async({path, projectName}) => {
+      console.log('path');
+      console.log(path);
+      console.log('projectName');
+      console.log(projectName);
+      const parameters = {
+        name: projectName
+      }
+      const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+      const generateVsCodeDownloadCodeParameters = {
+        pathId: path.pathId,
+        recipeId: path.recipeId, 
+        stepId: path.id,
+        pathOrgId: path.orgId,
+        userId: userId
+      };
+      try {
+        await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
+      } catch (error) {
+        console.log('COMMAND_CREATE_PROJECT');
         console.error(error);
       }
     }
