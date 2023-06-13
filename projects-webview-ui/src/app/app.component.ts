@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
   tempCreateProjectPath?: string = undefined;
   razrooStarters: any[] = [
     {
-      pathId: 'angular',
+      pathId: 'angular-16.0.0',
       batchId: 'starter',
       recipeId: 'create-workspace-recipe',
       id: 'create-workspace',
