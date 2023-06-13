@@ -1,7 +1,7 @@
 import { getUri } from '../utils/webview-utils/getUri';
 import * as vscode from 'vscode';
 import { getNonce } from '../utils/webview-utils/getNonce';
-import { COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, COMMAND_TRY_TO_AUTH, COMMAND_LOG_OUT_USER, COMMAND_CONNECT_PROJECT } from '../constants';
+import { COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH, COMMAND_TRY_TO_AUTH, COMMAND_LOG_OUT_USER, COMMAND_CREATE_PROJECT } from '../constants';
 
 export class ProjectsWebview implements vscode.WebviewViewProvider {
 
@@ -77,7 +77,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
     // Handle messages sent from the extension
     webview.onDidReceiveMessage(
       (message: any) => {
-        const {command, selectedProjects, path, disconnectedProjects, text, data, orgId} = message;
+        const {command, selectedProjects, path, projectName, disconnectedProjects, text, data, orgId} = message;
         
         switch (command) {
           case "connectProjects":
@@ -93,7 +93,7 @@ export class ProjectsWebview implements vscode.WebviewViewProvider {
             vscode.commands.executeCommand(COMMAND_LOG_OUT_USER);
             return;     
           case "createProject":
-            vscode.commands.executeCommand(COMMAND_CONNECT_PROJECT, {path});
+            vscode.commands.executeCommand(COMMAND_CREATE_PROJECT, {path, projectName});
             return; 
           // Add more switch case statements here as more webview message commands
           // are created within the webview context (i.e. inside media/main.js)
