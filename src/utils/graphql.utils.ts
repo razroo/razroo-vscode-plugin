@@ -79,7 +79,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
         // if a command is running, wait for it to complete until proceeding
         await waitForCommand().then(async () => {
           const path = selectedProject.versionControlParams.path;
-          await saveFiles(data, context, isProduction, path);
+          await saveFiles(data?.data?.generateVsCodeDownloadCodeSub, context, isProduction, path);
           await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
         });
       };

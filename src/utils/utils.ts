@@ -41,19 +41,20 @@ export const saveFiles = async (
   isProduction: boolean,
   path: string
 ) => {
-  const url = data.data.generateVsCodeDownloadCodeSub.downloadUrl;
+  
+  const url = data.downloadUrl;
   // parameters will always be a string <-- architected specifically this way
-  const parameters = data.data.generateVsCodeDownloadCodeSub?.parameters;
-  const templateParameters = data.data.generateVsCodeDownloadCodeSub?.template.parameters;
-  const type = data.data.generateVsCodeDownloadCodeSub.template.type;
-  const template = data.data.generateVsCodeDownloadCodeSub.template;
-  const updates = data.data.generateVsCodeDownloadCodeSub?.template?.updates;
-  const filesToGenerate = data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate ? JSON.parse(data.data.generateVsCodeDownloadCodeSub?.template?.filesToGenerate) : {};
-  const runUnitTests = data.data.generateVsCodeDownloadCodeSub.runUnitTests;
+  const parameters = data?.parameters;
+  const templateParameters = data?.template.parameters;
+  const type = data.template.type;
+  const template = data.template;
+  const updates = data?.template?.updates;
+  const filesToGenerate = data?.template?.filesToGenerate ? JSON.parse(data?.template?.filesToGenerate) : {};
+  const runUnitTests = data.runUnitTests;
   // unitTestFileName - for use with running unit tests. Allows to extract unit test name and use once all files generated
   let unitTestFileName = '';
-  const runIntegrationTests = data.data.generateVsCodeDownloadCodeSub.runIntegrationTests;
-  const runPreviewGeneration = data.data.generateVsCodeDownloadCodeSub.runPreviewGeneration;
+  const runIntegrationTests = data.runIntegrationTests;
+  const runPreviewGeneration = data.runPreviewGeneration;
 
   //Get files of S3
   const files = await getFileS3({ url });
@@ -153,13 +154,13 @@ export const saveFiles = async (
 
           if(runUnitTests) {
             setTimeout(async () => {
-              let template = data.data.generateVsCodeDownloadCodeSub.template;
+              let template = data.template;
               await unitTestGeneratedFiles(unitTestFileName, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
             }, 1000);
           }
         
           if(runIntegrationTests) {
-            let template = data.data.generateVsCodeDownloadCodeSub.template;
+            let template = data.template;
             await integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
           }
         }

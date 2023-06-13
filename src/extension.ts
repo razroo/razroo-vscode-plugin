@@ -38,6 +38,7 @@ import { MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_REFRESH_TOKEN } from "./constant
 import { getAccessToken } from "./graphql/expired";
 import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
+import { saveFiles } from "./utils/utils";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -157,12 +158,9 @@ export async function activate(context: vscode.ExtensionContext) {
   const createProject = vscode.commands.registerCommand(
     COMMAND_CREATE_PROJECT,
     async({path, projectName}) => {
-      console.log('path');
-      console.log(path);
-      console.log('projectName');
-      console.log(projectName);
       const parameters = {
-        name: projectName
+        name: projectName,
+        infrastructureCommandPath: '.'
       };
       const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
       const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
@@ -174,10 +172,15 @@ export async function activate(context: vscode.ExtensionContext) {
         pathOrgId: path.orgId,
         userId: userId,
         userOrgId: userOrgId,
+        vsCodeInstanceId: `${userId}-${userOrgId}`,
         parameters: JSON.stringify(parameters)
       };
       try {
-        await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
+        const result = await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
+        const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
+        const workspaceFolder = projectConfig?.versionControlParams?.path;
+        const data = result?.data?.generateVsCodeDownloadCode;
+        await saveFiles(data, context, isProduction, workspaceFolder);
       } catch (error) {
         console.log('COMMAND_CREATE_PROJECT');
         console.error(error);
