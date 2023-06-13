@@ -179,7 +179,7 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   selectedProjects: ProjectConfig[]
 ) => {
   for(let selectedProject of selectedProjects) {
-    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, selectedProject.versionControlParams, selectedProject.packageJsonParams);
     // needs to use this path for directories
     const path = selectedProject.versionControlParams.path;
     const absoluteFolderRoot = normalize(selectedProject.versionControlParams.path);

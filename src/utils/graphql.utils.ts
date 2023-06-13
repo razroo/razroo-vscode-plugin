@@ -27,7 +27,8 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 }: any) => {
   //Subscribe with appsync client
   for(let selectedProject of selectedProjects) {
-    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
+    const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, selectedProject.versionControlParams, selectedProject.packageJsonParams);
     client(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {

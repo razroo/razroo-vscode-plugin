@@ -25,9 +25,9 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
   }
   const packageJsonParams = activeWorkspaceFolderState.packageJsonParams;
   const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
-  const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID);
+  const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
-  const vsCodeInstanceId = createVSCodeIdToken(userId, activeWorkspaceFolderState.versionControlParams);
+  const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, activeWorkspaceFolderState.versionControlParams, activeWorkspaceFolderState.packageJsonParams);
   
   const path = vsCodeInstanceId ? (vsCodeInstanceId as any).split('_').pop() + '-' + packageJsonParams.version : '';
   if(!path) {

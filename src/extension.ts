@@ -198,8 +198,9 @@ export async function activate(context: vscode.ExtensionContext) {
         if(disconnectedProjects && disconnectedProjects.length) {
           for(let disconnectedProject of disconnectedProjects) {
             const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+            const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
             const accessToken = await getAccessToken(context, isProduction);
-            const vsCodeInstanceId = createVSCodeIdToken(userId, disconnectedProject.versionControlParams);
+            const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, disconnectedProject.versionControlParams, disconnectedProject.packageJsonParams);
             await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
           }
           if(!selectedProjects && !selectedProjects.length) {
@@ -380,11 +381,12 @@ export async function deactivate() {
   const isProduction = isProductionFunc(context);
   vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:activated', false);
   const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+  const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const selectedProjects = await context.workspaceState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
   const accessToken = await getAccessToken(context, isProduction);
   
   for(let selectedProject of selectedProjects) {
-    const vsCodeInstanceId = createVSCodeIdToken(userId, selectedProject.versionControlParams);
+    const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, selectedProject.versionControlParams, selectedProject.packageJsonParams);
     return await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
   }
   return {};
