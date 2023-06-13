@@ -16,7 +16,8 @@ import {
   COMMAND_LOG_OUT_USER,
   RAZROO_PREVIEW_STATE,
   MEMENTO_RAZROO_ORG_ID,
-  COMMAND_CREATE_PROJECT
+  COMMAND_CREATE_PROJECT,
+  EMPTY
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -162,14 +163,18 @@ export async function activate(context: vscode.ExtensionContext) {
       console.log(projectName);
       const parameters = {
         name: projectName
-      }
+      };
       const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
+      const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
       const generateVsCodeDownloadCodeParameters = {
         pathId: path.pathId,
-        recipeId: path.recipeId, 
+        recipeId: path.recipeId,
         stepId: path.id,
+        projectName: EMPTY,
         pathOrgId: path.orgId,
-        userId: userId
+        userId: userId,
+        userOrgId: userOrgId,
+        parameters: JSON.stringify(parameters)
       };
       try {
         await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
