@@ -29,12 +29,15 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   // const subdirs = fs.readdirSync(dir);
   // get top level git config, and package json first
   let ignorePatterns: string[] = [];
+  // uses path.sep so will work on mac and windows
+  const folderName = dir.split(path.sep).pop() as string;
+  if(!folderName) {
+    console.log('no folder name');
+    console.log(folderName);
+  }
+  
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
-  if(!versionControlParams) {
-    return undefined as any;
-  }
-
   const packageJsonPath = path.join(dir, 'package.json');
   let packageJsonParams: PackageJson | object = {};
   if (await fileExists(packageJsonPath)) {
@@ -88,7 +91,8 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
 
   return {
     versionControlParams,
-    packageJsonParams
+    packageJsonParams,
+    folderName
   };
 }
 

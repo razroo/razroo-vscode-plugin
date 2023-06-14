@@ -26,7 +26,7 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
         if(isInProgress) {
           if(selectedProjects) {
             for(let selectedProject of selectedProjects) {
-              const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, selectedProject.versionControlParams, selectedProject.packageJsonParams);
+              const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, selectedProject.versionControlParams, selectedProject.packageJsonParams, selectedProject.folderName);
               await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, selectedProjects);
               await subscribeToGenerateVsCodeDownloadCodeSub({ vsCodeInstanceId, context, isProduction, selectedProjects });    
             }
