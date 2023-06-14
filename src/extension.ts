@@ -91,6 +91,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
       context.workspaceState.update(workspaceFolderName, individualProjectConfig);
       if(individualProjectConfig) {
+        console.log('individualProjectConfig');
+        console.log(individualProjectConfig);
         projectConfigs.push(individualProjectConfig);
       }
     }

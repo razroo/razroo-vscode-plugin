@@ -29,6 +29,13 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   // const subdirs = fs.readdirSync(dir);
   // get top level git config, and package json first
   let ignorePatterns: string[] = [];
+  // uses path.sep so will work on mac and windows
+  const folderName = dir.split(path.sep).pop();
+  if(!folderName) {
+    console.log('no folder name');
+    console.log(folderName);
+  }
+  
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
   if(!versionControlParams) {
@@ -88,7 +95,8 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
 
   return {
     versionControlParams,
-    packageJsonParams
+    packageJsonParams,
+    folderName
   };
 }
 
