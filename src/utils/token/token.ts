@@ -4,7 +4,7 @@ import { extractProjectName } from '@codemorph/core';
 import { kebabCase } from 'lodash';
 
 export function createVSCodeIdToken(userId: string, orgId: string, versionControlParams: VersionControlParams, packageJsonParams: any, folderName: string) {
-  const gitOrigin = versionControlParams.gitOrigin;
+  const gitOrigin = versionControlParams && versionControlParams.gitOrigin;
   if(!gitOrigin) {
     if(userId === orgId) {
       if(packageJsonParams && packageJsonParams.name) {
