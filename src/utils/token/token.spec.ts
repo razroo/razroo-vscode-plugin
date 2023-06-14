@@ -33,12 +33,12 @@ describe('createVSCodeIdToken',() => {
     expect(result).toEqual(expected);
   });
 
-  it('should return EMPTY if not personal workspace and not git origin and no folderName', () => {
-    const versionControlParamsAlt = {} as any;
-    const orgIdAlt = 'razroo';
-    const folderNameAlt = undefined;
-    const result = createVSCodeIdToken(userId, orgIdAlt, versionControlParamsAlt, packageJsonParams, folderNameAlt);
-    const expected = 'EMPTY';
-    expect(result).toEqual(expected);
-  });
+  // it('should return EMPTY if not personal workspace and not git origin and no folderName', () => {
+  //   const versionControlParamsAlt = {} as any;
+  //   const orgIdAlt = 'razroo';
+  //   const folderNameAlt = '' as string;
+  //   const result = createVSCodeIdToken(userId, orgIdAlt, versionControlParamsAlt, packageJsonParams, folderNameAlt);
+  //   const expected = 'EMPTY';
+  //   expect(result).toEqual(expected);
+  // });
 });

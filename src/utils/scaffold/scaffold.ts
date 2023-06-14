@@ -51,7 +51,8 @@ export function createScaffold(vscode, pathId: string, recipeId: string, path: s
   const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const packageJsonParams = workspaceProjectConfig.packageJsonParams;
   const versionControlParams = workspaceProjectConfig.versionControlParams;
-  const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, versionControlParams, packageJsonParams);
+  const folderName = workspaceProjectConfig.folderName;
+  const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, versionControlParams, packageJsonParams, folderName);
   // automatically expand folder so files generated appear
   vscode.commands.executeCommand('list.expand', uri);
   const cancelAction = {
