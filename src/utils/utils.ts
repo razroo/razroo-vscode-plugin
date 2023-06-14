@@ -181,14 +181,14 @@ export const updatePrivateDirectoriesInVSCodeAuthentication = async (
   for(let selectedProject of selectedProjects) {
     const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, selectedProject.versionControlParams, selectedProject.packageJsonParams, selectedProject.folderName);
     // needs to use this path for directories
-    const path = selectedProject.versionControlParams.path;
-    const absoluteFolderRoot = normalize(selectedProject.versionControlParams.path);
+    const path = selectedProject.versionControlParams && selectedProject.versionControlParams.path;
+    const absoluteFolderRoot = path && normalize(selectedProject.versionControlParams.path);
     const privateDirectories = path ? await getPrivateDirs(path) : [];
 
     const packageJsonParamsStringified = typeof selectedProject.packageJsonParams === 'object' ? JSON.stringify(selectedProject.packageJsonParams) : selectedProject.packageJsonParams;
     const versionControlParams = {
-      gitBranch: selectedProject.versionControlParams.gitBranch,
-      gitOrigin: selectedProject.versionControlParams.gitOrigin
+      gitBranch: selectedProject.versionControlParams && selectedProject.versionControlParams.gitBranch,
+      gitOrigin: selectedProject.versionControlParams && selectedProject.versionControlParams.gitOrigin
     };
     await updatePrivateDirectoriesRequest({
       vsCodeInstanceId,
