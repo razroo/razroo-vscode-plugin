@@ -202,7 +202,7 @@ export async function activate(context: vscode.ExtensionContext) {
             const userId = await context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
             const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
             const accessToken = await getAccessToken(context, isProduction);
-            const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, disconnectedProject.versionControlParams, disconnectedProject.packageJsonParams);
+            const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, disconnectedProject.versionControlParams, disconnectedProject.packageJsonParams, disconnectedProject.folderName);
             await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
           }
           if(!selectedProjects && !selectedProjects.length) {
@@ -388,7 +388,7 @@ export async function deactivate() {
   const accessToken = await getAccessToken(context, isProduction);
   
   for(let selectedProject of selectedProjects) {
-    const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, selectedProject.versionControlParams, selectedProject.packageJsonParams);
+    const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, selectedProject.versionControlParams, selectedProject.packageJsonParams, selectedProject.folderName);
     return await disconnectVsCodeInstance(accessToken, userId, vsCodeInstanceId, isProduction);
   }
   return {};

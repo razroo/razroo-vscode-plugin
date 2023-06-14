@@ -3,7 +3,7 @@ import { EMPTY } from './../../constants';
 import { extractProjectName } from '@codemorph/core';
 import { kebabCase } from 'lodash';
 
-export function createVSCodeIdToken(userId: string, orgId: string, versionControlParams: VersionControlParams, packageJsonParams: any, folderName?: string) {
+export function createVSCodeIdToken(userId: string, orgId: string, versionControlParams: VersionControlParams, packageJsonParams: any, folderName: string) {
   const gitOrigin = versionControlParams.gitOrigin;
   if(!gitOrigin) {
     if(userId === orgId) {
