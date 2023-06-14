@@ -38,10 +38,6 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   
   const gitignorePath = path.join(dir, '.gitignore');
   const versionControlParams = await getVersionControlParams(dir);
-  if(!versionControlParams) {
-    return undefined as any;
-  }
-
   const packageJsonPath = path.join(dir, 'package.json');
   let packageJsonParams: PackageJson | object = {};
   if (await fileExists(packageJsonPath)) {
