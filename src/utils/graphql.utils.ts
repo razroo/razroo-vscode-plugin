@@ -18,6 +18,8 @@ export function getCommandStatus() {
   commandIsCalled;
 }
 
+const vsCodeInstancesSubscribedTo: string[] = [];
+
 export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   context, 
   isProduction,
@@ -29,6 +31,12 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   for(let selectedProject of selectedProjects) {
     const userOrgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
     const vsCodeInstanceId = createVSCodeIdToken(userId, userOrgId, selectedProject.versionControlParams, selectedProject.packageJsonParams, selectedProject.folderName);
+    if(vsCodeInstancesSubscribedTo.includes(vsCodeInstanceId)) {
+      break;
+    } else {
+      vsCodeInstancesSubscribedTo.push(vsCodeInstanceId);
+    }
+
     client(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
     .hydrated()
     .then(async function (client) {
