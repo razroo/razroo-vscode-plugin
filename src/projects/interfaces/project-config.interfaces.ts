@@ -2,6 +2,7 @@ export interface ProjectConfig {
   packageJsonParams?: any;
   versionControlParams: VersionControlParams;
   folderName: string;
+  rootPath: string;
 }
 
 export interface VersionControlParams {

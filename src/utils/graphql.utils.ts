@@ -87,7 +87,9 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       const realtimeResults = async function realtimeResults(data: any) {
         // if a command is running, wait for it to complete until proceeding
         await waitForCommand().then(async () => {
-          const path = selectedProject.versionControlParams.path;
+          const versionControlParamsPath = selectedProject?.versionControlParams?.path;
+          // enable root path even if no version control params
+          const path = selectedProject?.versionControlParams ? versionControlParamsPath : selectedProject?.rootPath;
           await saveFiles(data?.data?.generateVsCodeDownloadCodeSub, context, isProduction, path);
           // await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
         });
