@@ -92,7 +92,8 @@ export async function getProjectConfigs(dir: string): Promise<ProjectConfig> {
   return {
     versionControlParams,
     packageJsonParams,
-    folderName
+    folderName,
+    rootPath: dir
   };
 }
 
