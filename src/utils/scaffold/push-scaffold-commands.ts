@@ -3,42 +3,42 @@ import { createScaffold } from "./scaffold";
 function generateAngularComponent(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.component',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'component')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'component')
   );
 }
 
 function generateAngularAngularService(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularService',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-service')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'angular-service')
   );
 }
 
 function generateAngularAngularGuard(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularGuard',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-guard')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'angular-guard')
   );
 }
 
 function generateAngularTypescriptInterface(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.typescriptInterface',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'typescript-interface')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'typescript-interface')
   );
 }
 
 function generateAngularAngularPipe(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularPipe',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-pipe')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'angular-pipe')
   );
 }
 
 function generateAngularAngularDirective(vscode, context, isProduction) {
   return vscode.commands.registerCommand(
     'generate.angular.angularDirective',
-    async ({ path }) => createScaffold(vscode, 'angular-15.2.0', 'angular-core', path, context, isProduction, 'angular-directive')
+    async ({ path }) => createScaffold(vscode, 'angular-16.1.0', 'angular-core', path, context, isProduction, 'angular-directive')
   );
 }
 
