@@ -41,7 +41,6 @@ export const saveFiles = async (
   isProduction: boolean,
   path: string
 ) => {
-  
   const url = data.downloadUrl;
   // parameters will always be a string <-- architected specifically this way
   const parameters = data?.parameters;

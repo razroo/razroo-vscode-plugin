@@ -51,7 +51,7 @@ _______   ________  ________  ________  ________
       <div>Use Razroo to create a new project</div>
       <vscode-dropdown (change)="changeStarterDropdownValue($event)" class="App__organizations-dropdown" class="starters_dropdown">
         <ng-container *ngFor="let starter of razrooStarters">
-          <vscode-option [value]="starter">{{starter?.title}}</vscode-option>
+          <vscode-option [value]="starter.pathId">{{starter?.title}}</vscode-option>
         </ng-container>
       </vscode-dropdown>
       <vscode-text-field class="starter-project-input" (keyup)="changeProjectName($event)" type="text" placeholder="Project Name"></vscode-text-field>
