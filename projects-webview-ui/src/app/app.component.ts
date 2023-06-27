@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
   projectName = '';
   orgDropdown = new FormControl('');
   organizations: any[] = [];
-  tempCreateProjectPath?: string = undefined;
+  selectedStarterPath?: any = undefined;
   razrooStarters: any[] = [
     {
       pathId: 'angular-16.0.0',
@@ -56,6 +56,13 @@ export class AppComponent implements OnInit {
       batchId: 'starter',
       orgId: 'community',
       title: 'React'
+    },
+    {
+      pathId: 'vscode-1.7.0',
+      recipeId: 'create-vscode-workspace',
+      id: 'create-vscode-workspace',
+      orgId: 'community',
+      title: 'VSCode'
     }
   ];
 
@@ -151,8 +158,11 @@ export class AppComponent implements OnInit {
     this.tempOrgId = $event.target.value;
   }
 
-  changeStarterDropdownValue($event: any) {
-    this.tempCreateProjectPath = $event.target.value;
+  changeStarterDropdownValue(event: any) {
+    const pathId = event.target.value;
+    const filteredStarters = this.razrooStarters.filter(razrooStarter => razrooStarter.pathId === pathId);
+    const selectedStarterTemplate = filteredStarters[0];
+    this.selectedStarterPath = selectedStarterTemplate;
   }
 
   changeProjectName($event: any) {
@@ -160,7 +170,7 @@ export class AppComponent implements OnInit {
   }
 
   createProject() {
-    const path = this.tempCreateProjectPath ? this.tempCreateProjectPath : this.razrooStarters[0];
+    const path = this.selectedStarterPath ? this.selectedStarterPath : this.razrooStarters[0];
     const projectName = this.projectName;
     if(!projectName) {
       return; 

@@ -178,6 +178,8 @@ export async function activate(context: vscode.ExtensionContext) {
         parameters: JSON.stringify(parameters)
       };
       try {
+        console.log('generateVsCodeDownloadCodeParameters');
+        console.log(generateVsCodeDownloadCodeParameters);
         const result = await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
         const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
         const workspaceFolder = projectConfig?.versionControlParams?.path;
