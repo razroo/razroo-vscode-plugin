@@ -1,1 +1,1 @@
-export const starterSteps = [{"orgId":"community","pathId":"vscode-1.7.0","corePathId":"vscode","recipeId":"create-vscode-workspace","stepId":"create-vscode-workspace","title":"Create Vscode Workspace"}];
+export const starterSteps = [{"orgId":"community","pathId":"vscode-1.7.0","corePathId":"vscode","recipeId":"create-vscode-workspace","stepId":"create-vscode-workspace","title":"Create Vscode Workspace"},{"orgId":"community","pathId":"angular-16.1.0","corePathId":"angular","recipeId":"create-workspace-recipe","stepId":"create-workspace","title":"Create Workspace"}];
