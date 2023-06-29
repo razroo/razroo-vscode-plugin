@@ -39,7 +39,7 @@ import { getAccessToken } from "./graphql/expired";
 import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
 import { saveFiles } from "./utils/utils";
-import { createUrlToGenerateCode } from "./starters/starter-utils";
+import { createRootForStarterRepo } from "./starters/starter-utils";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -55,11 +55,6 @@ function isProductionFunc(context: vscode.ExtensionContext): boolean {
 export async function activate(context: vscode.ExtensionContext) {
   console.debug('activate has been called');
   const projectsProvider = new ProjectsWebview(context);
-
-  
-  const folderRoot = createUrlToGenerateCode();
-  console.log('folderRoot');
-  console.log(folderRoot);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
@@ -184,15 +179,13 @@ export async function activate(context: vscode.ExtensionContext) {
         parameters: JSON.stringify(parameters)
       };
       try {
-        console.log('generateVsCodeDownloadCodeParameters');
-        console.log(generateVsCodeDownloadCodeParameters);
         const result = await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
         const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
-        console.log('projectConfig');
-        console.log(projectConfig);
-        const workspaceFolder = projectConfig?.versionControlParams?.path;
+        const starterFolderRoot = createRootForStarterRepo(context, projectName);
+        console.log('starterFolderRoot');
+        console.log(starterFolderRoot);
         const data = result?.data?.generateVsCodeDownloadCode;
-        await saveFiles(data, context, isProduction, workspaceFolder);
+        await saveFiles(data, context, isProduction, starterFolderRoot);
       } catch (error) {
         console.log('COMMAND_CREATE_PROJECT');
         console.error(error);
