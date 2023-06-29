@@ -23,6 +23,7 @@
     "webpack": "webpack --mode development",
     "webpack-dev": "webpack --mode development --watch",
     "build-scaffolds": "ts-node scripts/build-scaffolds.ts",
+    "build-starter-steps": "ts-node scripts/build-starter-steps.ts",
     "start:webview": "cd projects-webview-ui && npm run start",
     "build:webview": "cd projects-webview-ui && npm run build && cd .. && cp -a projects-webview-ui/build/. dist/projects-webview-ui",
     "build:webview:prod": "cd projects-webview-ui && npm run build --prod && cd .. && cp -a projects-webview-ui/build/. dist/projects-webview-ui",
