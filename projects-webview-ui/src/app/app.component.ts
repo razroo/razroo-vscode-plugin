@@ -3,6 +3,7 @@ import { provideVSCodeDesignSystem, vsCodeButton, vsCodeDropdown, vsCodeOption, 
 import { ProjectConfig } from "./interfaces/project-config.interfaces";
 import { vscode } from "./utilities/vscode";
 import {FormControl} from '@angular/forms';
+import { starterSteps } from "./data/starter-steps";
 
 // In order to use the Webview UI Toolkit web components they
 // must be registered with the browser (i.e. webview) using the
@@ -42,29 +43,7 @@ export class AppComponent implements OnInit {
   orgDropdown = new FormControl('');
   organizations: any[] = [];
   selectedStarterPath?: any = undefined;
-  razrooStarters: any[] = [
-    {
-      pathId: 'angular-16.0.0',
-      batchId: 'starter',
-      recipeId: 'create-workspace-recipe',
-      id: 'create-workspace',
-      orgId: 'community',
-      title: 'Angular'
-    },
-    {
-      id: 'react',
-      batchId: 'starter',
-      orgId: 'community',
-      title: 'React'
-    },
-    {
-      pathId: 'vscode-1.7.0',
-      recipeId: 'create-vscode-workspace',
-      id: 'create-vscode-workspace',
-      orgId: 'community',
-      title: 'VSCode'
-    }
-  ];
+  razrooStarters: any[] = starterSteps;
 
   toggleProjectOption(projectOption: ProjectConfig, projectConfigs: ProjectConfig[]) {
     const projectName = projectOption.packageJsonParams.name;
