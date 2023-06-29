@@ -25,6 +25,7 @@ import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
 import { refreshAccessToken } from '../graphql/expired';
 import { switchToActiveBranch } from '../preview/switch-branch';
+import { openStarterInNewCodeEditor } from '../starters/generate-starter';
 
 const showInformationMessage = vscode.window.showInformationMessage;
 
@@ -54,6 +55,7 @@ export const saveFiles = async (
   let unitTestFileName = '';
   const runIntegrationTests = data.runIntegrationTests;
   const runPreviewGeneration = data.runPreviewGeneration;
+  const razrooStarter = data?.template?.starter;
 
   //Get files of S3
   const files = await getFileS3({ url });
@@ -161,6 +163,12 @@ export const saveFiles = async (
           if(runIntegrationTests) {
             let template = data.template;
             await integrationTestGeneratedFiles(fileNameandPath, folderRoot, template, context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN)!, isProduction);
+          }
+
+          if(razrooStarter) {
+            const parametersParsed = JSON.parse(parameters);
+            const projectName = parametersParsed.name;
+            await openStarterInNewCodeEditor(context, projectName);
           }
         }
       } catch (error) {
