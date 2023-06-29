@@ -11,6 +11,7 @@ export const GenerateVsCodeDownloadCode = `
         orgId
         updates
         filesToGenerate
+        starter
         parameters {
           defaultValue
           description

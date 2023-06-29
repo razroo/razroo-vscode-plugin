@@ -39,7 +39,7 @@ import { getAccessToken } from "./graphql/expired";
 import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
 import { saveFiles } from "./utils/utils";
-import { createRootForStarterRepo } from "./starters/starter-utils";
+import { createPathForStarterRepo } from "./starters/starter-utils";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -180,11 +180,9 @@ export async function activate(context: vscode.ExtensionContext) {
       };
       try {
         const result = await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
-        const starterFolderRoot = createRootForStarterRepo(context, projectName);
-        console.log('starterFolderRoot');
-        console.log(starterFolderRoot);
+        const starterFolderPath = createPathForStarterRepo(context, projectName);
         const data = result?.data?.generateVsCodeDownloadCode;
-        await saveFiles(data, context, isProduction, starterFolderRoot);
+        await saveFiles(data, context, isProduction, starterFolderPath);
       } catch (error) {
         console.log('COMMAND_CREATE_PROJECT');
         console.error(error);
