@@ -1,0 +1,1 @@
+export const starterSteps = [{"orgId":"community","pathId":"vscode-1.7.0","recipeId":"create-vscode-workspace","stepId":"create-vscode-workspace"}];
