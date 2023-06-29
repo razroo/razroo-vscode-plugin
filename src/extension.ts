@@ -180,7 +180,6 @@ export async function activate(context: vscode.ExtensionContext) {
       };
       try {
         const result = await generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction);
-        const projectConfig = context.workspaceState.get(ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG) as any;
         const starterFolderRoot = createRootForStarterRepo(context, projectName);
         console.log('starterFolderRoot');
         console.log(starterFolderRoot);
