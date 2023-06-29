@@ -3,8 +3,10 @@ export const GetStarterSteps = `
     getStarterSteps {
       orgId
       pathId
+      corePathId
       recipeId
       stepId
+      title
     }
   }
 `;
