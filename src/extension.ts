@@ -170,7 +170,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const generateVsCodeDownloadCodeParameters = {
         pathId: path.pathId,
         recipeId: path.recipeId,
-        stepId: path.id,
+        stepId: path.stepId,
         projectName: EMPTY,
         pathOrgId: path.orgId,
         userId: userId,
