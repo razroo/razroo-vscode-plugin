@@ -106,7 +106,7 @@ export const saveFiles = async (
 
     if (type !== 'edit' && extname(fileName) !== ".sh") {
       try {
-        const fileData = zipEntry.getData().toString("utf8");
+        const fileData = zipEntry.getData();
         const fullPathOfFile = join(folderRoot, fileNameandPath);
         await fse.outputFile(fullPathOfFile, fileData);
         const pathId = template.baseCommunityPath ? template.baseCommunityPath : template.pathId; 
