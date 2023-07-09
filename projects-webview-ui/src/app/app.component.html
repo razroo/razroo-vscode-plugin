@@ -55,7 +55,7 @@ _______   ________  ________  ________  ________
         </ng-container>
       </vscode-dropdown>
       <vscode-text-field class="starter-project-input" (keyup)="changeProjectName($event)" type="text" placeholder="Project Name"></vscode-text-field>
-      <vscode-button class="App__button" (click)="createProject()">Create</vscode-button>
+      <vscode-button class="App__button" [disabled]="createProjectCalled" (click)="createProject()">{{createProjectCalled ? 'Creating...' : 'Create'}}</vscode-button>
     </div>
     </ng-container>
   </ng-template>

@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
   organizationsLoading = false;
   isAuthenticated = false;
   loggingOutLoading = false;
+  createProjectCalled = false;
   projectConfigs: ProjectConfig[] = [];
   selectedProjects?: any[] = [];
   originalSelectedProjects?: ProjectConfig[] = [];
@@ -149,6 +150,7 @@ export class AppComponent implements OnInit {
   }
 
   createProject() {
+    this.createProjectCalled = true;
     const path = this.selectedStarterPath ? this.selectedStarterPath : this.razrooStarters[0];
     const projectName = this.projectName;
     if(!projectName) {
