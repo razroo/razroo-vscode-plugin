@@ -12,7 +12,6 @@ export async function getStarterSteps(isProduction: boolean) {
   const apiKey =  isProduction ? PROD_AWS_API_KEY : DEV_AWS_API_KEY;
 
   try {
-    // const accessToken = await getAccessToken(context, isProduction);
     const response = await axios.post(url, body, {
       headers: {
         'Content-Type': 'application/json',
