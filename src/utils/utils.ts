@@ -49,7 +49,6 @@ export const saveFiles = async (
   const type = data.template.type;
   const template = data.template;
   const updates = data?.template?.updates;
-  const filesToGenerate = data?.template?.filesToGenerate ? JSON.parse(data?.template?.filesToGenerate) : {};
   const runUnitTests = data.runUnitTests;
   // unitTestFileName - for use with running unit tests. Allows to extract unit test name and use once all files generated
   let unitTestFileName = '';
