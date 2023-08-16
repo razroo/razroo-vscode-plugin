@@ -10,7 +10,6 @@ export const GenerateVsCodeDownloadCode = `
         pathId
         orgId
         updates
-        filesToGenerate
         starter
         parameters {
           defaultValue

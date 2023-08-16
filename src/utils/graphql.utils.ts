@@ -59,7 +59,6 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
                 type
                 title
                 updates
-                filesToGenerate
                 baseCommunityPath
                 parameters {
                   defaultValue
@@ -261,7 +260,6 @@ export const saveTestOutputMutation = (accessToken: string, isProduction: boolea
                 codePath
                 count
                 description
-                filesToGenerate
                 id
                 instructionalContent
                 integrationTestsFailed
