@@ -90,7 +90,6 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
           // enable root path even if no version control params
           const path = selectedProject?.versionControlParams ? versionControlParamsPath : selectedProject?.rootPath;
           await saveFiles(data?.data?.generateVsCodeDownloadCodeSub, context, isProduction, path);
-          // await updatePrivateDirectoriesPostCodeGeneration(context, isProduction, selectedProjects);
         });
       };
 
@@ -122,13 +121,6 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 async function fallback(content) {
   console.log('content');
   console.log(content);
-}
-
-async function updatePrivateDirectoriesPostCodeGeneration(context, isProduction: boolean, allPackageJsons) {
-  const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID);
-  const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID);
-  await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, allPackageJsons);
 }
 
 async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
@@ -210,7 +202,7 @@ export const updatePrivateDirectoriesRequest = async ({
     });
     return response?.data;
   } catch (error) {    
-    console.log('error updatePrivateDirectoriesRequest', error);
+    console.log('error updateVSCodeAuthentication', error);
     return error;
   }
 };
