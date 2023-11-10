@@ -93,7 +93,7 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
       const nonFilePathParameters = (selectedOption as any).parameters.filter(parameter => parameter.paramType !== 'filePath');
       const parameters = await collectInputBoxValues(nonFilePathParameters);
       codeSnippetGeneratingNotification();
-      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, parameters, fileName);
+      const generateVsCodeDownloadCodeParameters = createGenerateVsCodeDownloadCodeParameters(context, (selectedOption as any).orgId as string, (selectedOption as any).pathId, (selectedOption as any).recipeId, (selectedOption as any).id, parameters, fileName, vsCodeInstanceId);
       generateVsCodeDownloadCode(generateVsCodeDownloadCodeParameters, context, isProduction).then(data => {
       });
     }
@@ -136,7 +136,7 @@ async function showInputBox(nonFilePathParameters: any, index: number, parameter
 }
 
 function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
-    pathId: string, recipeId: string, stepId: string, parameters: any, fileName?: string) {
+    pathId: string, recipeId: string, stepId: string, parameters: any, fileName?: string, vsCodeInstanceId?: string) {
 
   return {
     projectName: '',
@@ -146,7 +146,7 @@ function createGenerateVsCodeDownloadCodeParameters(context, orgId: string,
     recipeId: recipeId,
     stepId: stepId,
     fileName: fileName,
-    vsCodeInstanceId: context.workspaceState.get(MEMENTO_RAZROO_ID_VS_CODE_TOKEN) as string,
+    vsCodeInstanceId: vsCodeInstanceId,
     userId: context.globalState.get(MEMENTO_RAZROO_USER_ID) as string,
     userOrgId: context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string,
   };

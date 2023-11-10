@@ -25,7 +25,7 @@ export async function updateVsCode(context: vscode.ExtensionContext, isProductio
         setWorkspaceState(context, accessToken, refreshToken, userId, orgId, isInProgress);
         if(isInProgress) {
           if(selectedProjects) {
-            await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, selectedProjects });    
+            await subscribeToGenerateVsCodeDownloadCodeSub({ context, isProduction, selectedProjects, userId });    
             await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, selectedProjects);
           }
           vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
