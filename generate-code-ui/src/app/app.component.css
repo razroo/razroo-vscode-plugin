@@ -1,0 +1,122 @@
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.App__select-overlay {
+  position: relative;
+}
+
+.App__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.App__vscode-option {
+  width: 100%;
+}
+
+.App__dropdown {
+  display: flex;
+  margin-top: 8px;
+  flex-direction: column;
+  background-color: transparent;
+  width: 100%;
+}
+
+.App__button {
+  margin-top: 8px;
+  display: flex;
+  width: 100%;
+}
+
+:host([aria-selected="true"]):not(.App__dropdown-selected) {
+  background: transparent!important;
+  border: none!important;
+  color: transparent!important;
+}
+
+.App__dropdown-selected {
+  width: 100%;
+  background: var(--list-active-selection-background);
+  border: calc(var(--border-width) * 1px) solid var(--focus-border);
+  color: var(--list-active-selection-foreground);
+}
+
+.App__organizations-dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.App__projects-header-text {
+  white-space: nowrap;
+}
+
+.App__checkbox-control-container {
+  position: relative;
+  display: inline-block;
+  width: calc(var(--design-unit) * 4px + 2px);
+  height: calc(var(--design-unit) * 4px + 2px);
+}
+
+.App__checkbox-control {
+  position: absolute;
+  display: inline-block;
+  margin-top: 4px;
+  width: calc(var(--design-unit) * 4px + 2px);
+  height: calc(var(--design-unit) * 4px + 2px);
+  box-sizing: border-box;
+  border-radius: calc(var(--checkbox-corner-radius) * 1px);
+  border: calc(var(--border-width) * 1px) solid var(--checkbox-border);
+  background: var(--checkbox-background);
+  outline: none;
+}
+
+.App__user-login-container {
+  margin-top: auto;
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.App__logout-text {
+  padding-right: 16px;
+}
+
+.App__user-logout-button {
+  margin-left: auto;
+}
+
+.ascii-art {
+  font-family: monospace;
+  font-size: 6px;
+}
+
+.ascii-art--error {
+  color: #FF0000;
+}
+
+.App__new-project {
+  margin-top: 8px;
+}
+
+.starter-project-input {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.starters_dropdown {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.starters-hr {
+  width: 100%;
+  margin-top: 16px;
+}
+
+
