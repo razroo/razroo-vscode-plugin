@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getAccessToken } from "../graphql/expired";
+import { getAccessToken } from "../auth/auth";
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from "../graphql/awsConstants";
 import axios from 'axios';
 

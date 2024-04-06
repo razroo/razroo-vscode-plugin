@@ -23,7 +23,7 @@ import { determineFilePathParameter, effects, getVersionAndNameString, replaceCu
 import {  runRazrooCommand } from './command/command';
 import { writeCodeSnippet } from '../snippets/write-snippet';
 import { createVSCodeIdToken } from './token/token';
-import { refreshAccessToken } from '../graphql/expired';
+import { refreshAccessToken } from '../auth/auth';
 import { switchToActiveBranch } from '../preview/switch-branch';
 import { openStarterInNewCodeEditor } from '../starters/generate-starter';
 
