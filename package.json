@@ -55,7 +55,7 @@
       },
       {
         "command": "razroo.generate",
-        "title": "Razroo Auth0 Authentication"
+        "title": "Razroo Generate"
       },
       {
         "command": "generate.angular.component",
@@ -126,6 +126,10 @@
       "explorer/context": [
         {
           "submenu": "scaffold.submenu",
+          "group": "myextension.myGroup"
+        },
+        {
+          "command": "razroo.generate",
           "group": "myextension.myGroup"
         }
       ],
@@ -216,10 +220,6 @@
       {
         "id": "scaffold.submenu",
         "label": "Razroo Scaffold"
-      },
-      {
-        "id": "generate",
-        "label": "Razroo Generate"
       }
     ],
     "viewsContainers": {

@@ -1,4 +1,4 @@
-import { ProjectConfig } from './../../interfaces/project-config.interfaces';
+import { ProjectConfig } from '../../interfaces/project-config.interfaces';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
