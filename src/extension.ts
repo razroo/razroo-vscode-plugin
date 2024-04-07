@@ -35,7 +35,7 @@ import { generatePreviewFiles } from './preview/generate-preview';
 import { PreviewStateObject } from './preview/preview.interface';
 import { createVSCodeIdToken } from "./utils/token/token";
 import { MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_REFRESH_TOKEN } from "./constants";
-import { getAccessToken } from "./graphql/expired";
+import { getAccessToken } from "./auth/auth";
 import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
 import { saveFiles } from "./utils/utils";

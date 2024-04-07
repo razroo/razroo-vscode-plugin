@@ -3,7 +3,7 @@ import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../../graphql/awsConstants';
 import axios, { AxiosRequestConfig, AxiosPromise, AxiosResponse } from 'axios';
 
 import { GetUserOrganizations } from './organizations.queries';
-import { getAccessToken } from '../../graphql/expired';
+import { getAccessToken } from '../../auth/auth';
 
 export const getUserOrganizations = async (
     userId: string,

@@ -54,6 +54,10 @@
         "title": "Razroo Auth0 Authentication"
       },
       {
+        "command": "razroo.generate",
+        "title": "Razroo Generate"
+      },
+      {
         "command": "generate.angular.component",
         "title": "Angular Component"
       },
@@ -122,6 +126,10 @@
       "explorer/context": [
         {
           "submenu": "scaffold.submenu",
+          "group": "myextension.myGroup"
+        },
+        {
+          "command": "razroo.generate",
           "group": "myextension.myGroup"
         }
       ],

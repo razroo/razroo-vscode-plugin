@@ -4,7 +4,7 @@ import { GenerateCodeParameters } from './../../interfaces/generate-code.interfa
 import { GenerateVsCodeDownloadCode } from "./generate-code.mutations";
 import * as vscode from 'vscode';
 import axios from 'axios';
-import { getAccessToken } from '../../graphql/expired';
+import { getAccessToken } from '../../auth/auth';
 
 export const generateVsCodeDownloadCode = async (
     generateVsCodeDownloadCodeParameters: GenerateCodeParameters,
