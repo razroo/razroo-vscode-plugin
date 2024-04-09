@@ -215,7 +215,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         await tryToAuth(context, isProduction, projectsProvider, projectConfigs, orgId);
       } catch (error) {
-        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.log('Connect projects try to auth ERROR');
         console.error(error);
       }
     }

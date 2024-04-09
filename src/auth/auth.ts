@@ -45,7 +45,7 @@ export async function refreshAccessToken(context: vscode.ExtensionContext, isPro
 
 export async function getAccessToken(context: vscode.ExtensionContext, isProduction: boolean) {
   const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-  if (isTokenExpired(accessToken)) {
+  if(accessToken && isTokenExpired(accessToken)) {
     const newToken = await refreshAccessToken(context, isProduction);
     return newToken;
   }
