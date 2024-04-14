@@ -254,7 +254,7 @@ export const tryToAuth = async (context: vscode.ExtensionContext, isProduction: 
   if (accessToken && userId && orgId) {
     if(selectedProjects) {
       await updatePrivateDirectoriesInVSCodeAuthentication(accessToken, isProduction, userId, orgId, selectedProjects);
-      await subscribeToGenerateVsCodeDownloadCodeSub({context, isProduction, projectsProvider, selectedProjects, userId});
+      await subscribeToGenerateVsCodeDownloadCodeSub({context, isProduction, projectsProvider, selectedProjects, userId, accessToken});
     }
     vscode.commands.executeCommand('setContext', 'razroo-vscode-plugin:isAuthenticated', true);
     await projectsProvider?.view?.webview.postMessage({

@@ -1,4 +1,4 @@
-import { ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ID_VS_CODE_TOKEN, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_COLUMN_NUMBER, VSCODE_ACTIVE_LINE_NUMBER} from '../constants';
+import { ACTIVE_WORKSPACE_FOLDER_PROJECT_CONFIG, MEMENTO_RAZROO_ORG_ID, MEMENTO_RAZROO_USER_ID, VSCODE_ACTIVE_COLUMN_NUMBER, VSCODE_ACTIVE_LINE_NUMBER} from '../constants';
 import * as vscode from 'vscode';
 import { getSnippetTemplates } from './snippets.queries';
 import { generateVsCodeDownloadCode } from '../graphql/generate-code/generate-code.service';
@@ -24,7 +24,6 @@ export async function logCursorPosition(context: vscode.ExtensionContext, select
     console.log('logCursorPosition no active state');
   }
   const packageJsonParams = activeWorkspaceFolderState.packageJsonParams;
-  const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;      
   const orgId = context.globalState.get(MEMENTO_RAZROO_ORG_ID) as string;
   const userId = context.globalState.get(MEMENTO_RAZROO_USER_ID) as string;
   const vsCodeInstanceId = createVSCodeIdToken(userId, orgId, activeWorkspaceFolderState.versionControlParams, activeWorkspaceFolderState.packageJsonParams, activeWorkspaceFolderState.folderName);

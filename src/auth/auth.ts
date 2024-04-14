@@ -28,7 +28,7 @@ export async function refreshAccessToken(context: vscode.ExtensionContext, isPro
 
     await context.globalState.update(MEMENTO_RAZROO_ACCESS_TOKEN, userData.access_token);
     await context.globalState.update(MEMENTO_RAZROO_REFRESH_TOKEN, userData.refresh_token);
-    await vscode.window.showInformationMessage('User successfully authenticated with Razroo.');
+    await vscode.window.showInformationMessage('User successfully authenticated with Razroo[refreshed].');
     return userData.access_token;
   } catch (err) {
     const projectsProvider = new ProjectsWebview(context);
