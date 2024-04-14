@@ -1,9 +1,9 @@
 import gql from 'graphql-tag';
 import parseGitConfig from 'parse-git-config';
-import { AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_USER_ID, MEMENTO_RAZROO_ORG_ID, AUTH0_DOMAIN, DEV_AUTH0_URL, AUTH0_AUDIENCE, AUTH0_URL } from '../constants';
+import { AUTH0_DEV_CLIENT_ID, AUTH0_CLIENT_ID, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_ORG_ID, DEV_AUTH0_URL, AUTH0_AUDIENCE, AUTH0_URL } from '../constants';
 import { URL_GRAPHQL, URL_PROD_GRAPHQL } from '../graphql/awsConstants';
 import client from '../graphql/subscription';
-import { saveFiles, tryToAuth, updatePrivateDirectoriesInVSCodeAuthentication } from './utils';
+import { saveFiles, tryToAuth } from './utils';
 import * as vscode from 'vscode';
 import { isTokenExpired } from './date/date.utils';
 import { createVSCodeIdToken } from './token/token';
@@ -25,7 +25,8 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
   isProduction,
   projectsProvider,
   selectedProjects,
-  userId
+  userId,
+  accessToken
 }: any) => {
   //Subscribe with appsync client
   for(let selectedProject of selectedProjects) {
@@ -37,7 +38,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
       vsCodeInstancesSubscribedTo.push(vsCodeInstanceId);
     }
 
-    client(context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN), isProduction)
+    client(accessToken, isProduction)
     .hydrated()
     .then(async function (client) {
       //Now subscribe to results
@@ -80,7 +81,7 @@ export const subscribeToGenerateVsCodeDownloadCodeSub = async ({
 
       const error = async function error(data: any) {
         //Save the files in a new folder
-        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, selectedProjects);
+        await generateVsCodeDownloadCodeSubError(data, context, isProduction, projectsProvider, selectedProjects, accessToken);
       };
 
       const realtimeResults = async function realtimeResults(data: any) {
@@ -123,9 +124,7 @@ async function fallback(content) {
   console.log(content);
 }
 
-async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons) {
-  let accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN);
-  
+async function generateVsCodeDownloadCodeSubError(data: any, context, isProduction: boolean, projectsProvider, allPackageJsons, accessToken: string) {  
   if(isTokenExpired(accessToken as string)) {
     vscode.window.showInformationMessage(
       'Authentication Token Expired. Re-logging you in now.'
