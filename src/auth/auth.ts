@@ -11,13 +11,16 @@ import { ProjectsWebview } from '../projects/projects';
  * Used for triggering token refresh
  */
 export function isTokenExpired(accessToken: string): boolean {
-  let decodedIdToken: any = jwt_decode(accessToken);
-
-  if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
-    return true;  
-  }
-  else {
-    return false;
+  try {
+    let decodedIdToken: any = jwt_decode(accessToken);
+    if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
+      return true;  
+    } else {
+      return false;
+    }
+  } catch (error: any) {
+    console.error('Invalid token specified:', error.message);
+    return true; // Treat invalid token as expired
   }
 }
 
@@ -31,13 +34,12 @@ export async function refreshAccessToken(context: vscode.ExtensionContext, isPro
     await vscode.window.showInformationMessage('User successfully authenticated with Razroo[refreshed].');
     return userData.access_token;
   } catch (err) {
+    console.error('Error refreshing token:', err);
     const projectsProvider = new ProjectsWebview(context);
     const selectedProjects = await context.globalState.get(MEMENTO_SELECTED_PROJECTS) as ProjectConfig[];
     const selectedProjectsArr: ProjectConfig[] = selectedProjects ? selectedProjects : [];
     await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
     await vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
-    console.log('refresh token error');
-    console.log(err);
     return undefined;
   }
 };
@@ -45,9 +47,30 @@ export async function refreshAccessToken(context: vscode.ExtensionContext, isPro
 
 export async function getAccessToken(context: vscode.ExtensionContext, isProduction: boolean) {
   const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-  if(accessToken && isTokenExpired(accessToken)) {
-    const newToken = await refreshAccessToken(context, isProduction);
-    return newToken;
+  const refreshToken = context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN) as string;
+  
+  console.log('accessToken', accessToken);
+  console.log('refreshToken', refreshToken);
+  let accessTokenExpiry: number | undefined = 0; 
+  let refreshTokenExpiry: number | undefined = 0;
+
+  if (accessToken) {
+    const decodedAccessToken: any = jwt_decode(accessToken);
+    accessTokenExpiry = decodedAccessToken.exp * 1000; // Convert to milliseconds
   }
+
+  const now = Date.now();
+
+  if (now >= accessTokenExpiry - 5 * 60 * 1000) { // 5 minutes before expiry
+    try {
+      const newTokens = await refreshAccessToken(context, isProduction);
+      return newTokens.access_token;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      await vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+      return null;
+    }
+  }
+
   return accessToken;
 }

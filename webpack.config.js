@@ -70,6 +70,12 @@ module.exports =  function withDefaults(extConfig) {
                         }
                     }]
                 },
+                {
+                  test: /\.m?js$/,
+                  resolve: {
+                    fullySpecified: false,
+                  },
+                },
           ]
         },
         performance: {
