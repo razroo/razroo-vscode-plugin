@@ -45,9 +45,39 @@ export async function refreshAccessToken(context: vscode.ExtensionContext, isPro
 
 export async function getAccessToken(context: vscode.ExtensionContext, isProduction: boolean) {
   const accessToken = context.globalState.get(MEMENTO_RAZROO_ACCESS_TOKEN) as string;
-  if(accessToken && isTokenExpired(accessToken)) {
-    const newToken = await refreshAccessToken(context, isProduction);
-    return newToken;
+  const refreshToken = context.globalState.get(MEMENTO_RAZROO_REFRESH_TOKEN) as string;
+  
+  let accessTokenExpiry: number | undefined = 0; 
+  let refreshTokenExpiry: number | undefined = 0;
+
+  if (accessToken) {
+    const decodedAccessToken: any = jwt_decode(accessToken);
+    accessTokenExpiry = decodedAccessToken.exp * 1000; // Convert to milliseconds
   }
+
+  if (refreshToken) {
+    const decodedRefreshToken: any = jwt_decode(refreshToken);
+    refreshTokenExpiry = decodedRefreshToken.exp * 1000; // Convert to milliseconds
+  }
+
+  const now = Date.now();
+
+  if (refreshTokenExpiry && now >= refreshTokenExpiry) {
+    // Refresh token has expired, need full re-authentication
+    await vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+    return null;
+  }
+
+  if (now >= accessTokenExpiry - 5 * 60 * 1000) { // 5 minutes before expiry
+    try {
+      const newTokens = await refreshAccessToken(context, isProduction);
+      return newTokens.access_token;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      await vscode.commands.executeCommand(COMMAND_AUTH0_AUTH);
+      return null;
+    }
+  }
+
   return accessToken;
 }
