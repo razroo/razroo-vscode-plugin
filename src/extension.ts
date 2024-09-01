@@ -139,7 +139,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const auth0Authentication = vscode.commands.registerCommand(
     COMMAND_AUTH0_AUTH,
-    async ({selectedProjects, projectConfigs}) => {
+    async ({selectedProjects, projectConfigs} = {}) => { // Added default value
+      if (!selectedProjects) {
+        console.error('selectedProjects is undefined');
+        return;
+      }
       context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
       const selectedProjectsArr: ProjectConfig[] = selectedProjects ? selectedProjects : [];
       await updateVsCode(context, isProduction, selectedProjectsArr, projectsProvider);
@@ -192,7 +196,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const connectProjectsTryToAuthCommmand = vscode.commands.registerCommand(
     COMMAND_CONNECT_PROJECTS_TRY_TO_AUTH,
-    async({selectedProjects, disconnectedProjects, orgId}) => {
+    async({selectedProjects = [], disconnectedProjects = [], orgId}) => {
       try {
         context.workspaceState.update(MEMENTO_SELECTED_PROJECTS, selectedProjects);
         
