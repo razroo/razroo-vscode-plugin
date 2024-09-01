@@ -69,7 +69,7 @@ module.exports =  function withDefaults(extConfig) {
                           }
                         }
                     }]
-                },
+                }
           ]
         },
         performance: {
