@@ -1,3 +1,5 @@
+Download Razroo VSCode Plugin here: https://marketplace.visualstudio.com/items?itemName=Razroo.razroo-vscode-plugin
+
 <br>
 <b>Note: Click on the "Go!" button in the Razroo Extension to get started.</b>
 <br>
