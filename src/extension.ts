@@ -169,7 +169,6 @@ export async function activate(context: vscode.ExtensionContext) {
     async() => {
       try {
         getGitHistoryAndNavigateToRazrooUrl();
-        console.log('show documentation called');
       } catch (error) {
         console.log('COMMAND_TRY_TO_AUTH ERROR');
         console.error(error);
