@@ -17,7 +17,8 @@ import {
   RAZROO_PREVIEW_STATE,
   MEMENTO_RAZROO_ORG_ID,
   COMMAND_CREATE_PROJECT,
-  EMPTY
+  EMPTY,
+  COMMAND_SHOW_RAZROO_DOCUMENTATION
 } from './constants';
 import { EventEmitter } from 'stream';
 import { pushScaffoldCommands } from './utils/scaffold/push-scaffold-commands';
@@ -40,6 +41,7 @@ import { disconnectVsCodeInstance } from "./disconnect/disconnect.service";
 import { generateVsCodeDownloadCode } from "./graphql/generate-code/generate-code.service";
 import { saveFiles } from "./utils/utils";
 import { createPathForStarterRepo } from "./starters/starter-utils";
+import { getGitHistoryAndNavigateToRazrooUrl } from "./documentation/documentation";
 
 // function to determine if production environment or not
 function isProductionFunc(context: vscode.ExtensionContext): boolean {
@@ -162,6 +164,18 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   );
 
+  const showRazrooDocumentationCommand = vscode.commands.registerCommand(
+    COMMAND_SHOW_RAZROO_DOCUMENTATION,
+    async() => {
+      try {
+        getGitHistoryAndNavigateToRazrooUrl();
+      } catch (error) {
+        console.log('COMMAND_TRY_TO_AUTH ERROR');
+        console.error(error);
+      }
+    }
+  );
+
   const createProject = vscode.commands.registerCommand(
     COMMAND_CREATE_PROJECT,
     async({path, projectName}) => {
@@ -269,6 +283,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(logout);
   context.subscriptions.push(logoutUser);
   context.subscriptions.push(buildPreviewAndUploadDisposable);
+  context.subscriptions.push(showRazrooDocumentationCommand);
 
 
   // execute command for tryToAuth to re-connect previously connected projects

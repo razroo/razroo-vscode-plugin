@@ -54,6 +54,10 @@
         "title": "Razroo Auth0 Authentication"
       },
       {
+        "command": "extension.showRazrooDocumentation",
+        "title": "Razroo Documentation"
+      },
+      {
         "command": "razroo.generate",
         "title": "Razroo Generate"
       },
@@ -131,6 +135,12 @@
         {
           "command": "razroo.generate",
           "group": "myextension.myGroup"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "extension.showRazrooDocumentation",
+          "group": "navigation"
         }
       ],
       "scaffold.submenu": [
