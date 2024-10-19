@@ -318,8 +318,8 @@
     "resolve-typescript-plugin": "^2.0.1",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.6.3",
     "tslib": "^2.8.0",
+    "typescript": "^5.6.3",
     "url-loader": "^4.1.1",
     "vscode-test": "^1.6.1",
     "webpack": "^5.95.0",
@@ -372,6 +372,7 @@
     "ts-node": "^10.9.2",
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0",
+    "vscode": "^1.1.37",
     "ws": "^8.18.0"
   },
   "overrides": {
