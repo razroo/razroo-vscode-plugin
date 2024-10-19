@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_SELECTED_PROJECTS } from "../constants";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { refreshAuth0Token } from '../utils/graphql.utils';
 import { updateVsCode } from '../update-vscode/update-vscode';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
@@ -11,7 +11,7 @@ import { ProjectsWebview } from '../projects/projects';
  * Used for triggering token refresh
  */
 export function isTokenExpired(accessToken: string): boolean {
-  let decodedIdToken: any = jwt_decode(accessToken);
+  let decodedIdToken: any = jwtDecode(accessToken);
 
   if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
     return true;  

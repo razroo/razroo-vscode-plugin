@@ -129,12 +129,12 @@ async function getGitignorePatterns(gitignorePath: string): Promise<string[]> {
     .map((line: any) => path.join(path.dirname(gitignorePath), line));
 }
 
-export async function findGitFolders(parentFolder: string, gitFolders: any[] = []): Promise<string[]> {
+export async function findGitFolders(parentFolder: string, gitFolders: string[] = []): Promise<string[]> {
   // Create an ignore object based on the parentFolder's .gitignore file
   const ignoreRules = fs.readFileSync(path.join(parentFolder, '.gitignore'), 'utf8');
   const ig = ignore().add(ignoreRules);
 
-  async function search(folder: string) {
+  async function search(folder: string): Promise<void> {
     const files = fs.readdirSync(folder);
 
     for (const file of files) {
@@ -147,12 +147,13 @@ export async function findGitFolders(parentFolder: string, gitFolders: any[] = [
           if (file === '.git') {
             gitFolders.push(filePath);
           } else {
-            return await search(filePath);
+            await search(filePath);
           }
         }
       }
     }
-  };
+  }
 
-  return await search(parentFolder);
+  await search(parentFolder);
+  return gitFolders;
 }

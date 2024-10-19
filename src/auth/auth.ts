@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { COMMAND_AUTH0_AUTH, MEMENTO_RAZROO_ACCESS_TOKEN, MEMENTO_RAZROO_REFRESH_TOKEN, MEMENTO_SELECTED_PROJECTS } from "../constants";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { refreshAuth0Token } from '../utils/graphql.utils';
 import { updateVsCode } from '../update-vscode/update-vscode';
 import { ProjectConfig } from '../projects/interfaces/project-config.interfaces';
@@ -12,7 +12,7 @@ import { ProjectsWebview } from '../projects/projects';
  */
 export function isTokenExpired(accessToken: string): boolean {
   try {
-    let decodedIdToken: any = jwt_decode(accessToken);
+    let decodedIdToken: any = jwtDecode(accessToken);
     if (((decodedIdToken.exp as number) * 1000) - Date.now() <= 0) {
       return true;  
     } else {
@@ -55,7 +55,7 @@ export async function getAccessToken(context: vscode.ExtensionContext, isProduct
   let refreshTokenExpiry: number | undefined = 0;
 
   if (accessToken) {
-    const decodedAccessToken: any = jwt_decode(accessToken);
+    const decodedAccessToken: any = jwtDecode(accessToken);
     accessTokenExpiry = decodedAccessToken.exp * 1000; // Convert to milliseconds
   }
 
