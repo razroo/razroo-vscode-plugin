@@ -378,6 +378,9 @@
   "overrides": {
     "aws-appsync": {
       "graphql": "15.3.0"
+    },
+    "subscriptions-transport-ws": {
+      "graphql": "15.3.0"
     }
   }
 }
