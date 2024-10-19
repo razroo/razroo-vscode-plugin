@@ -6,7 +6,7 @@
   "version": "3.4.2",
   "private": true,
   "engines": {
-    "vscode": "^1.73.0"
+    "vscode": "^1.94.0"
   },
   "icon": "media/razroo-icon.jpg",
   "main": "./dist/extension",
@@ -373,5 +373,10 @@
     "utf-8-validate": "^6.0.4",
     "uuid": "^10.0.0",
     "ws": "^8.18.0"
+  },
+  "overrides": {
+    "aws-appsync": {
+      "graphql": "15.3.0"
+    }
   }
 }
