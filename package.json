@@ -86,12 +86,20 @@
         "title": "Angular Directive"
       },
       {
+        "command": "generate.angular.angularNxLib",
+        "title": "Angular Nx Lib"
+      },
+      {
+        "command": "generate.javascript.javascriptComponent",
+        "title": "Javascript Component"
+      },
+      {
         "command": "generate.nextjs.nextjsComponent",
         "title": "Nextjs Component"
       },
       {
-        "command": "generate.ngrx.ngrxFeature",
-        "title": "Ngrx Feature"
+        "command": "generate.nextjs.nextjsNxLib",
+        "title": "Nextjs Nx Lib"
       },
       {
         "command": "generate.react.reactComponent",
@@ -175,14 +183,24 @@
           "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
         },
         {
+          "command": "generate.angular.angularNxLib",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:angular"
+        },
+        {
+          "command": "generate.javascript.javascriptComponent",
+          "group": "myextension.myGroup",
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:javascript"
+        },
+        {
           "command": "generate.nextjs.nextjsComponent",
           "group": "myextension.myGroup",
           "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:nextjs"
         },
         {
-          "command": "generate.ngrx.ngrxFeature",
+          "command": "generate.nextjs.nextjsNxLib",
           "group": "myextension.myGroup",
-          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:ngrx"
+          "when": "razroo-vscode-plugin:isAuthenticated && razroo-vscode-plugin-language:nextjs"
         },
         {
           "command": "generate.react.reactComponent",
