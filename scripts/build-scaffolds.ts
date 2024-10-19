@@ -1,3 +1,5 @@
+
+
 import { getPathScaffolds } from './../src/graphql/scaffold/scaffold.service';
 import { COMMUNITY } from '../src/constants';
 import { getPaths } from '../src/graphql/get-paths/paths.service';
@@ -9,6 +11,9 @@ import { getVersionAndNameString, morphCode } from '@codemorph/core';
 import { camelCase } from 'lodash';
 // Parsing the env file.
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+// comment out the followin
+
 
 // 1. getPaths - TODO modify this so 
 // 2. loop through each path
@@ -28,6 +33,12 @@ getPaths(COMMUNITY, accessToken, production).then(async paths => {
   const scaffoldCommands = [{
     command: "extension.auth0Authentication",
     title: "Razroo Auth0 Authentication"
+  }, {
+    command: "extension.showRazrooDocumentation",
+    title: "Razroo Documentation"
+  }, {
+    command: "razroo.generate",
+    title: "Razroo Generate"
   }] as any;
   const pushScaffoldCommandsEdits = [{
     nodeType: 'import',

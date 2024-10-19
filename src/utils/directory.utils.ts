@@ -24,7 +24,13 @@ const readGitIgnoreFile = async (dir = '') => {
       path: dir,
       gitignorePatterns: await globifyGitIgnore(gitignoreContent)
       //This hack is needed because the "globifyGitIgnore v0.2.1" returns inverted patterns.
-      .then(gitIgnorePatterns => gitIgnorePatterns.map(pattern => pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern)),
+      .then(gitIgnorePatterns => gitIgnorePatterns.map((pattern: any) => {
+        if (typeof pattern === 'string') {
+          return pattern.startsWith('!') ? pattern.slice(1) : '!' + pattern;
+        }
+        // Handle non-string patterns (assuming they're GlobifiedEntry objects)
+        return pattern;
+      })),
     };
   } catch (error) {
     if ((error as Error)?.message.startsWith('ENOENT: no such file or directory')) {
